@@ -1,0 +1,5 @@
+# Hanya index.html yang perlu dideploy. Materi sumber berhak cipta jangan ikut terpublikasi.
+*.pdf
+3_*.html
+4_*.html
+SPEC.md
