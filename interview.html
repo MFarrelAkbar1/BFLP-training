@@ -1,0 +1,1409 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Latihan Smart Interview</title>
+<meta name="description" content="Latihan Smart Interview On Demand: rekam jawaban, putar ulang, lalu evaluasi diri dengan checklist dan pembahasan.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=IBM+Plex+Mono:wght@500&family=Instrument+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: satu kolom fokus; bar menempel di atas; tiap pertanyaan berjalan per tahap (pertanyaan → berpikir → rekam → tinjau → pembahasan) */
+:root{
+  --bg:#F1F5F4; --surface:#FFFFFF; --sunk:#E7EEED; --ink:#122427; --muted:#55696C; --line:#D3DEDD; --line-strong:#9FB0AF;
+  --accent:#0A6964; --accent-ink:#FFFFFF; --accent-soft:#D9EDEA;
+  --warn:#A9461A; --warn-soft:#FAE7DC;
+  --ok:#2E7D32; --ok-soft:#E1F1E1;
+  --rec:#CF2B42; --rec-ink:#FFFFFF; --rec-soft:#FBE4E7;
+  --font-display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --font-body:"Instrument Sans","Segoe UI",system-ui,-apple-system,sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --radius:12px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0B1416; --surface:#132024; --sunk:#0F1B1E; --ink:#E2ECEB; --muted:#92A7A8; --line:#253739; --line-strong:#4A6163;
+    --accent:#4DC2B4; --accent-ink:#062421; --accent-soft:#143633;
+    --warn:#F0985A; --warn-soft:#3A2416;
+    --ok:#7BCB7F; --ok-soft:#173220;
+    --rec:#FF6377; --rec-ink:#1A0B0E; --rec-soft:#3A1C23;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0B1416; --surface:#132024; --sunk:#0F1B1E; --ink:#E2ECEB; --muted:#92A7A8; --line:#253739; --line-strong:#4A6163;
+  --accent:#4DC2B4; --accent-ink:#062421; --accent-soft:#143633;
+  --warn:#F0985A; --warn-soft:#3A2416;
+  --ok:#7BCB7F; --ok-soft:#173220;
+  --rec:#FF6377; --rec-ink:#1A0B0E; --rec-soft:#3A1C23;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+button,textarea,select,input{font:inherit;color:inherit}
+[hidden]{display:none!important}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+h1,h2,h3{font-family:var(--font-display);letter-spacing:-.02em;text-wrap:balance;margin:0}
+h1{font-size:clamp(30px,6vw,44px);line-height:1.08;font-weight:700}
+h2{font-size:22px;line-height:1.25;font-weight:700}
+h3{font-size:17px;line-height:1.3;font-weight:600;letter-spacing:-.01em}
+p{margin:0}
+.small{font-size:14px;color:var(--muted)}
+.eyebrow{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.stack{display:flex;flex-direction:column;gap:24px}
+.stack-s{display:flex;flex-direction:column;gap:12px}
+
+/* Bar */
+.bar{position:sticky;top:0;z-index:20;background:var(--surface);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px)}
+.bar-in{max-width:920px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:10px 14px}
+.brand{font-family:var(--font-display);font-weight:700;font-size:15px;letter-spacing:-.01em;margin-right:auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.brand b{color:var(--accent)}
+.menulink{font-size:13px;font-weight:600;color:var(--muted);text-decoration:none;white-space:nowrap;padding:5px 10px;border:1px solid var(--line);border-radius:999px;flex:none}
+.menulink:hover{color:var(--accent);border-color:var(--accent)}
+.iconbtn{border:1px solid var(--line);background:var(--sunk);border-radius:999px;width:34px;height:34px;display:grid;place-items:center;cursor:pointer;padding:0;flex:none}
+.iconbtn svg{width:16px;height:16px}
+.bar-tag{font-family:var(--font-mono);font-size:13px;padding:4px 10px;border-radius:8px;background:var(--sunk);white-space:nowrap;flex:none}
+
+.wrap{max-width:920px;margin:0 auto;padding:28px 16px 40px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px}
+@media (max-width:560px){.card{padding:16px 14px}.wrap{padding-top:20px}}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:10px;border:1px solid transparent;padding:11px 18px;font-weight:600;cursor:pointer;min-height:44px;text-decoration:none;background:none}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn-primary{background:var(--accent);color:var(--accent-ink)}
+.btn-primary:hover:not(:disabled){filter:brightness(1.08)}
+.btn-ghost{background:transparent;border-color:var(--line-strong);color:var(--ink)}
+.btn-ghost:hover:not(:disabled){background:var(--sunk)}
+.btn-rec{background:var(--rec);color:var(--rec-ink)}
+.warnmsg{color:var(--warn);background:var(--warn-soft);border-radius:8px;padding:8px 12px;font-size:14px}
+.btn-text{background:none;border:0;color:var(--muted);padding:8px 4px;min-height:auto;font-weight:500;text-decoration:underline;text-underline-offset:3px}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+
+/* Home */
+.lede{font-size:17px;color:var(--muted);max-width:62ch}
+.legend-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin:0}
+.legend-grid div{border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.legend-grid dt{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.legend-grid dd{margin:4px 0 0;font-size:14px;color:var(--muted)}
+.note{border-left:4px solid var(--accent);background:var(--accent-soft);padding:12px 16px;border-radius:0 10px 10px 0;font-size:15px}
+.note.warn{border-color:var(--warn);background:var(--warn-soft)}
+.modes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media (max-width:760px){.modes{grid-template-columns:1fr}}
+.mode{display:flex;flex-direction:column;gap:8px;text-align:left;border:1px solid var(--line);border-radius:var(--radius);padding:18px;background:var(--surface);cursor:pointer}
+.mode:hover:not(:disabled){border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.mode:disabled{cursor:not-allowed;opacity:.6}
+.mode b{font-family:var(--font-display);font-size:18px}
+.mode span{font-size:14px;color:var(--muted)}
+.settings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:560px){.settings{grid-template-columns:1fr}}
+.field{display:flex;flex-direction:column;gap:6px;font-size:14px}
+.field select{border:1px solid var(--line-strong);border-radius:8px;padding:9px 10px;background:var(--surface);min-height:42px}
+.switch{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line);border-radius:10px;padding:14px;cursor:pointer}
+.switch input{margin-top:4px;accent-color:var(--accent);width:18px;height:18px;flex:none}
+.switch b{display:block}
+.switch.off{opacity:.6;cursor:not-allowed}
+
+/* Mic check */
+.meter{display:block;width:100%;height:44px;border-radius:8px;background:var(--sunk)}
+.pill{font-size:13px;font-weight:600;padding:3px 10px;border-radius:999px;background:var(--sunk);white-space:nowrap}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.pill.bad{background:var(--warn-soft);color:var(--warn)}
+audio{width:100%;max-width:100%}
+
+/* List */
+.filters{display:flex;gap:8px;flex-wrap:wrap}
+.fchip{border:1px solid var(--line-strong);border-radius:999px;padding:6px 14px;background:var(--surface);cursor:pointer;font-size:14px;font-weight:600;min-height:36px}
+.fchip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.qlist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.qitem{display:flex;gap:14px;align-items:flex-start;width:100%;text-align:left;border:1px solid var(--line);border-radius:var(--radius);padding:16px;background:var(--surface);cursor:pointer}
+.qitem:hover{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.code{font-family:var(--font-mono);font-size:13px;font-weight:500;padding:3px 8px;border-radius:6px;background:var(--accent-soft);color:var(--accent);flex:none}
+.qitem-body{display:flex;flex-direction:column;gap:6px;min-width:0}
+.qitem-body b{font-size:16px}
+.qitem-body p{font-size:14px;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.tags{display:flex;gap:6px;flex-wrap:wrap}
+.tag{font-size:12px;font-weight:600;border-radius:999px;padding:2px 9px;background:var(--sunk);color:var(--muted);white-space:nowrap}
+.tag.real{background:var(--warn-soft);color:var(--warn)}
+.tag.done{background:var(--ok-soft);color:var(--ok)}
+
+/* Question */
+.qbox{border-radius:var(--radius);padding:20px 22px;background:var(--accent);color:var(--accent-ink);display:flex;flex-direction:column;gap:8px}
+.qbox .qlabel{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;opacity:.85}
+.qbox p{font-size:18px;line-height:1.5;font-weight:500}
+@media (max-width:560px){.qbox{padding:16px}.qbox p{font-size:17px}}
+.qhead{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.stage{display:flex;flex-direction:column;gap:16px}
+#stage,#review,#discussion{scroll-margin-top:72px}
+.clock{font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-size:clamp(40px,10vw,56px);line-height:1;letter-spacing:-.02em}
+.clock small{font-size:.4em;color:var(--muted);margin-left:6px}
+.stage-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.track{height:8px;border-radius:999px;background:var(--sunk);overflow:hidden}
+.track i{display:block;height:100%;width:100%;background:var(--accent);transform-origin:left center}
+.track.rec i{background:var(--rec)}
+.recdot{display:inline-flex;align-items:center;gap:8px;font-weight:600;color:var(--rec)}
+.recdot::before{content:"";width:12px;height:12px;border-radius:50%;background:var(--rec);animation:blink 1.2s infinite}
+@keyframes blink{50%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){.recdot::before{animation:none}}
+textarea{width:100%;min-height:90px;border:1px solid var(--line-strong);border-radius:10px;padding:10px 12px;background:var(--surface);line-height:1.5;resize:vertical}
+.porsi{display:flex;border-radius:8px;overflow:hidden;font-size:12px;line-height:1.3}
+.porsi div{padding:6px 8px;color:#fff;min-width:0}
+.porsi div:nth-child(1){background:#1C77A0}.porsi div:nth-child(2){background:#0A6964}.porsi div:nth-child(3){background:#7A5BA8}.porsi div:nth-child(4){background:#A9461A}
+.porsi b{display:block;font-family:var(--font-mono);font-weight:500}
+.porsi span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* Metrics */
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin:0}
+.metrics div{background:var(--surface);padding:12px 14px;min-width:0}
+.metrics dt{font-size:12px;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+.metrics dd{margin:2px 0 0;font-family:var(--font-display);font-weight:700;font-size:22px}
+.metrics dd.na{font-family:var(--font-body);font-weight:500;font-size:14px;color:var(--muted)}
+@media (max-width:560px){.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.checklist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.checklist label{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line);border-radius:10px;padding:12px 14px;cursor:pointer}
+.checklist label:has(input:checked){border-color:var(--ok);background:var(--ok-soft)}
+.checklist input{margin-top:4px;width:18px;height:18px;accent-color:var(--ok);flex:none}
+
+/* Pembahasan */
+.sec{display:flex;flex-direction:column;gap:10px;padding-top:18px;border-top:1px solid var(--line)}
+.sec:first-child{border-top:0;padding-top:0}
+.sec h3{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-family:var(--font-body);font-weight:600}
+.sec ul,.sec ol{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:6px}
+.example{border-radius:10px;padding:14px 16px;background:var(--accent-soft);display:flex;flex-direction:column;gap:8px}
+.example .prof{font-size:13px;font-weight:600;color:var(--accent)}
+.example.bad{background:var(--warn-soft)}
+.example.bad .prof{color:var(--warn)}
+.example p{font-size:15px}
+.bedah{width:100%;border-collapse:collapse;font-size:14px}
+.bedah th,.bedah td{border-bottom:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+.bedah th{background:var(--sunk);font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.bedah td:last-child,.bedah th:last-child{white-space:nowrap;font-family:var(--font-mono)}
+@media (max-width:560px){
+  .bedah thead{display:none}
+  .bedah tr{display:block;border-bottom:1px solid var(--line);padding:8px 0}
+  .bedah td{display:block;border:0;padding:2px 0}
+  .bedah td:first-child{font-weight:600}
+}
+.practice-q{display:flex;gap:10px;align-items:flex-start;justify-content:space-between;border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.practice-q span{min-width:0}
+.practice-q .btn{min-height:36px;padding:6px 12px;font-size:14px;flex:none}
+
+.subhead{font-size:17px}
+.simq{font-weight:500;border-left:4px solid var(--accent);padding-left:12px}
+details.rv{background:var(--surface);border:1px solid var(--line);border-radius:10px}
+details.rv>summary{list-style:none;cursor:pointer;padding:12px 16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+details.rv>summary::-webkit-details-marker{display:none}
+details.rv>summary::after{content:"";margin-left:auto;width:9px;height:9px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);transition:transform .15s}
+details.rv[open]>summary::after{transform:rotate(-135deg)}
+details.rv .rv-body{padding:0 16px 16px;display:flex;flex-direction:column;gap:16px}
+.htable{width:100%;border-collapse:collapse;font-size:14px}
+.htable th,.htable td{border-bottom:1px solid var(--line);padding:9px 12px;text-align:left;vertical-align:top}
+.htable tr:last-child td{border-bottom:0}
+.htable th{background:var(--sunk);font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.htable td:not(:nth-child(2)){white-space:nowrap}
+@media (max-width:640px){
+  .htable thead{display:none}
+  .htable tr{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px 12px;padding:12px 14px;border-bottom:1px solid var(--line)}
+  .htable tr:last-child{border-bottom:0}
+  .htable td{border:0;padding:0;white-space:normal!important}
+  .htable td:nth-child(2){grid-column:1/-1;order:-1;font-weight:600}
+  .htable td:first-child{grid-column:1/-1;order:-1;color:var(--muted);font-size:13px}
+  .htable td:nth-child(n+3)::before{content:attr(data-l);display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+}
+
+.foot{max-width:920px;margin:0 auto;padding:18px 16px 32px;font-size:13px;color:var(--muted);border-top:1px solid var(--line);display:flex;flex-direction:column;gap:4px}
+</style>
+</head>
+<body>
+<header class="bar">
+  <div class="bar-in">
+    <a class="menulink" href="index.html">← Menu</a>
+    <div class="brand">Smart Interview · <b>Latihan BFLP</b></div>
+    <span class="bar-tag" id="bartag" hidden></span>
+    <button class="iconbtn" id="themebtn" type="button" aria-label="Ganti tema" title="Tema: otomatis"></button>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- BERANDA -->
+  <section id="home" class="stack">
+    <div class="stack-s">
+      <span class="eyebrow">Latihan mandiri · Video interview</span>
+      <h1>Smart Interview On Demand</h1>
+      <p class="lede" id="home-lede"></p>
+    </div>
+
+    <div class="card stack-s">
+      <h2>Cara membaca setiap pertanyaan</h2>
+      <dl class="legend-grid" id="legend"></dl>
+      <p class="note warn"><b>Contoh jawaban bukan jawaban mutlak.</b> <span id="catatan-contoh"></span></p>
+    </div>
+
+    <div class="card stack-s">
+      <h2>Privasi rekaman</h2>
+      <ul class="small" style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px">
+        <li>Rekaman suaramu <b>hanya disimpan di browser ini</b> selama halaman terbuka. Tidak ada yang diunggah, dan rekaman hilang saat halaman ditutup atau dimuat ulang.</li>
+        <li>Transkrip otomatis <b>mati secara bawaan</b>. Kalau kamu menyalakannya, Chrome/Edge mengirim audio ke server Google untuk diubah menjadi teks.</li>
+        <li>Tanpa transkrip otomatis, kamu tetap bisa mengetik transkrip sendiri untuk menghitung jumlah kata dan tempo.</li>
+      </ul>
+    </div>
+
+    <div class="card stack-s">
+      <div class="stage-head"><h2>Cek mikrofon</h2><span class="pill" id="mic-pill">Belum dicek</span></div>
+      <p class="small">Izinkan akses mikrofon, bicara sebentar, lalu dengarkan hasilnya. Pakai Chrome atau Edge terbaru di ruangan yang tenang.</p>
+      <canvas class="meter" id="mic-meter" aria-hidden="true"></canvas>
+      <p class="small" id="mic-msg" hidden></p>
+      <div class="row">
+        <button class="btn btn-ghost" id="mic-test" type="button">Rekam 3 detik</button>
+        <audio id="mic-audio" controls hidden></audio>
+      </div>
+    </div>
+
+    <div class="card stack-s">
+      <h2>Pengaturan</h2>
+      <div class="settings">
+        <label class="field">Waktu berpikir
+          <select id="set-think"><option value="0">Tanpa waktu berpikir</option><option value="15">15 detik</option><option value="30">30 detik</option><option value="45">45 detik</option><option value="60">60 detik</option></select>
+        </label>
+        <label class="field">Batas waktu menjawab
+          <select id="set-rec"><option value="60">1 menit</option><option value="90">1,5 menit</option><option value="120">2 menit</option><option value="180">3 menit</option></select>
+        </label>
+      </div>
+      <label class="switch" id="sr-switch">
+        <input type="checkbox" id="set-sr">
+        <span><b>Transkrip otomatis (bahasa Indonesia)</b><span class="small" id="sr-desc">Audio dikirim ke server Google oleh browser untuk dikenali. Matikan kalau tidak mau rekamanmu keluar dari perangkat.</span></span>
+      </label>
+    </div>
+
+    <div class="stack-s">
+      <h2>Pilih mode</h2>
+      <div class="modes">
+        <button class="mode" type="button" id="mode-latihan"><b>Latihan per pertanyaan</b><span>Pilih satu pertanyaan, rekam jawaban, nilai sendiri, lalu baca pembahasan.</span></button>
+        <button class="mode" type="button" id="mode-sim"><b>Simulasi</b><span>Beberapa pertanyaan acak berturut-turut seperti tes asli. Pembahasan dibuka di akhir.</span></button>
+        <button class="mode" type="button" id="mode-belajar"><b>Mode belajar</b><span>Baca strategi dan contoh jawaban, lalu tulis draft jawabanmu tanpa merekam.</span></button>
+      </div>
+      <div class="row"><button class="btn btn-ghost" type="button" id="btn-history">Riwayat latihan</button></div>
+    </div>
+  </section>
+
+  <!-- DAFTAR -->
+  <section id="list" class="stack" hidden>
+    <div class="stack-s">
+      <button class="btn-text btn" type="button" data-go="home" style="align-self:flex-start">← Beranda latihan</button>
+      <h2 id="list-title">Pilih pertanyaan</h2>
+      <p class="small" id="list-sub"></p>
+      <div class="filters" role="group" aria-label="Filter pertanyaan" id="filters"></div>
+    </div>
+    <ul class="qlist" id="qlist"></ul>
+  </section>
+
+  <!-- SIMULASI: PERSIAPAN -->
+  <section id="sim" class="stack" hidden>
+    <div class="stack-s">
+      <button class="btn-text btn" type="button" data-go="home" style="align-self:flex-start">← Beranda latihan</button>
+      <h2>Simulasi</h2>
+      <p class="small">Jawab beberapa pertanyaan acak berturut-turut seperti video interview sungguhan.</p>
+    </div>
+    <div class="card stack-s">
+      <label class="field" style="max-width:260px">Jumlah pertanyaan <select id="sim-n"></select></label>
+      <ul class="small" id="sim-rules" style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px"></ul>
+      <p class="small">Waktu berpikir, batas rekam, dan transkrip otomatis diatur di Beranda latihan → Pengaturan.</p>
+      <p class="warnmsg" id="sim-err" hidden></p>
+      <div class="row"><button class="btn btn-primary" id="sim-start" type="button">Mulai simulasi</button></div>
+    </div>
+  </section>
+
+  <!-- SIMULASI: RINGKASAN -->
+  <section id="simres" class="stack" hidden></section>
+
+  <!-- RIWAYAT -->
+  <section id="history" class="stack" hidden></section>
+
+  <!-- SATU PERTANYAAN -->
+  <section id="q" class="stack" hidden>
+    <div class="qhead">
+      <button class="btn-text btn" type="button" id="q-back">← Daftar pertanyaan</button>
+    </div>
+    <div class="stack-s">
+      <div class="qhead"><span class="code" id="q-code"></span><span class="tag" id="q-variant" hidden></span></div>
+      <h2 id="q-title"></h2>
+    </div>
+    <div class="qbox"><span class="qlabel" id="q-label"></span><p id="q-text"></p></div>
+    <div class="card stage" id="stage"></div>
+    <div class="card stack-s" id="review" hidden></div>
+    <div class="card stack" id="discussion" hidden></div>
+  </section>
+</main>
+
+<footer class="foot">
+  <span>Simulasi latihan mandiri untuk persiapan tes. Tidak berafiliasi dengan, disponsori, atau didukung oleh SHL.</span>
+  <span>Sumber pertanyaan, strategi, dan contoh jawaban: <i>Smart Interview On Demand</i> oleh @lolosrekrutmen.</span>
+</footer>
+
+<script>
+/* =====================================================================
+   DATA — disalin dari "5_Smart Interview On Demand.pdf".
+   Untuk menambah pertanyaan: tambahkan satu objek ke SI.pertanyaan dengan field yang sama.
+   Field opsional boleh null / [] / tidak ditulis; tampilan hanya menampilkan field yang terisi.
+   Teks contoh jawaban: paragraf dipisah "\n\n" sesuai PDF.
+   ===================================================================== */
+const SI = {
+  judul: "Smart Interview On Demand",
+  subjudul: "Kumpulan Pertanyaan dan Contoh Jawaban",
+  pengantar: "Bahan latihan Self Interview yang bisa kamu sesuaikan dengan pengalaman dan posisi yang kamu lamar.",
+  caraMembaca: [
+    { label: "Yang ingin digali", teks: "Hal yang kemungkinan dicari penilai lewat pertanyaan itu." },
+    { label: "Strategi", teks: "Cara menyusun jawabannya." },
+    { label: "Kerangka jawaban", teks: "Urutan isi yang bisa kamu ikuti." },
+    { label: "Contoh jawaban", teks: "Ilustrasi jawaban yang terdengar natural saat diucapkan." },
+    { label: "Hindari", teks: "Jebakan yang sering terjadi." }
+  ],
+  catatanContoh: "Contoh di bab ini memakai tokoh dan pengalaman rekaan dengan latar yang beragam. Pelajari strukturnya, lalu isi dengan pengalamanmu sendiri dan sesuaikan dengan posisi serta perusahaan yang kamu lamar. Jangan mengarang pengalaman, prestasi, atau kemampuan yang tidak kamu miliki.",
+  pertanyaan: [
+    {
+      kode: "A1",
+      judul: "Menyampaikan hal yang benar meskipun tidak disukai (pertanyaan dari peserta)",
+      realTest: true,
+      pertanyaan: "Pernahkah Anda menyampaikan sesuatu yang menurut Anda benar atau sesuai dengan aturan, prinsip, atau norma yang berlaku, meskipun tidak disukai oleh teman-teman Anda? Apa yang akan Anda sampaikan dan mengapa hal tersebut tidak disukai? Bagaimana hasilnya?",
+      yangDigali: "Integritas, yaitu kesediaanmu memegang aturan atau prinsip saat ada tekanan dari orang-orang terdekat. Penilai juga melihat caramu menyampaikan hal yang tidak populer: apakah kamu tetap menghargai orang lain dan menjaga hubungan.",
+      bedahPertanyaan: [
+        { bagian: "\"Pernahkah Anda menyampaikan sesuatu yang benar atau sesuai aturan...\"", yangPerluDijawab: "Situasi singkat, serta aturan atau prinsip yang kamu pegang", porsi: 20 },
+        { bagian: "\"Apa yang Anda sampaikan...\"", yangPerluDijawab: "Isi pesanmu, kepada siapa, kapan, dan bagaimana caramu menyampaikannya", porsi: 35 },
+        { bagian: "\"...dan mengapa hal tersebut tidak disukai?\"", yangPerluDijawab: "Kepentingan teman yang terganggu, dan bukti bahwa kamu memahami sudut pandang mereka", porsi: 15 },
+        { bagian: "\"Bagaimana hasilnya?\"", yangPerluDijawab: "Hasil untuk aturan atau tujuan, hasil untuk hubungan, dan pelajaranmu", porsi: 30 }
+      ],
+      catatanBedah: "Kata \"akan\" di bagian kedua bisa membuat pertanyaan ini terdengar seperti pengandaian. Karena pertanyaannya dibuka dengan \"Pernahkah\", jawaban terkuat tetap berupa cerita nyata. Kalau kamu memang belum pernah mengalaminya, katakan dengan jujur, lalu jelaskan apa yang akan kamu sampaikan dan ceritakan pengalaman yang paling mendekati.",
+      strategi: [
+        "Pilih aturan atau prinsip yang jelas dan penting, bukan soal selera pribadi.",
+        "Tunjukkan caramu menyampaikan: memilih waktu dan tempat yang tepat, memberi alasan, dan menawarkan jalan keluar yang tetap sesuai aturan.",
+        "Akui alasan teman-temanmu tidak suka. Bagian ini menunjukkan empati, bukan kelemahan.",
+        "Tutup dengan hasil yang konkret untuk aturan dan untuk hubungan, lalu refleksi tentang caramu menyampaikan."
+      ],
+      kerangkaJawaban: [
+        "Situasi: di mana, kapan, dan aturan atau prinsip apa yang dipertaruhkan.",
+        "Yang disampaikan: isi pesanmu dan caramu menyampaikannya.",
+        "Alasan tidak disukai: kepentingan atau perasaan teman yang terganggu.",
+        "Hasil: untuk aturan, untuk hubungan, dan pelajaranmu."
+      ],
+      contohJawaban: [
+        { profil: "Fresh graduate, bendahara kepanitiaan", teks: "Pernah. Waktu itu saya jadi bendahara kepanitiaan seminar nasional di himpunan. Setelah acara selesai, ternyata ada sisa dana sponsor sekitar dua juta rupiah. Beberapa teman panitia mengusulkan uang itu dipakai untuk makan-makan, lalu dicatat di laporan pertanggungjawaban sebagai biaya konsumsi rapat. Saya paham kenapa mereka mau begitu. Kami sudah kerja tiga bulan, dan banyak yang keluar uang pribadi untuk transportasi. Tapi aturan kampus jelas: sisa dana harus dilaporkan apa adanya dan masuk ke kas himpunan.\n\nJadi di rapat evaluasi saya sampaikan bahwa saya tidak bisa mencatat pengeluaran yang tidak terjadi, karena tanda tangan saya ada di laporan itu. Saya juga usulkan jalan tengah: kami ajukan ke pengurus himpunan supaya sebagian kas dipakai untuk apresiasi panitia secara resmi. Suasananya sempat tidak enak, dan ada yang bilang saya terlalu kaku.\n\nHasilnya, ketua panitia setuju, laporan kami diterima fakultas tanpa revisi, dan pengurus himpunan menyetujui acara syukuran kecil dari pos kas. Dua teman sempat agak dingin ke saya selama seminggu, setelah itu hubungan kami biasa lagi. Dari situ saya belajar, menolak saja tidak cukup. Saya perlu datang dengan alasan yang jelas dan pilihan lain yang tetap sesuai aturan." },
+        { profil: "Berpengalaman, team leader gudang", teks: "Pernah, waktu saya jadi team leader di gudang distribusi. Menjelang akhir tahun, target muat barang naik, dan beberapa operator forklift mengusulkan supaya pemeriksaan forklift sebelum dipakai dilewati saja. Pemeriksaan itu makan sekitar sepuluh menit per unit, dan mereka sedang mengejar bonus target. Saya mengerti tekanannya, karena saya juga dikejar target yang sama. Tapi pemeriksaan itu bagian dari prosedur keselamatan kerja yang wajib.\n\nSaya sampaikan ke tim di briefing pagi bahwa pemeriksaan tetap jalan, dan saya jelaskan alasannya: kalau rem atau garpu forklift bermasalah, yang terancam teman kita sendiri. Supaya target tidak terganggu, saya usulkan pemeriksaan dilakukan bergiliran lima belas menit sebelum shift mulai, dan saya ikut mengerjakannya. Beberapa orang kurang senang karena harus datang lebih awal.\n\nHasilnya, target minggu itu tetap tercapai. Di hari ketiga, pemeriksaan menemukan satu forklift dengan rem yang mulai lemah, dan unit itu langsung kami tarik untuk diperbaiki. Setelah kejadian itu, tim tidak lagi mempersoalkan pemeriksaan. Saya belajar bahwa aturan lebih mudah diterima kalau saya ikut menanggung bebannya." }
+      ],
+      contohKurangEfektif: "Pernah. Saya orangnya memang tegas soal aturan. Waktu itu teman-teman saya mau titip absen, saya tidak mau, dan saya langsung laporkan ke dosen. Mereka marah, tapi saya tidak peduli karena aturan tetap aturan. Hasilnya mereka kena teguran.",
+      kenapaKurangEfektif: [
+        "Kandidat langsung melapor tanpa mencoba bicara dengan teman lebih dulu. Untuk pelanggaran kecil, langkah ini terkesan tidak peduli pada hubungan.",
+        "Kalimat \"saya tidak peduli\" memberi kesan kaku dan sulit diajak bekerja sama.",
+        "Alasan teman-teman tidak suka tidak dijelaskan dari sudut pandang mereka.",
+        "Hasilnya hanya hukuman. Tidak ada solusi dan tidak ada pelajaran."
+      ],
+      hindari: [
+        "Pelanggaran yang terlalu sepele, misalnya teman datang terlambat lima menit.",
+        "Detail kasus sensitif yang berlebihan, misalnya kasus hukum yang melibatkan orang lain.",
+        "Nada menghakimi atau merasa paling benar.",
+        "Melompat ke pelaporan tanpa mencoba bicara langsung, kecuali pelanggarannya serius dan ada jalur pelaporan resmi untuk itu.",
+        "Mengarang cerita. Kalau kamu belum punya pengalaman yang pas, pakai cerita yang lebih kecil tapi nyata."
+      ],
+      variasiLatihan: [
+        "Pernahkah Anda menolak ajakan teman karena bertentangan dengan aturan? Bagaimana cara Anda menolaknya?",
+        "Ceritakan saat Anda melihat rekan melakukan kecurangan kecil. Apa yang Anda lakukan, dan apa akibatnya bagi hubungan kalian?",
+        "Pernahkah Anda harus memilih antara mencapai target dan mengikuti prosedur? Apa yang Anda pilih dan mengapa?",
+        "Ceritakan saat Anda mengakui kesalahan yang tidak diketahui orang lain. Mengapa Anda mengakuinya?",
+        "Apa yang akan Anda lakukan jika atasan meminta Anda melakukan sesuatu yang menurut Anda melanggar aturan?"
+      ],
+      versiSituasional: null
+    },
+    {
+      kode: "A2",
+      judul: "Inisiatif: memperbaiki sesuatu tanpa diminta",
+      realTest: true,
+      pertanyaan: "Ceritakan saat Anda melihat ada hal yang perlu diperbaiki, lalu Anda bertindak tanpa menunggu diminta. Apa yang Anda lihat, apa yang Anda lakukan, dan apa dampaknya?",
+      yangDigali: "Inisiatif, kepekaan melihat masalah, dan caramu bertindak tanpa melangkahi wewenang.",
+      strategi: ["Pilih inisiatif yang tetap kamu komunikasikan ke pihak yang berwenang. Inisiatif yang baik tidak dijalankan diam-diam."],
+      kerangkaJawaban: [
+        "Masalah yang kamu lihat dan dampaknya.",
+        "Langkah yang kamu ambil, termasuk izin atau komunikasinya.",
+        "Dampak yang terukur."
+      ],
+      contohJawaban: [
+        { profil: "Fresh graduate, magang di tim rekrutmen", teks: "Waktu magang di tim rekrutmen, saya lihat data pelamar tersebar di email, folder, dan catatan masing-masing perekrut. Sering ada pelamar yang ditelepon dua kali, atau malah tidak dikabari sama sekali. Tidak ada yang meminta, tapi saya buat lembar kerja sederhana berisi semua pelamar dengan kolom status, dari seleksi berkas sampai penawaran kerja. Sebelum dipakai, saya tunjukkan dulu ke supervisor dan minta masukan, karena saya tidak mau mengubah cara kerja tim tanpa izin. Beliau minta ditambah kolom tanggal kontak terakhir. Setelah dua minggu dipakai, rapat mingguan tim jadi lebih singkat karena status setiap pelamar bisa dilihat di satu tempat. Waktu magang saya selesai, lembar kerja itu tetap dipakai." }
+      ],
+      hindari: [
+        "Inisiatif yang melanggar prosedur atau melangkahi atasan.",
+        "Inisiatif tanpa hasil dan tanpa pelajaran."
+      ],
+      versiSituasional: "Jika Anda melihat cara kerja tim yang menurut Anda membuang waktu, apa yang akan Anda lakukan?"
+    },
+    {
+      kode: "A3",
+      judul: "Memimpin kelompok yang kurang aktif",
+      realTest: false,
+      pertanyaan: "Pernahkah Anda memimpin kelompok yang anggotanya kurang aktif? Apa yang Anda lakukan untuk menggerakkan mereka, dan bagaimana hasilnya?",
+      yangDigali: "Caramu memimpin, memahami anggota, dan membagi peran.",
+      strategi: ["Tunjukkan bahwa kamu mencari tahu penyebab anggota pasif sebelum bertindak. Pemimpin yang hanya menegur, atau malah mengambil alih semua pekerjaan, memberi kesan kurang baik."],
+      kerangkaJawaban: [
+        "Kelompoknya dan masalahnya.",
+        "Caramu mencari tahu penyebabnya.",
+        "Langkah yang kamu ambil.",
+        "Hasil untuk tugas kelompok dan untuk anggotanya."
+      ],
+      contohJawaban: [
+        { profil: "Fresh graduate, ketua kelompok KKN", teks: "Saya pernah jadi ketua kelompok KKN dengan sepuluh anggota dari jurusan berbeda. Di minggu kedua, tiga orang hampir tidak pernah ikut rapat. Awalnya saya kesal, tapi saya putuskan mengobrol dengan mereka satu per satu. Ternyata alasannya beda-beda. Satu orang sambil kerja paruh waktu daring di malam hari, satu lagi bingung tugasnya karena programnya jauh dari jurusannya, dan satu lagi memang sungkan. Saya atur ulang pembagian tugas sesuai jurusan dan jadwal mereka. Teman yang kerja malam saya pindahkan ke kegiatan pagi, dan teman dari jurusan komunikasi saya minta memegang dokumentasi dan laporan. Semua program selesai tepat waktu, dan dosen pembimbing lapangan menilai laporan kami rapi. Yang paling saya ingat, teman yang tadinya sungkan malah paling aktif memimpin kegiatan bersama warga di akhir KKN." }
+      ],
+      hindari: [
+        "Menyalahkan anggota kelompok.",
+        "Cerita yang berakhir dengan \"akhirnya saya kerjakan semuanya sendiri\"."
+      ],
+      versiSituasional: "Jika Anda ditunjuk memimpin tim yang anggotanya lebih senior dari Anda, apa yang akan Anda lakukan di minggu pertama?"
+    },
+    {
+      kode: "A4",
+      judul: "Bekerja dengan orang yang cara kerjanya berbeda",
+      realTest: false,
+      pertanyaan: "Ceritakan saat Anda harus bekerja sama dengan orang yang cara kerjanya sangat berbeda dengan Anda. Apa tantangannya, bagaimana Anda menyesuaikan diri, dan apa hasilnya?",
+      yangDigali: "Kemampuan bekerja sama, fleksibilitas, dan sikapmu terhadap perbedaan.",
+      strategi: ["Ceritakan perbedaan cara kerja, bukan kekurangan pribadi orang itu. Tunjukkan bahwa kamu juga ikut menyesuaikan diri."],
+      kerangkaJawaban: [
+        "Perbedaan cara kerjanya.",
+        "Dampak perbedaan itu pada pekerjaan.",
+        "Penyesuaianmu dan kesepakatan bersama.",
+        "Hasilnya."
+      ],
+      contohJawaban: [
+        { profil: "Berpengalaman, staf pemasaran digital", teks: "Saya suka merencanakan semuanya dari jauh hari, sementara rekan desainer di tim saya baru bisa mulai kalau brief-nya sudah matang, dan dia paling produktif mendekati tenggat. Awalnya ini bikin saya cemas, dan dia merasa saya terlalu sering menagih. Kami akhirnya ngobrol, dan saya baru paham bahwa dia butuh brief yang lengkap supaya tidak bolak-balik revisi. Kami sepakat saya mengirim brief final paling lambat seminggu sebelum tenggat, lengkap dengan contoh referensi. Sebagai gantinya, dia mengirim sketsa kasar di hari ketiga supaya saya bisa cek arahnya. Sejak itu revisi besar turun dari biasanya tiga putaran jadi satu, dan kampanye bulanan kami tidak pernah terlambat lagi. Saya juga belajar menanyakan dulu kebutuhan rekan kerja sebelum menilai cara kerjanya." }
+      ],
+      hindari: [
+        "Mengeluhkan sifat orang lain.",
+        "Cerita di mana hanya orang lain yang harus berubah."
+      ],
+      versiSituasional: "Jika rekan satu tim sering terlambat menyerahkan bagiannya sehingga pekerjaan Anda tertahan, apa yang akan Anda lakukan?"
+    },
+    {
+      kode: "A5",
+      judul: "Mendekati pihak yang belum dikenal",
+      realTest: false,
+      pertanyaan: "Pernahkah Anda harus meminta bantuan dari orang atau instansi yang belum Anda kenal? Bagaimana Anda mendekatinya, dan apa hasilnya?",
+      yangDigali: "Kemampuan membangun hubungan, sopan santun profesional, dan kegigihan.",
+      strategi: ["Tunjukkan persiapanmu sebelum mendekati, caramu memberi nilai balik, dan caramu menjaga hubungan sesudahnya."],
+      kerangkaJawaban: [
+        "Apa yang kamu butuhkan dan dari siapa.",
+        "Persiapan dan caramu mendekati.",
+        "Hambatan dan caramu menanganinya.",
+        "Hasil dan kelanjutan hubungannya."
+      ],
+      contohJawaban: [
+        { profil: "Fresh graduate, S1 Perencanaan Wilayah dan Kota", teks: "Untuk skripsi, saya butuh data titik banjir lima tahun terakhir dari BPBD kabupaten, dan saya tidak kenal siapa pun di sana. Saya siapkan surat dari kampus dan ringkasan satu halaman tentang penelitian saya, termasuk data apa saja yang saya perlukan dan untuk apa. Waktu datang pertama kali, petugasnya bilang data belum bisa diberikan tanpa izin pimpinan. Saya tanyakan prosedurnya, mengajukan permohonan resmi, lalu menindaklanjutinya dengan sopan seminggu kemudian. Saya juga menawarkan peta hasil analisis saya kalau sudah jadi. Dua minggu kemudian datanya keluar. Setelah sidang, saya antarkan peta dan ringkasan hasilnya ke kantor mereka, dan salah satu stafnya bilang peta itu dipakai sebagai bahan rapat koordinasi." }
+      ],
+      hindari: [
+        "Cerita yang menunjukkan kamu memaksa atau memakai jalur \"orang dalam\".",
+        "Berhenti di \"datanya didapat\" tanpa menyebut caramu menjaga hubungan."
+      ],
+      versiSituasional: "Jika Anda harus bekerja dengan divisi lain yang dikenal sulit diajak berkoordinasi, bagaimana Anda memulainya?"
+    },
+    {
+      kode: "A6",
+      judul: "Meyakinkan orang lain untuk berubah",
+      realTest: false,
+      pertanyaan: "Ceritakan saat Anda berhasil meyakinkan orang lain untuk mengubah keputusan atau cara kerjanya. Bagaimana caranya, dan apa yang terjadi setelahnya?",
+      yangDigali: "Kemampuan memengaruhi dengan argumen dan data, bukan dengan tekanan.",
+      strategi: ["Tunjukkan bahwa kamu memahami keberatan pihak lain dan menjawabnya, misalnya dengan data atau uji coba kecil."],
+      kerangkaJawaban: [
+        "Hal yang ingin kamu ubah dan alasannya.",
+        "Keberatan pihak lain.",
+        "Caramu meyakinkan.",
+        "Hasilnya."
+      ],
+      contohJawaban: [
+        { profil: "Berpengalaman, staf keuangan", teks: "Di kantor saya, pengajuan penggantian biaya masih memakai formulir kertas yang harus ditandatangani tiga orang. Prosesnya bisa makan waktu sampai dua minggu, dan karyawan lapangan sering mengeluh. Saya usulkan pindah ke formulir daring, tapi kepala bagian saya khawatir soal keamanan dokumen dan jejak audit. Saya tidak memaksa. Saya kumpulkan data waktu proses tiga bulan terakhir, lalu mencari cara supaya formulir daring tetap menyimpan bukti persetujuan dan lampiran nota. Saya juga usulkan uji coba sebulan untuk satu tim saja. Setelah uji coba, waktu prosesnya rata-rata tinggal empat hari, dan auditor internal tidak menemukan masalah. Kepala bagian kemudian setuju menerapkannya ke semua tim. Dari situ saya belajar menjawab kekhawatiran orang lebih dulu sebelum meminta persetujuan." }
+      ],
+      hindari: [
+        "Cerita yang berhasil karena kamu memaksa atau melangkahi atasan.",
+        "Cerita tanpa keberatan apa pun, karena belum memperlihatkan kemampuan memengaruhi."
+      ],
+      versiSituasional: "Jika ide Anda ditolak dalam rapat padahal Anda yakin ide itu bermanfaat, apa yang akan Anda lakukan?"
+    },
+    {
+      kode: "A7",
+      judul: "Menjelaskan hal rumit kepada orang awam",
+      realTest: false,
+      pertanyaan: "Pernahkah Anda harus menjelaskan hal yang rumit kepada orang yang awam? Bagaimana Anda membuatnya mudah dipahami, dan bagaimana Anda tahu mereka sudah paham?",
+      yangDigali: "Kemampuan berkomunikasi, menyesuaikan bahasa dengan pendengar, dan memastikan pemahaman.",
+      strategi: ["Bagian terakhir pertanyaan ini sering terlupa. Jelaskan caramu mengecek pemahaman, misalnya meminta mereka mempraktikkan atau menjelaskan ulang."],
+      kerangkaJawaban: [
+        "Hal yang dijelaskan dan kepada siapa.",
+        "Caramu menyederhanakan.",
+        "Caramu mengecek pemahaman.",
+        "Hasilnya."
+      ],
+      contohJawaban: [
+        { profil: "Fresh graduate, S1 Akuntansi, KKN", teks: "Waktu KKN, saya mengajari pemilik warung di desa membuat catatan keuangan sederhana. Kalau saya pakai istilah seperti arus kas atau laba kotor, mereka langsung bingung. Jadi saya ganti dengan bahasa sehari-hari: uang masuk, uang keluar, dan uang yang tersisa untuk modal besok. Saya buatkan satu buku tulis dengan tiga kolom itu, lalu kami isi bersama memakai nota belanja mereka sendiri hari itu. Untuk memastikan mereka paham, besoknya saya minta mereka mengisi sendiri tanpa saya bantu, lalu menceritakan hasilnya ke saya. Dari delapan warung yang ikut, enam masih rutin mencatat waktu kami cek dua minggu kemudian. Dua yang berhenti ternyata kesulitan menulis tabel sendiri, jadi kami buatkan tabel cetak supaya mereka tinggal mengisi angka." }
+      ],
+      hindari: [
+        "Menjelaskan cara menyederhanakan tanpa menyebut cara mengecek pemahaman.",
+        "Nada yang merendahkan pendengar."
+      ],
+      versiSituasional: "Jika Anda harus menyampaikan perubahan aturan kepada pelanggan yang kurang paham teknologi, bagaimana caranya?"
+    },
+    {
+      kode: "A8",
+      judul: "Menelusuri akar masalah",
+      realTest: false,
+      pertanyaan: "Ceritakan masalah yang penyebabnya tidak langsung terlihat. Bagaimana Anda menelusuri akar masalahnya, dan apa solusinya?",
+      yangDigali: "Kemampuan analisis, ketelitian, dan cara berpikir sistematis.",
+      strategi: ["Ceritakan langkah analisismu secara urut: data apa yang kamu lihat, pola apa yang kamu temukan, dan caramu memastikan dugaanmu benar."],
+      kerangkaJawaban: [
+        "Gejala masalahnya.",
+        "Langkah penelusuran dan data yang dipakai.",
+        "Akar masalah yang ditemukan.",
+        "Solusi dan hasilnya."
+      ],
+      contohJawaban: [
+        { profil: "Berpengalaman, staf layanan pelanggan di perusahaan logistik", teks: "Dalam satu bulan, keluhan keterlambatan paket di satu kota naik hampir dua kali lipat, padahal volume kirimannya biasa saja. Awalnya tim mengira jumlah kurirnya kurang. Saya tarik data keluhan per tanggal dan per jam paket masuk gudang. Ternyata hampir semua paket yang terlambat masuk gudang setelah jam tiga sore. Saya cek ke tim operasional, dan ketemu penyebabnya: mitra angkutan antarkota memajukan jadwal jemput dari jam lima ke jam tiga sore, dan informasinya belum sampai ke tim gudang. Paket yang masuk setelah jam tiga jadi tertahan satu hari. Kami ubah batas waktu penerimaan paket dan memberi tahu pelanggan korporat soal jadwal barunya. Bulan berikutnya, keluhan di kota itu kembali ke angka normal." }
+      ],
+      hindari: [
+        "Melompat ke solusi tanpa menjelaskan analisisnya.",
+        "Mengklaim akar masalah tanpa bukti."
+      ],
+      versiSituasional: "Jika angka penjualan bulan ini turun tajam dan Anda diminta mencari penyebabnya, apa yang pertama Anda lakukan?"
+    },
+    {
+      kode: "A9", // Di PDF tertulis "H9"; dianggap salah ketik (urutan A1–A8 berlanjut).
+      judul: "Menguasai hal baru dalam waktu singkat",
+      realTest: false,
+      pertanyaan: "Ceritakan saat Anda harus menguasai hal baru dalam waktu singkat. Apa yang Anda lakukan supaya cepat paham, dan bagaimana hasilnya?",
+      yangDigali: "Kemampuan belajar cepat (learning agility) dan cara belajar yang terarah.",
+      strategi: ["Ceritakan strategi belajarmu, bukan hanya \"saya belajar keras\". Tunjukkan bahwa kamu langsung mempraktikkan dan mencari masukan."],
+      kerangkaJawaban: [
+        "Hal baru yang harus dikuasai dan tenggatnya.",
+        "Strategi belajarmu.",
+        "Hambatan dan caramu mengatasinya.",
+        "Hasilnya."
+      ],
+      contohJawaban: [
+        { profil: "Fresh graduate, magang di tim pemasaran digital", teks: "Di minggu pertama magang, saya diminta membuat laporan performa iklan memakai Looker Studio, padahal saya belum pernah memakainya. Tenggatnya dua minggu. Saya mulai dengan menuliskan apa saja yang harus ada di laporan itu, supaya saya tidak mempelajari semua fitur. Lalu saya ikuti tutorial resmi untuk bagian-bagian itu saja dan langsung mencoba di salinan data tim. Setiap dua hari, saya tunjukkan progresnya ke supervisor, dan dari situ saya tahu grafik mana yang tidak perlu. Saya sempat macet waktu harus menggabungkan data dari dua sumber, lalu saya cari caranya di forum pengguna. Laporannya selesai di hari kesepuluh, dan mulai minggu ketiga laporan itu dipakai di rapat mingguan tim." }
+      ],
+      hindari: [
+        "Cerita \"saya belajar sampai larut malam\" tanpa strategi.",
+        "Cerita yang hasilnya tidak jelas."
+      ],
+      versiSituasional: "Jika di minggu pertama bekerja Anda diberi sistem yang belum pernah Anda pakai, bagaimana Anda mempelajarinya?"
+    },
+    {
+      kode: "A10", // Di PDF tertulis "H10"; dianggap salah ketik (urutan A1–A8 berlanjut).
+      judul: "Mengusulkan cara baru",
+      realTest: false,
+      pertanyaan: "Pernahkah Anda mengusulkan cara baru yang lebih baik dari cara lama? Apa idenya, bagaimana Anda mengujinya, dan apakah ide itu dipakai?",
+      yangDigali: "Kreativitas yang praktis, keberanian mengusulkan, dan caramu menguji ide.",
+      strategi: ["Inovasi tidak harus berupa teknologi canggih. Perbaikan sederhana yang terukur sudah cukup. Tonjolkan caramu menguji ide sebelum diterapkan sepenuhnya."],
+      kerangkaJawaban: [
+        "Masalah pada cara lama.",
+        "Idemu dan alasannya.",
+        "Caramu menguji ide itu.",
+        "Hasilnya dan apakah ide itu diterapkan."
+      ],
+      contohJawaban: [
+        { profil: "Berpengalaman, staf administrasi akademik di kampus", teks: "Di bagian akademik tempat saya bekerja, setiap musim wisuda antrean legalisir ijazah bisa mengular sampai ke lorong. Saya usulkan alumni mengisi formulir daring lebih dulu, lalu kami siapkan dokumennya dan mengabari jadwal pengambilannya. Atasan saya ragu, karena khawatir alumni yang tidak membaca pengumuman tetap datang. Jadi kami uji coba di satu fakultas selama sebulan sambil tetap membuka loket biasa. Selama uji coba, sekitar tujuh puluh persen alumni memakai jalur daring, dan waktu tunggu di loket turun dari sekitar satu jam jadi lima belas menit. Semester berikutnya, cara ini dipakai di semua fakultas." }
+      ],
+      hindari: [
+        "Ide yang tidak pernah diuji atau diterapkan, kecuali kamu menjelaskan pelajarannya.",
+        "Ide yang kamu terapkan sendiri tanpa persetujuan."
+      ],
+      versiSituasional: "Jika Anda punya ide perbaikan, tetapi tim sudah terbiasa dengan cara lama, bagaimana Anda memperkenalkannya?"
+    }
+  ]
+};
+
+/* Kata pengisi yang dihitung otomatis dari transkrip */
+const FILLERS = ["eh", "um", "uh", "anu", "kayak", "like", "you know"];
+
+/* =====================================================================
+   UTILITAS
+   ===================================================================== */
+const $ = (s, r = document) => r.querySelector(s);
+function h(tag, props, ...kids) {
+  const el = document.createElement(tag);
+  setProps(el, props);
+  for (const c of kids.flat()) if (c != null && c !== false) el.append(c.nodeType ? c : String(c));
+  return el;
+}
+function setProps(el, props) {
+  for (const [k, v] of Object.entries(props || {})) {
+    if (v == null || v === false) continue;
+    if (k === "class") el.setAttribute("class", v);
+    else if (k === "text") el.textContent = v;
+    else if (k === "html") el.innerHTML = v;
+    else if (k === "style" && typeof v === "object") for (const [sk, sv2] of Object.entries(v)) { if (sk.startsWith("--")) el.style.setProperty(sk, sv2); else el.style[sk] = sv2; }
+    else if (k.startsWith("on") && typeof v === "function") el.addEventListener(k.slice(2), v);
+    else el.setAttribute(k, v === true ? "" : v);
+  }
+}
+const has = v => Array.isArray(v) ? v.length > 0 : v != null && v !== "";
+const now = () => performance.now();
+function fmtDur(sec) { sec = Math.max(0, Math.round(sec)); return `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, "0")}`; }
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } }
+};
+const Q = kode => SI.pertanyaan.find(q => q.kode === kode);
+
+/* Pengaturan (transkrip otomatis mati secara bawaan) */
+const settings = Object.assign({ berpikirDtk: 30, rekamDtk: 120, transkrip: false, nSimulasi: 5 }, store.get("si-settings", {}));
+const saveSettings = () => store.set("si-settings", settings);
+
+/* =====================================================================
+   AUDIO: beep, mikrofon, meter level (pola dari svar.html)
+   ===================================================================== */
+let audioCtx = null;
+function ctx() {
+  if (!audioCtx) {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (AC) { try { audioCtx = new AC(); } catch (e) { audioCtx = null; } }
+  }
+  if (audioCtx && audioCtx.state === "suspended") {
+    try { const p = audioCtx.resume(); if (p && p.catch) p.catch(() => {}); } catch (e) {}
+  }
+  return audioCtx;
+}
+function beep() {
+  return new Promise(res => {
+    const c = ctx();
+    if (c) {
+      try {
+        const o = c.createOscillator(), g = c.createGain(), t = c.currentTime;
+        o.type = "sine"; o.frequency.value = 1000;
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.exponentialRampToValueAtTime(0.3, t + 0.02);
+        g.gain.setValueAtTime(0.3, t + 0.22);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + 0.28);
+        o.connect(g); g.connect(c.destination);
+        o.start(t); o.stop(t + 0.3);
+      } catch (e) {}
+    }
+    setTimeout(res, 350);
+  });
+}
+
+let stream = null, analyser = null, buf = null, level = 0, activeCanvas = null, loopOn = false, meterRec = false;
+const levels = new Array(56).fill(0);
+function readLevel() {
+  if (!analyser || !buf) return 0;
+  try { analyser.getFloatTimeDomainData(buf); } catch (e) { return 0; }
+  let s = 0;
+  for (let i = 0; i < buf.length; i++) s += buf[i] * buf[i];
+  level = Math.sqrt(s / buf.length);
+  return level;
+}
+function drawMeter() {
+  const c = activeCanvas;
+  if (!c || c.offsetParent === null) return;
+  const dpr = window.devicePixelRatio || 1, w = c.clientWidth, hh = c.clientHeight;
+  if (!w || !hh) return;
+  if (c.width !== Math.round(w * dpr) || c.height !== Math.round(hh * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(hh * dpr); }
+  const g = c.getContext("2d");
+  if (!g) return;
+  g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  g.clearRect(0, 0, w, hh);
+  const cs = getComputedStyle(document.documentElement);
+  const onColor = cs.getPropertyValue(meterRec ? "--rec" : "--accent").trim();
+  const offColor = cs.getPropertyValue("--line").trim();
+  const N = levels.length, gap = 3, bw = Math.max(1, (w - 12 - gap * (N - 1)) / N);
+  for (let k = 0; k < N; k++) {
+    const v = Math.min(1, Math.sqrt(levels[k]) * 3.2);
+    const bh = Math.max(3, v * (hh - 12));
+    g.fillStyle = levels[k] > 0.015 ? onColor : offColor;
+    g.fillRect(6 + k * (bw + gap), (hh - bh) / 2, bw, bh);
+  }
+}
+function frame() { readLevel(); levels.push(level); levels.shift(); drawMeter(); requestAnimationFrame(frame); }
+function startLoop() { if (!loopOn) { loopOn = true; requestAnimationFrame(frame); } }
+
+async function initMic() {
+  if (stream && stream.active) return { ok: true };
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    return { ok: false, pill: "Tidak tersedia", msg: "Halaman ini tidak bisa mengakses mikrofon. Buka di Chrome atau Edge lewat https atau localhost." };
+  }
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
+  } catch (e) {
+    stream = null;
+    const n = e && e.name;
+    if (n === "NotAllowedError" || n === "SecurityError") return { ok: false, pill: "Ditolak", msg: "Akses mikrofon ditolak atau diblokir. Klik ikon di kiri address bar, izinkan mikrofon, lalu coba lagi." };
+    if (n === "NotFoundError" || n === "OverconstrainedError") return { ok: false, pill: "Tidak ditemukan", msg: "Mikrofon tidak ditemukan. Sambungkan headset atau mikrofon, lalu coba lagi." };
+    return { ok: false, pill: "Gagal", msg: "Mikrofon tidak bisa dibuka (" + (n || "error") + "). Tutup aplikasi lain yang sedang memakai mikrofon, lalu coba lagi." };
+  }
+  const c = ctx();
+  if (c) {
+    try {
+      const src = c.createMediaStreamSource(stream);
+      analyser = c.createAnalyser(); analyser.fftSize = 1024; buf = new Float32Array(analyser.fftSize);
+      src.connect(analyser);
+    } catch (e) { analyser = null; buf = null; }
+  }
+  startLoop();
+  return { ok: true };
+}
+function newRecorder() {
+  const chunks = [];
+  let mr;
+  try { mr = new MediaRecorder(stream); } catch (e) { return null; }
+  mr.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
+  const done = new Promise(res => {
+    mr.onstop = () => {
+      let url = null;
+      try { if (chunks.length) url = URL.createObjectURL(new Blob(chunks, { type: mr.mimeType || "audio/webm" })); } catch (e) {}
+      res(url);
+    };
+  });
+  return { mr, done, start() { mr.start(); }, stop() { try { if (mr.state !== "inactive") mr.stop(); } catch (e) {} return done; } };
+}
+
+/* =====================================================================
+   TRANSKRIP: Web Speech API (opsional; audio dikirim ke server Google oleh browser)
+   ===================================================================== */
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition || null;
+const SR_FATAL = new Set(["not-allowed", "service-not-allowed", "language-not-supported", "bad-grammar"]);
+function joinTexts(list) {
+  const out = [];
+  list.forEach(t => {
+    t = String(t || "").replace(/\s+/g, " ").trim();
+    if (!t) return;
+    const prev = out.length ? out[out.length - 1] : null;
+    if (prev) {
+      const a = prev.toLowerCase(), b = t.toLowerCase();
+      if (b.startsWith(a + " ")) { out[out.length - 1] = t; return; }
+      if (a === b) return;
+    }
+    out.push(t);
+  });
+  return out.join(" ");
+}
+/* Satu sesi pengenalan per jawaban; dibuka ulang otomatis kalau browser menutupnya saat jeda bicara. */
+function newTranscriber(onUpdate) {
+  const finals = [];
+  let interim = "", rec = null, keep = true, err = null, endWaiter = null;
+  function open() {
+    try { rec = new SR(); } catch (e) { err = "start-failed"; return; }
+    rec.lang = "id-ID"; rec.continuous = true; rec.interimResults = true; rec.maxAlternatives = 1;
+    rec.onresult = ev => {
+      interim = "";
+      for (let k = ev.resultIndex; k < ev.results.length; k++) {
+        const r = ev.results[k];
+        if (!r || !r[0]) continue;
+        if (r.isFinal) finals.push(r[0].transcript); else interim += " " + r[0].transcript;
+      }
+      onUpdate(text());
+    };
+    rec.onerror = ev => { const e = ev && ev.error; if (e && e !== "no-speech" && e !== "aborted") err = e; };
+    rec.onend = () => {
+      if (interim.trim()) { finals.push(interim); interim = ""; }
+      rec = null;
+      if (keep && !SR_FATAL.has(err)) { err = null; setTimeout(() => { if (keep && !rec) open(); }, 0); }
+      else if (endWaiter) { endWaiter(); endWaiter = null; }
+    };
+    try { rec.start(); } catch (e) { err = "start-failed"; rec = null; }
+  }
+  function text() { return joinTexts([...finals, interim]); }
+  open();
+  return {
+    get error() { return err; },
+    text,
+    stop() {
+      keep = false;
+      return new Promise(res => {
+        if (!rec) return res(text());
+        const t = setTimeout(() => { endWaiter = null; res(text()); }, 2500);
+        endWaiter = () => { clearTimeout(t); res(text()); };
+        try { rec.stop(); } catch (e) { clearTimeout(t); res(text()); }
+      });
+    }
+  };
+}
+
+/* Metrik yang benar-benar terukur dari transkrip + durasi */
+function countWords(t) { return (String(t || "").match(/[\p{L}\p{N}]+(?:[-'’][\p{L}\p{N}]+)*/gu) || []).length; }
+function countFillers(t) {
+  const s = " " + String(t || "").toLowerCase().replace(/[^\p{L}\p{N}\s]/gu, " ").replace(/\s+/g, " ") + " ";
+  const per = {};
+  let total = 0;
+  for (const f of FILLERS) {
+    let n = 0, i = 0;
+    const needle = " " + f + " ";
+    while ((i = s.indexOf(needle, i)) !== -1) { n++; i += needle.length - 1; }
+    if (n) { per[f] = n; total += n; }
+  }
+  return { total, per };
+}
+
+/* =====================================================================
+   NAVIGASI LAYAR
+   ===================================================================== */
+const app = { screen: "home", filter: "semua", listMode: "latihan", run: null, sim: null };
+const SCREENS = ["home", "list", "q", "sim", "simres", "history"];
+function show(id) {
+  for (const s of SCREENS) $("#" + s).hidden = s !== id;
+  app.screen = id;
+  if (id !== "q") $("#bartag").hidden = true;
+  window.scrollTo(0, 0);
+}
+document.addEventListener("click", e => { const b = e.target.closest("[data-go]"); if (b) show(b.dataset.go); });
+
+const varianKey = v => v.jenis === "variasi" ? `variasi-${v.idx + 1}` : v.jenis;
+function varianLabel(key) {
+  if (key === "utama") return "Utama";
+  if (key === "situasional") return "Versi situasional";
+  const m = /^variasi-(\d+)$/.exec(key);
+  return m ? `Variasi ${m[1]}` : key;
+}
+const getDraft = kode => String(store.get("si-draft-" + kode, "") || "");
+
+/* ---- Beranda ---- */
+function renderHome() {
+  $("#home-lede").textContent = `${SI.pengantar} ${SI.pertanyaan.length} pertanyaan berlapis gaya SHL: rekam jawabanmu, dengarkan ulang, centang checklist, lalu bandingkan dengan strategi dan contoh jawaban.`;
+  $("#legend").replaceChildren(...SI.caraMembaca.map(c => h("div", null, h("dt", { text: c.label }), h("dd", { text: c.teks }))));
+  $("#catatan-contoh").textContent = SI.catatanContoh;
+  $("#set-think").value = String(settings.berpikirDtk);
+  $("#set-rec").value = String(settings.rekamDtk);
+  $("#set-think").onchange = e => { settings.berpikirDtk = +e.target.value; saveSettings(); };
+  $("#set-rec").onchange = e => { settings.rekamDtk = +e.target.value; saveSettings(); };
+  const sr = $("#set-sr");
+  if (!SR) {
+    settings.transkrip = false; sr.disabled = true; $("#sr-switch").classList.add("off");
+    $("#sr-desc").textContent = "Browser ini tidak mendukung pengenalan suara. Kamu tetap bisa mengetik transkrip sendiri setelah merekam.";
+  }
+  sr.checked = !!settings.transkrip;
+  sr.onchange = () => { settings.transkrip = sr.checked; saveSettings(); };
+  $("#mode-latihan").onclick = () => { app.listMode = "latihan"; renderList(); show("list"); };
+  $("#mode-belajar").onclick = () => { app.listMode = "belajar"; renderList(); show("list"); };
+  $("#mode-sim").onclick = () => { renderSimSetup(); show("sim"); };
+  $("#btn-history").onclick = () => { renderHistory(); show("history"); };
+}
+
+/* Cek mikrofon: rekam 3 detik lalu putar ulang */
+function setMicPill(text, cls) { const p = $("#mic-pill"); p.textContent = text; p.className = "pill" + (cls ? " " + cls : ""); }
+$("#mic-test").onclick = async () => {
+  const btn = $("#mic-test"), msg = $("#mic-msg");
+  btn.disabled = true; msg.hidden = true;
+  ctx();
+  const m = await initMic();
+  if (!m.ok) { setMicPill(m.pill, "bad"); msg.textContent = m.msg; msg.hidden = false; btn.disabled = false; return; }
+  activeCanvas = $("#mic-meter"); meterRec = true;
+  const r = window.MediaRecorder ? newRecorder() : null;
+  if (!r) { setMicPill("Tidak bisa merekam", "bad"); msg.textContent = "Browser ini tidak mendukung perekaman. Pakai Chrome atau Edge terbaru."; msg.hidden = false; btn.disabled = false; return; }
+  setMicPill("Merekam…", "bad");
+  r.start();
+  let peak = 0;
+  const iv = setInterval(() => { peak = Math.max(peak, level); }, 50);
+  await new Promise(res => setTimeout(res, 3000));
+  clearInterval(iv); meterRec = false;
+  const url = await r.stop();
+  const a = $("#mic-audio");
+  if (url) { a.src = url; a.hidden = false; }
+  if (peak > 0.015) { setMicPill("Mikrofon siap", "ok"); msg.hidden = true; }
+  else { setMicPill("Suara lemah", "bad"); msg.textContent = "Suaramu hampir tidak terdengar. Dekatkan mikrofon atau periksa perangkat input di pengaturan suara."; msg.hidden = false; }
+  btn.textContent = "Rekam ulang 3 detik"; btn.disabled = false;
+};
+
+/* ---- Daftar pertanyaan (dipakai mode latihan dan mode belajar) ---- */
+const FILTERS = [
+  { id: "semua", label: "Semua", fn: () => true },
+  { id: "real", label: "Real test", fn: q => !!q.realTest },
+  { id: "situasional", label: "Punya versi situasional", fn: q => has(q.versiSituasional) }
+];
+function renderList() {
+  const hist = store.get("si-history", []);
+  const belajar = app.listMode === "belajar";
+  $("#list-title").textContent = belajar ? "Mode belajar: pilih pertanyaan" : "Latihan: pilih pertanyaan";
+  $("#list-sub").textContent = belajar
+    ? "Baca strategi, contoh jawaban, dan tulis draft jawabanmu tanpa merekam."
+    : "Rekam jawabanmu dulu. Strategi dan contoh jawaban terbuka setelah self-review.";
+  $("#filters").replaceChildren(...FILTERS.map(f => h("button", {
+    class: "fchip", type: "button", "aria-pressed": String(app.filter === f.id), text: `${f.label} (${SI.pertanyaan.filter(f.fn).length})`,
+    onclick: () => { app.filter = f.id; renderList(); }
+  })));
+  const fn = FILTERS.find(f => f.id === app.filter).fn;
+  $("#qlist").replaceChildren(...SI.pertanyaan.filter(fn).map(q => {
+    const n = hist.filter(x => x.kode === q.kode).length;
+    return h("li", null, h("button", { class: "qitem", type: "button", onclick: () => belajar ? openStudy(q.kode) : openQuestion(q.kode) },
+      h("span", { class: "code", text: q.kode }),
+      h("span", { class: "qitem-body" },
+        h("b", { text: q.judul }),
+        h("p", { text: q.pertanyaan }),
+        h("span", { class: "tags" },
+          q.realTest ? h("span", { class: "tag real", text: "Real test" }) : null,
+          has(q.versiSituasional) ? h("span", { class: "tag", text: "Versi situasional" }) : null,
+          has(q.variasiLatihan) ? h("span", { class: "tag", text: `${q.variasiLatihan.length} variasi latihan` }) : null,
+          n ? h("span", { class: "tag done", text: `Dilatih ${n}×` }) : null,
+          getDraft(q.kode).trim() ? h("span", { class: "tag done", text: "Ada draft" }) : null))));
+  }));
+}
+
+/* ---- Tampilan pertanyaan (latihan, simulasi, belajar) ---- */
+function setQuestionView(q, varian, o) {
+  $("#q-code").textContent = o.codeText || q.kode;
+  $("#q-title").textContent = q.judul;
+  $("#q-title").hidden = !!o.hideTitle;
+  const vt = $("#q-variant");
+  vt.hidden = varian.jenis === "utama";
+  vt.textContent = varianLabel(varianKey(varian));
+  $("#q-label").textContent = varian.jenis === "utama" ? (q.realTest ? "Pertanyaan (real test)" : "Pertanyaan") : varianLabel(varianKey(varian));
+  $("#q-text").textContent = varian.teks;
+  $("#q-back").textContent = o.backText;
+  $("#q-back").onclick = o.onBack;
+  $("#stage").hidden = !!o.noStage;
+  $("#review").hidden = true;
+  $("#discussion").hidden = true;
+  $("#bartag").textContent = o.tag || q.kode;
+  $("#bartag").hidden = false;
+  show("q");
+}
+const backToList = mode => { app.listMode = mode; renderList(); show("list"); };
+
+/* =====================================================================
+   ALUR SATU PERTANYAAN
+   pertanyaan → berpikir → beep → rekam → tinjau (putar ulang, metrik, checklist) → pembahasan
+   ===================================================================== */
+function newRun(q, varian, mode, onRecorded) {
+  return { q, varian, mode, onRecorded, phase: "intro", timers: [], url: null, durSec: 0, transcript: "", auto: false, srError: null, saved: false, checklist: null };
+}
+function openQuestion(kode, varian) {
+  const q = Q(kode);
+  varian = varian || { jenis: "utama", teks: q.pertanyaan };
+  stopRun();
+  app.run = newRun(q, varian, "latihan", renderPracticeReview);
+  setQuestionView(q, varian, {
+    backText: "← Daftar pertanyaan",
+    onBack: () => { if (busy() && !confirm("Rekaman sedang berjalan. Keluar dari pertanyaan ini?")) return; stopRun(); backToList("latihan"); }
+  });
+  renderIntro();
+}
+/* Sedang berpikir/merekam, simulasi berjalan, atau ringkasan simulasi masih punya rekaman yang belum disimpan */
+const busy = () => !!(
+  (app.run && ["think", "rec", "stopping"].includes(app.run.phase)) ||
+  (app.sim && !app.sim.done) ||
+  (app.sim && app.sim.done && app.screen === "simres" && app.sim.items.some(i => !i.saved)));
+function clearTimers() { if (app.run) { app.run.timers.forEach(t => { clearInterval(t); clearTimeout(t); }); app.run.timers = []; } }
+function stopRun() {
+  if (!app.run) return;
+  clearTimers();
+  const r = app.run;
+  if (r.rec) { try { r.rec.stop(); } catch (e) {} }
+  if (r.tr) { try { r.tr.stop(); } catch (e) {} }
+  meterRec = false;
+  app.run = null;
+}
+
+function porsiGuide(q) {
+  if (!has(q.bedahPertanyaan) || app.run.varian.jenis !== "utama" || app.run.mode !== "latihan") return null;
+  return h("div", { class: "stack-s", style: { gap: "6px" } },
+    h("span", { class: "small", text: "Panduan porsi waktu (dari bedah pertanyaan):" }),
+    h("div", { class: "porsi" }, q.bedahPertanyaan.map(b => h("div", { style: { flex: `${b.porsi} 1 0` }, title: `${b.bagian} — ${b.yangPerluDijawab}` },
+      h("b", { text: `±${b.porsi}%` }), h("span", { text: b.bagian.replace(/^"|"$/g, "") })))));
+}
+
+function renderIntro() {
+  const r = app.run, st = $("#stage");
+  const srNote = settings.transkrip && SR
+    ? "Transkrip otomatis menyala: audio dikirim ke server Google oleh browser."
+    : "Transkrip otomatis mati. Setelah merekam, kamu bisa mengetik transkrip sendiri.";
+  st.replaceChildren(
+    h("div", { class: "stack-s" },
+      h("h3", { text: "Siap menjawab?" }),
+      h("p", { class: "small", text: `${settings.berpikirDtk ? `Kamu punya ${settings.berpikirDtk} detik untuk berpikir (bisa dilewati), lalu ` : ""}bunyi beep menandai mulai merekam. Batas jawaban ${fmtDur(settings.rekamDtk)} menit; tekan Selesai kapan saja.` }),
+      h("p", { class: "small", text: srNote + " Ubah di Beranda latihan → Pengaturan." })),
+    porsiGuide(r.q),
+    h("p", { class: "warnmsg", id: "intro-err", hidden: true }),
+    h("div", { class: "row" }, h("button", { class: "btn btn-primary", type: "button", id: "btn-go", text: "Mulai" })));
+  $("#btn-go").onclick = async () => {
+    $("#btn-go").disabled = true;
+    const err = await prepareMic();
+    if (err) { const e = $("#intro-err"); e.textContent = err; e.hidden = false; $("#btn-go").disabled = false; return; }
+    if (settings.berpikirDtk > 0) startThink(); else startRec();
+  };
+}
+/* Membuka mikrofon; mengembalikan pesan galat atau null */
+async function prepareMic() {
+  ctx();
+  const m = await initMic();
+  if (!m.ok) return m.msg;
+  if (!window.MediaRecorder) return "Browser ini tidak mendukung perekaman. Pakai Chrome atau Edge terbaru.";
+  return null;
+}
+
+function startThink() {
+  const r = app.run, st = $("#stage");
+  r.phase = "think";
+  const total = settings.berpikirDtk * 1000, t0 = now();
+  const clock = h("div", { class: "clock", text: fmtDur(settings.berpikirDtk) });
+  const fill = h("i");
+  st.replaceChildren(
+    h("div", { class: "stage-head" }, h("h3", { text: "Waktu berpikir" }), clock),
+    h("div", { class: "track" }, fill),
+    porsiGuide(r.q),
+    h("label", { class: "field" }, "Coretan sementara (tidak disimpan)", h("textarea", { rows: 3, placeholder: "Poin-poin cerita: situasi, tindakan, hasil…" })),
+    h("div", { class: "row" }, h("button", { class: "btn btn-primary", type: "button", onclick: () => { clearTimers(); startRec(); }, text: "Lewati, mulai bicara" })));
+  const iv = setInterval(() => {
+    const left = total - (now() - t0);
+    clock.textContent = fmtDur(Math.ceil(left / 1000));
+    fill.style.transform = `scaleX(${Math.max(0, left / total)})`;
+    if (left <= 0) { clearTimers(); startRec(); }
+  }, 100);
+  r.timers.push(iv);
+}
+
+async function startRec() {
+  const r = app.run, st = $("#stage");
+  if (!r || r.phase === "rec") return;
+  r.phase = "rec";
+  st.replaceChildren(h("div", { class: "stage-head" }, h("h3", { text: "Bersiap…" })));
+  await beep();
+  if (app.run !== r) return;
+  const limit = settings.rekamDtk * 1000;
+  r.rec = newRecorder();
+  if (!r.rec) { st.replaceChildren(h("p", { class: "warnmsg", text: "Perekam tidak bisa dimulai di browser ini." })); r.phase = "intro"; return; }
+  r.rec.start();
+  r.auto = !!(settings.transkrip && SR);
+  if (r.auto) r.tr = newTranscriber(t => { const live = $("#live-tr"); if (live) live.textContent = t || "…"; });
+  const t0 = now();
+  r.t0 = t0;
+  const clock = h("div", { class: "clock" }, "0:00", h("small", { text: `/ ${fmtDur(settings.rekamDtk)}` }));
+  const fill = h("i", { style: { transform: "scaleX(0)" } });
+  const canvas = h("canvas", { class: "meter", "aria-hidden": "true" });
+  st.replaceChildren(
+    h("div", { class: "stage-head" }, h("span", { class: "recdot", text: "Merekam" }), clock),
+    h("div", { class: "track rec" }, fill),
+    canvas,
+    porsiGuide(r.q),
+    r.auto ? h("div", { class: "stack-s", style: { gap: "4px" } }, h("span", { class: "small", text: "Transkrip langsung (bisa meleset):" }), h("p", { id: "live-tr", class: "small", text: "…" })) : null,
+    h("div", { class: "row" }, h("button", { class: "btn btn-rec", type: "button", id: "btn-done", onclick: () => finishRec(), text: "Selesai menjawab" })));
+  activeCanvas = canvas; meterRec = true;
+  const iv = setInterval(() => {
+    const el = now() - t0;
+    clock.firstChild.textContent = fmtDur(Math.floor(el / 1000));
+    fill.style.transform = `scaleX(${Math.min(1, el / limit)})`;
+    if (el >= limit) finishRec();
+  }, 100);
+  r.timers.push(iv);
+}
+
+async function finishRec() {
+  const r = app.run;
+  if (!r || r.phase !== "rec") return;
+  r.phase = "stopping";
+  clearTimers();
+  meterRec = false;
+  r.durSec = (now() - r.t0) / 1000;
+  $("#stage").replaceChildren(h("div", { class: "stage-head" }, h("h3", { text: "Menyimpan rekaman…" })));
+  const [url, text] = await Promise.all([r.rec.stop(), r.tr ? r.tr.stop() : Promise.resolve("")]);
+  if (app.run !== r) return;
+  r.url = url; r.transcript = text; r.srError = r.tr ? r.tr.error : null;
+  r.rec = null; r.tr = null;
+  r.phase = "review";
+  r.onRecorded(r);
+}
+
+function metricsView(r) {
+  const words = countWords(r.transcript);
+  const hasText = r.transcript.trim().length > 0;
+  const wpm = hasText && r.durSec > 0 ? Math.round(words / (r.durSec / 60)) : null;
+  const f = countFillers(r.transcript);
+  const cell = (label, val, na) => h("div", null, h("dt", { text: label }), val == null ? h("dd", { class: "na", text: na || "Butuh transkrip" }) : h("dd", { text: val }));
+  return h("div", { class: "stack-s", style: { gap: "8px" } },
+    h("dl", { class: "metrics" },
+      cell("Durasi", fmtDur(r.durSec)),
+      cell("Jumlah kata", hasText ? words : null),
+      cell("Tempo", wpm == null ? null : `${wpm} kata/mnt`),
+      cell("Filler", hasText ? f.total : null)),
+    hasText && f.total ? h("p", { class: "small", text: "Rincian filler: " + Object.entries(f.per).map(([k, v]) => `"${k}" ${v}×`).join(", ") }) : null);
+}
+
+function pushHistory(item) {
+  const hist = store.get("si-history", []);
+  hist.push({ t: new Date().toISOString(), kode: item.q.kode, varian: varianKey(item.varian), mode: item.mode, durasiDtk: Math.round(item.durSec), kata: item.transcript.trim() ? countWords(item.transcript) : null, checklist: item.checklist });
+  store.set("si-history", hist.slice(-200));
+}
+
+/* Metrik + transkrip + checklist self-review untuk satu rekaman (latihan & ringkasan simulasi) */
+function reviewPanel(item, onSaved) {
+  const q = item.q;
+  const metricsBox = h("div");
+  const draw = () => metricsBox.replaceChildren(metricsView(item));
+  const ta = h("textarea", { rows: 5, placeholder: item.auto ? "" : "Dengarkan rekamanmu, lalu ketik ulang jawabanmu di sini untuk menghitung jumlah kata, tempo, dan filler." });
+  ta.value = item.transcript;
+  ta.addEventListener("input", () => { item.transcript = ta.value; draw(); });
+  draw();
+  const srMsg = item.auto
+    ? (item.srError ? `Transkrip otomatis gagal (${item.srError}). Ketik transkrip sendiri kalau ingin menghitung kata.` : item.transcript ? "Transkrip otomatis (bisa meleset, dan pengenal suara sering membuang filler). Kamu boleh membetulkannya." : "Transkrip otomatis tidak menangkap kata apa pun. Ketik sendiri kalau ingin menghitung kata.")
+    : "Transkrip manual (opsional).";
+  const checks = q.kerangkaJawaban.map((k, i) => h("input", { type: "checkbox" }));
+  if (item.checklist) checks.forEach((c, i) => { c.checked = !!item.checklist[i]; });
+  const btn = h("button", { class: "btn btn-primary", type: "button", text: "Simpan & buka pembahasan" });
+  const markSaved = () => {
+    btn.textContent = `Tersimpan · ${item.checklist.filter(Boolean).length}/${item.checklist.length} tercakup`;
+    btn.disabled = true;
+    checks.forEach(c => { c.disabled = true; });
+  };
+  btn.onclick = () => {
+    item.checklist = checks.map(c => c.checked);
+    if (!item.saved) { pushHistory(item); item.saved = true; }
+    markSaved();
+    onSaved();
+  };
+  if (item.saved) markSaved();
+  return [
+    h("h3", { class: "subhead", text: "Metrik terukur" }),
+    metricsBox,
+    h("label", { class: "field" }, h("span", { class: "small", text: srMsg }), ta),
+    h("h3", { class: "subhead", text: "Self-review" }),
+    h("p", { class: "small", text: item.varian.jenis === "utama" ? "Dengarkan rekamanmu, lalu centang bagian kerangka jawaban yang sudah kamu sampaikan dengan jelas." : "Kerangka ini dari pertanyaan induknya. Untuk pertanyaan pengandaian, nilai apakah urutan berpikirmu sudah mencakup bagian-bagian ini." }),
+    h("ul", { class: "checklist" }, q.kerangkaJawaban.map((k, i) => h("li", null, h("label", null, checks[i], h("span", { html: kerangkaHtml(k) }))))),
+    h("div", { class: "row" }, btn)];
+}
+
+function renderPracticeReview(r) {
+  const q = r.q;
+  $("#stage").replaceChildren(
+    h("div", { class: "stage-head" }, h("h3", { text: "Rekaman jawabanmu" }), h("span", { class: "small", text: `Durasi ${fmtDur(r.durSec)}` })),
+    r.url ? h("audio", { controls: true, src: r.url }) : h("p", { class: "small", text: "Rekaman kosong. Coba periksa mikrofon di Beranda latihan." }),
+    h("p", { class: "small", text: "Rekaman ini hanya ada di browser dan hilang saat halaman ditutup." }),
+    h("div", { class: "row" },
+      h("button", { class: "btn btn-ghost", type: "button", onclick: () => openQuestion(q.kode, r.varian), text: "Rekam ulang" })));
+  const rev = $("#review");
+  rev.replaceChildren(...reviewPanel(r, () => {
+    const d = $("#discussion");
+    d.replaceChildren(h("h2", { text: "Pembahasan" }), ...discussionSections(q, { practice: true }), draftEl(q),
+      h("div", { class: "row", style: { paddingTop: "8px" } },
+        r.varian.jenis !== "utama" ? h("button", { class: "btn btn-ghost", type: "button", onclick: () => openQuestion(q.kode), text: "Kembali ke pertanyaan utama" }) : null,
+        h("button", { class: "btn btn-primary", type: "button", onclick: () => { stopRun(); backToList("latihan"); }, text: "Pilih pertanyaan lain" })));
+    d.hidden = false;
+    d.scrollIntoView({ behavior: "smooth", block: "start" });
+  }));
+  rev.hidden = false;
+}
+
+function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
+/* "Label: isi" → label ditebalkan, seperti di PDF */
+function kerangkaHtml(k) { const m = /^([^:]{2,30}):\s(.*)$/.exec(k); return m ? `<b>${esc(m[1])}:</b> ${esc(m[2])}` : esc(k); }
+const paras = t => String(t).split(/\n\n+/).map(p => h("p", { text: p }));
+
+/* Pembahasan: hanya field yang tersedia untuk pertanyaan ini. o.practice = tampilkan tombol "Latih" untuk variasi/situasional */
+function discussionSections(q, o) {
+  const secs = [];
+  const sec = (title, ...kids) => secs.push(h("section", { class: "sec" }, h("h3", { text: title }), ...kids));
+  const practiceRow = (teks, varian) => h("div", { class: "practice-q" }, h("span", { text: teks }),
+    o.practice ? h("button", { class: "btn btn-ghost", type: "button", onclick: () => openQuestion(q.kode, varian), text: "Latih" }) : null);
+  if (has(q.yangDigali)) sec("Yang ingin digali", h("p", { text: q.yangDigali }));
+  if (has(q.bedahPertanyaan)) sec("Bedah pertanyaan",
+    h("table", { class: "bedah" },
+      h("thead", null, h("tr", null, h("th", { text: "Bagian pertanyaan" }), h("th", { text: "Yang perlu kamu jawab" }), h("th", { text: "Porsi waktu" }))),
+      h("tbody", null, q.bedahPertanyaan.map(b => h("tr", null, h("td", { text: b.bagian }), h("td", { text: b.yangPerluDijawab }), h("td", { text: `±${b.porsi}%` }))))),
+    has(q.catatanBedah) ? h("p", { class: "small", text: q.catatanBedah }) : null);
+  if (has(q.strategi)) sec("Strategi", q.strategi.length > 1 ? h("ul", null, q.strategi.map(s => h("li", { text: s }))) : h("p", { text: q.strategi[0] }));
+  if (has(q.kerangkaJawaban)) sec("Kerangka jawaban", h("ol", null, q.kerangkaJawaban.map(k => h("li", { html: kerangkaHtml(k) }))));
+  if (has(q.contohJawaban)) sec("Contoh jawaban",
+    ...q.contohJawaban.map(c => h("div", { class: "example" }, h("span", { class: "prof", text: c.profil }), ...paras(`“${c.teks}”`))));
+  if (has(q.contohKurangEfektif)) sec("Contoh jawaban kurang efektif",
+    h("div", { class: "example bad" }, ...paras(`“${q.contohKurangEfektif}”`)),
+    has(q.kenapaKurangEfektif) ? h("b", { text: "Kenapa kurang efektif" }) : null,
+    has(q.kenapaKurangEfektif) ? h("ul", null, q.kenapaKurangEfektif.map(s => h("li", { text: s }))) : null);
+  if (has(q.hindari)) sec("Hindari", h("ul", null, q.hindari.map(s => h("li", { text: s }))));
+  if (has(q.variasiLatihan)) sec("Variasi latihan", ...q.variasiLatihan.map((v, i) => practiceRow(v, { jenis: "variasi", idx: i, teks: v })));
+  if (has(q.versiSituasional)) sec("Versi situasional", practiceRow(q.versiSituasional, { jenis: "situasional", teks: q.versiSituasional }));
+  return secs;
+}
+
+/* Draft jawaban per pertanyaan, tersimpan otomatis di localStorage */
+function draftEl(q) {
+  const ta = h("textarea", { rows: 8, placeholder: "Tulis kerangka atau jawaban lengkapmu di sini…", "aria-label": `Draft jawaban ${q.kode}` });
+  ta.value = getDraft(q.kode);
+  const status = h("span", { class: "small", text: ta.value.trim() ? "Draft tersimpan di browser ini." : "" });
+  let t = null;
+  const save = () => { status.textContent = store.set("si-draft-" + q.kode, ta.value) ? "Tersimpan di browser ini." : "Tidak bisa menyimpan: penyimpanan browser diblokir. Salin draftmu ke tempat lain."; };
+  ta.addEventListener("input", () => { clearTimeout(t); status.textContent = "Menyimpan…"; t = setTimeout(save, 400); });
+  ta.addEventListener("blur", () => { if (t) { clearTimeout(t); t = null; save(); } });
+  const tpl = h("button", { class: "btn btn-ghost", type: "button", text: "Mulai dari kerangka jawaban",
+    onclick: () => {
+      const skeleton = q.kerangkaJawaban.map((k, i) => `${i + 1}. ${k}\n`).join("\n");
+      ta.value = ta.value.trim() ? `${ta.value.replace(/\s+$/, "")}\n\n${skeleton}` : skeleton;
+      ta.focus(); save();
+    } });
+  return h("section", { class: "sec" },
+    h("h3", { text: "Draft jawabanku" }),
+    h("p", { class: "note", text: "Pakai pengalaman nyatamu sendiri. Contoh jawaban hanya ilustrasi strukturnya; jangan mengarang pengalaman, prestasi, atau kemampuan yang tidak kamu miliki." }),
+    ta,
+    h("div", { class: "row", style: { justifyContent: "space-between" } }, status, tpl));
+}
+
+/* =====================================================================
+   MODE BELAJAR — baca pembahasan dan tulis draft tanpa merekam
+   ===================================================================== */
+function openStudy(kode) {
+  stopRun();
+  const q = Q(kode);
+  setQuestionView(q, { jenis: "utama", teks: q.pertanyaan }, { noStage: true, backText: "← Daftar pertanyaan", onBack: () => backToList("belajar") });
+  const d = $("#discussion");
+  d.replaceChildren(h("h2", { text: "Pembahasan" }), ...discussionSections(q, { practice: true }), draftEl(q),
+    h("div", { class: "row", style: { paddingTop: "8px" } },
+      h("button", { class: "btn btn-primary", type: "button", onclick: () => openQuestion(q.kode), text: "Latih dengan rekaman" }),
+      h("button", { class: "btn btn-ghost", type: "button", onclick: () => backToList("belajar"), text: "Pilih pertanyaan lain" })));
+  d.hidden = false;
+}
+
+/* =====================================================================
+   SIMULASI — N pertanyaan acak berturut-turut, pembahasan di akhir
+   ===================================================================== */
+function renderSimSetup() {
+  const sel = $("#sim-n");
+  sel.replaceChildren(...SI.pertanyaan.map((_, i) => h("option", { value: i + 1, text: `${i + 1} pertanyaan` })));
+  sel.value = String(Math.min(settings.nSimulasi || 5, SI.pertanyaan.length));
+  sel.onchange = () => { settings.nSimulasi = +sel.value; saveSettings(); };
+  $("#sim-rules").replaceChildren(...[
+    `Pertanyaan dipilih acak dari ${SI.pertanyaan.length} pertanyaan, tanpa pengulangan.`,
+    settings.berpikirDtk
+      ? `Setiap pertanyaan: ${settings.berpikirDtk} detik berpikir (bisa dilewati), lalu beep dan rekam maksimal ${fmtDur(settings.rekamDtk)} menit.`
+      : `Setiap pertanyaan: langsung beep dan rekam maksimal ${fmtDur(settings.rekamDtk)} menit.`,
+    "Pertanyaan berikutnya muncul otomatis. Kamu tidak bisa kembali ke pertanyaan sebelumnya.",
+    "Judul, strategi, dan pembahasan disembunyikan sampai semua pertanyaan dijawab.",
+    settings.transkrip && SR ? "Transkrip otomatis menyala (audio dikirim ke server Google oleh browser)." : "Transkrip otomatis mati; kamu bisa mengetik transkrip di ringkasan akhir."
+  ].map(t => h("li", { text: t })));
+  $("#sim-err").hidden = true;
+  $("#sim-start").disabled = false;
+  $("#sim-start").onclick = startSim;
+}
+async function startSim() {
+  $("#sim-start").disabled = true;
+  const err = await prepareMic();
+  if (err) { $("#sim-err").textContent = err; $("#sim-err").hidden = false; $("#sim-start").disabled = false; return; }
+  const pool = SI.pertanyaan.slice();
+  for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
+  app.sim = { list: pool.slice(0, +$("#sim-n").value), idx: 0, items: [], done: false };
+  nextSim();
+}
+function nextSim() {
+  const s = app.sim;
+  if (!s) return;
+  if (s.idx >= s.list.length) { s.done = true; app.run = null; renderSimResult(); return; }
+  const q = s.list[s.idx], varian = { jenis: "utama", teks: q.pertanyaan };
+  app.run = newRun(q, varian, "simulasi", r => { s.items.push(r); s.idx++; nextSim(); });
+  setQuestionView(q, varian, { hideTitle: true, codeText: `Pertanyaan ${s.idx + 1} dari ${s.list.length}`, tag: `${s.idx + 1}/${s.list.length}`, backText: "Keluar simulasi", onBack: () => leaveSim("home") });
+  if (settings.berpikirDtk > 0) startThink(); else startRec();
+}
+/* Keluar dari simulasi (saat berjalan atau dari ringkasan); minta konfirmasi bila ada rekaman yang belum disimpan */
+function leaveSim(target) {
+  if (busy() && !confirm("Keluar dari simulasi? Rekaman yang belum disimpan akan hilang.")) return;
+  stopRun();
+  app.sim = null;
+  if (target === "sim") renderSimSetup();
+  if (target === "history") renderHistory();
+  show(target);
+}
+function renderSimResult() {
+  const s = app.sim;
+  const total = s.items.reduce((a, i) => a + i.durSec, 0);
+  const head = h("div", { class: "card stack-s" },
+    h("span", { class: "eyebrow", text: "Simulasi selesai" }),
+    h("h2", { text: `${s.items.length} pertanyaan dijawab` }),
+    h("p", { class: "small", text: `Total durasi bicara ${fmtDur(total)} · rata-rata ${fmtDur(total / s.items.length)} per jawaban` }),
+    h("p", { class: "note warn", text: "Rekaman hanya ada selama halaman ini terbuka. Dengarkan tiap jawaban, isi checklist, lalu simpan agar masuk riwayat. Pembahasan tiap pertanyaan terbuka setelah disimpan." }));
+  const cards = s.items.map((it, i) => {
+    const disc = h("details", { class: "rv" },
+      h("summary", null, h("b", { text: "Pembahasan" }), h("span", { class: "small", text: "strategi, contoh jawaban, hindari" })),
+      h("div", { class: "rv-body" }, ...discussionSections(it.q, { practice: false }),
+        h("div", { class: "row" }, h("button", { class: "btn btn-ghost", type: "button", onclick: () => { if (busy() && !confirm("Rekaman yang belum disimpan akan hilang. Buka mode belajar?")) return; app.sim = null; openStudy(it.q.kode); }, text: "Buka di mode belajar + draft" }))));
+    disc.hidden = !it.saved;
+    return h("article", { class: "card stack-s" },
+      h("div", { class: "qhead" }, h("span", { class: "code", text: it.q.kode }), h("span", { class: "small", text: `Pertanyaan ${i + 1} · ${fmtDur(it.durSec)}` })),
+      h("h3", { text: it.q.judul }),
+      h("p", { class: "simq", text: it.varian.teks }),
+      it.url ? h("audio", { controls: true, src: it.url }) : h("p", { class: "small", text: "Rekaman kosong." }),
+      ...reviewPanel(it, () => { disc.hidden = false; disc.open = true; }),
+      disc);
+  });
+  $("#simres").replaceChildren(head, ...cards,
+    h("div", { class: "row" },
+      h("button", { class: "btn btn-primary", type: "button", onclick: () => leaveSim("sim"), text: "Simulasi lagi" }),
+      h("button", { class: "btn btn-ghost", type: "button", onclick: () => leaveSim("history"), text: "Lihat riwayat" }),
+      h("button", { class: "btn btn-ghost", type: "button", onclick: () => leaveSim("home"), text: "Beranda latihan" })));
+  show("simres");
+}
+
+/* =====================================================================
+   RIWAYAT
+   ===================================================================== */
+function renderHistory() {
+  const hist = store.get("si-history", []).slice().reverse();
+  const fmtDate = t => { try { return new Date(t).toLocaleString("id-ID", { dateStyle: "medium", timeStyle: "short" }); } catch (e) { return t; } };
+  const kids = [
+    h("button", { class: "btn-text btn", type: "button", "data-go": "home", style: { alignSelf: "flex-start" }, text: "← Beranda latihan" }),
+    h("h2", { text: "Riwayat latihan" })];
+  if (!hist.length) {
+    kids.push(h("p", { class: "small", text: "Belum ada riwayat. Riwayat tersimpan setiap kali kamu menyimpan self-review setelah merekam." }));
+  } else {
+    const uniq = new Set(hist.map(x => x.kode)).size;
+    const totalSec = hist.reduce((a, x) => a + (x.durasiDtk || 0), 0);
+    const ratios = hist.filter(x => x.checklist && x.checklist.length).map(x => x.checklist.filter(Boolean).length / x.checklist.length);
+    const avg = ratios.length ? Math.round(100 * ratios.reduce((a, b) => a + b, 0) / ratios.length) : null;
+    kids.push(
+      h("dl", { class: "metrics" },
+        h("div", null, h("dt", { text: "Rekaman disimpan" }), h("dd", { text: hist.length })),
+        h("div", null, h("dt", { text: "Pertanyaan berbeda" }), h("dd", { text: `${uniq}/${SI.pertanyaan.length}` })),
+        h("div", null, h("dt", { text: "Total durasi" }), h("dd", { text: fmtDur(totalSec) })),
+        h("div", null, h("dt", { text: "Rata-rata checklist" }), h("dd", { text: avg == null ? "–" : `${avg}%` }))),
+      h("p", { class: "small", text: "Rata-rata checklist = bagian kerangka jawaban yang kamu centang sendiri, bukan penilaian otomatis." }),
+      h("div", { class: "card", style: { padding: "0", overflow: "hidden" } },
+        h("table", { class: "htable" },
+          h("thead", null, h("tr", null, ["Tanggal", "Pertanyaan", "Mode", "Durasi", "Kata", "Checklist"].map(t => h("th", { text: t })))),
+          h("tbody", null, hist.map(x => {
+            const q = Q(x.kode), cl = x.checklist || [];
+            return h("tr", null,
+              h("td", { "data-l": "Tanggal", text: fmtDate(x.t) }),
+              h("td", { "data-l": "Pertanyaan" }, h("span", { class: "code", text: x.kode }), " ", q ? q.judul : "(pertanyaan tidak tersedia)",
+                x.varian && x.varian !== "utama" ? h("span", { class: "tag", style: { marginLeft: "6px" }, text: varianLabel(x.varian) }) : null),
+              h("td", { "data-l": "Mode", text: x.mode === "simulasi" ? "Simulasi" : "Latihan" }),
+              h("td", { "data-l": "Durasi", text: fmtDur(x.durasiDtk || 0) }),
+              h("td", { "data-l": "Kata", text: x.kata == null ? "–" : x.kata }),
+              h("td", { "data-l": "Checklist", text: cl.length ? `${cl.filter(Boolean).length}/${cl.length}` : "–" }));
+          })))));
+    const del = h("button", { class: "btn btn-ghost", type: "button", text: "Hapus semua riwayat" });
+    del.onclick = () => {
+      if (!del.dataset.arm) {
+        del.dataset.arm = "1"; del.textContent = "Yakin? Klik sekali lagi untuk menghapus";
+        setTimeout(() => { if (del.isConnected) { delete del.dataset.arm; del.textContent = "Hapus semua riwayat"; } }, 4000);
+        return;
+      }
+      store.set("si-history", []);
+      renderHistory();
+    };
+    kids.push(h("div", { class: "row" }, del));
+  }
+  kids.push(h("p", { class: "small", text: "Riwayat dan draft hanya tersimpan di browser ini. Rekaman audio tidak ikut disimpan." }));
+  $("#history").replaceChildren(...kids);
+}
+
+/* Konfirmasi sebelum meninggalkan halaman saat berpikir/merekam/simulasi (termasuk lewat tautan "← Menu") */
+addEventListener("beforeunload", e => { if (busy()) { e.preventDefault(); e.returnValue = ""; } });
+
+/* ---- Tema (kunci penyimpanan sama dengan menu dan gat.html) ---- */
+const THEMES = ["auto", "light", "dark"];
+const ICONS = {
+  auto: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="6"/><path d="M8 2v12" /><path d="M8 2a6 6 0 0 1 0 12z" fill="currentColor"/></svg>',
+  light: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="8" cy="8" r="3"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3 3l1.4 1.4M11.6 11.6 13 13M3 13l1.4-1.4M11.6 4.4 13 3"/></svg>',
+  dark: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M13.5 10A6 6 0 0 1 6 2.5a6 6 0 1 0 7.5 7.5z"/></svg>'
+};
+function applyTheme(t) {
+  if (t === "auto") document.documentElement.removeAttribute("data-theme"); else document.documentElement.setAttribute("data-theme", t);
+  const b = $("#themebtn"); b.innerHTML = ICONS[t]; b.title = `Tema: ${{ auto: "otomatis", light: "terang", dark: "gelap" }[t]}`; b.setAttribute("aria-label", b.title + ". Klik untuk ganti.");
+  try { localStorage.setItem("gat-theme", t); } catch (e) {}
+}
+let theme = "auto"; try { theme = localStorage.getItem("gat-theme") || "auto"; } catch (e) {}
+if (!THEMES.includes(theme)) theme = "auto";
+applyTheme(theme);
+$("#themebtn").onclick = () => { theme = THEMES[(THEMES.indexOf(theme) + 1) % 3]; applyTheme(theme); };
+
+renderHome();
+
+/* Hook untuk pengujian otomatis dari console (tidak dipakai UI) */
+window.SIT = { SI, app, settings, countWords, countFillers, openQuestion, openStudy, finishRec, busy };
+</script>
+</body>
+</html>

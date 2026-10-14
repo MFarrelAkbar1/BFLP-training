@@ -176,10 +176,15 @@ kbd{font-family:var(--font-mono);font-size:12px;border:1px solid var(--line);bor
   .seg-l{display:none}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+.menulink{font-size:13px;font-weight:600;color:var(--muted);text-decoration:none;white-space:nowrap;padding:5px 10px;border:1px solid var(--line);border-radius:999px;flex:none}
+.menulink:hover{color:var(--accent);border-color:var(--accent)}
+@media (max-width:480px){.bar-in{flex-wrap:nowrap}.bar .brand{overflow:hidden;text-overflow:ellipsis;min-width:0}.bar .seg,.bar .timer{flex:none}}
+.pagefoot{max-width:760px;margin:0 auto;padding:18px 16px 32px;font-size:13px;color:var(--muted);border-top:1px solid var(--line)}
 </style>
 
 <header class="bar">
   <div class="bar-in">
+    <a class="menulink" href="index.html">← Menu</a>
     <div class="brand">Lolos <b>Rekrutmen</b></div>
     <div class="seg" role="group" aria-label="Bahasa soal" id="langseg">
       <span class="seg-l">Bahasa soal</span>
@@ -267,6 +272,7 @@ kbd{font-family:var(--font-mono);font-size:12px;border:1px solid var(--line);bor
   <!-- RESULT -->
   <section id="result" class="stack" hidden></section>
 </main>
+<footer class="pagefoot">Simulasi latihan mandiri untuk persiapan tes. Tidak berafiliasi dengan, disponsori, atau didukung oleh SHL.</footer>
 
 <script>
 (function(){
@@ -887,6 +893,10 @@ document.addEventListener("keydown",function(e){
 
 renderLegend();renderPractice();show();
 })();
+</script>
+<script>
+/* Konfirmasi sebelum meninggalkan halaman saat tes berjalan (termasuk lewat tautan "← Menu") */
+addEventListener("beforeunload", function (e) { if (!document.getElementById("test").hidden) { e.preventDefault(); e.returnValue = ""; } });
 </script>
 
 </body></html>

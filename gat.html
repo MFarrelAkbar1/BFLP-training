@@ -1,0 +1,2059 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Latihan General Ability Test</title>
+<meta name="description" content="Simulasi latihan General Ability Test (prediksi soal BFLP): 20 soal interaktif, 30 menit, lengkap dengan pembahasan.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=IBM+Plex+Mono:wght@500&family=Instrument+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: satu kolom fokus; bar tes menempel di atas; tiap soal = kartu; warna data (pie, tugas, pola) tetap sama di tema terang/gelap */
+:root{
+  --bg:#F1F5F4; --surface:#FFFFFF; --sunk:#E7EEED; --ink:#122427; --muted:#55696C; --line:#D3DEDD; --line-strong:#9FB0AF;
+  --accent:#0A6964; --accent-ink:#FFFFFF; --accent-soft:#D9EDEA;
+  --warn:#A9461A; --warn-soft:#FAE7DC;
+  --ok:#2E7D32; --ok-soft:#E1F1E1;
+  --busy:#D5DBDD; --busy-hover:#C3CBCE;
+  --shape-bg:#FFFFFF; --shape-line:#2D3436;
+  --c-blue:#1A8FD0; --c-green:#5D9B2C; --c-red:#EF3E3E; --c-orange:#E47528;
+  --t-blue:#3444CF; --t-green:#137D46; --t-yellow:#F3D34A; --t-cyan:#5CDBE3; --t-link:#2F55D4;
+  --g-fill:#4A8A22; --p-fill:#5D5FE0;
+  --s-blue:#1C77A0; --s-green:#4E8A1E; --lp:#5A9A2A; --nl:#5A8A2E; --mc-head:#E6D7C4;
+  --font-display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --font-body:"Instrument Sans","Segoe UI",system-ui,-apple-system,sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --radius:12px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0B1416; --surface:#132024; --sunk:#0F1B1E; --ink:#E2ECEB; --muted:#92A7A8; --line:#253739; --line-strong:#4A6163;
+    --accent:#4DC2B4; --accent-ink:#062421; --accent-soft:#143633;
+    --warn:#F0985A; --warn-soft:#3A2416;
+    --ok:#7BCB7F; --ok-soft:#173220;
+    --busy:#3E5458; --busy-hover:#4C6569;
+    --shape-bg:#1B2C30; --shape-line:#C9D6D5; --nl:#7DB84A; --lp:#7DB84A; --mc-head:#2B3D40;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0B1416; --surface:#132024; --sunk:#0F1B1E; --ink:#E2ECEB; --muted:#92A7A8; --line:#253739; --line-strong:#4A6163;
+  --accent:#4DC2B4; --accent-ink:#062421; --accent-soft:#143633;
+  --warn:#F0985A; --warn-soft:#3A2416;
+  --ok:#7BCB7F; --ok-soft:#173220;
+  --busy:#3E5458; --busy-hover:#4C6569;
+  --shape-bg:#1B2C30; --shape-line:#C9D6D5; --nl:#7DB84A; --lp:#7DB84A; --mc-head:#2B3D40;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit}
+[hidden]{display:none!important}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+h1,h2,h3{font-family:var(--font-display);letter-spacing:-.02em;text-wrap:balance;margin:0}
+h1{font-size:clamp(30px,6vw,44px);line-height:1.08;font-weight:700}
+h2{font-size:22px;line-height:1.25;font-weight:700}
+h3{font-size:17px;line-height:1.3;font-weight:600;letter-spacing:-.01em}
+p{margin:0}
+.small{font-size:14px;color:var(--muted)}
+.eyebrow{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.stack{display:flex;flex-direction:column;gap:24px}
+
+/* Bar */
+.bar{position:sticky;top:0;z-index:20;background:var(--surface);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px)}
+.bar-in{max-width:920px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:10px 14px}
+.brand{font-family:var(--font-display);font-weight:700;font-size:15px;letter-spacing:-.01em;margin-right:auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand b{color:var(--accent)}
+.qcount{font-size:13px;color:var(--muted);white-space:nowrap}
+.timer{font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-size:15px;padding:4px 10px;border-radius:8px;background:var(--sunk);min-width:70px;text-align:center}
+.timer.low{color:var(--warn);background:var(--warn-soft)}
+.iconbtn{border:1px solid var(--line);background:var(--sunk);border-radius:999px;width:34px;height:34px;display:grid;place-items:center;cursor:pointer;padding:0}
+.iconbtn svg{width:16px;height:16px}
+.prog{height:3px;background:var(--sunk)}
+.prog i{display:block;height:100%;width:0;background:var(--accent);transition:width .25s ease}
+
+.wrap{max-width:920px;margin:0 auto;padding:28px 16px 40px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px}
+@media (max-width:560px){.card{padding:16px 14px}.wrap{padding-top:20px}}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:10px;border:1px solid transparent;padding:11px 18px;font-weight:600;cursor:pointer;min-height:44px;text-decoration:none}
+.btn-primary{background:var(--accent);color:var(--accent-ink)}
+.btn-primary:hover{filter:brightness(1.08)}
+.btn-ghost{background:transparent;border-color:var(--line-strong);color:var(--ink)}
+.btn-ghost:hover{background:var(--sunk)}
+.btn-text{background:none;border:0;color:var(--muted);padding:8px 4px;min-height:auto;font-weight:500;text-decoration:underline;text-underline-offset:3px}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+
+/* Intro */
+.facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin:0}
+.facts div{background:var(--surface);padding:14px 16px;min-width:0}
+.facts dt{font-size:12px;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+.facts dd{margin:2px 0 0;font-family:var(--font-display);font-weight:700;font-size:20px}
+@media (max-width:560px){.facts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.rules{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
+.choice{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:560px){.choice{grid-template-columns:1fr}}
+.opt{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line);border-radius:10px;padding:14px;cursor:pointer;background:var(--surface)}
+.opt:has(input:checked){border-color:var(--accent);box-shadow:0 0 0 1px var(--accent);background:var(--accent-soft)}
+.opt input{margin-top:4px;accent-color:var(--accent)}
+.opt b{display:block}
+
+/* Question stem */
+.qhead{display:flex;align-items:baseline;justify-content:space-between;gap:4px 12px;margin-bottom:6px;flex-wrap:wrap}
+.stem{display:flex;flex-direction:column;gap:12px;margin-bottom:18px}
+.stem ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
+.stem .qlabel{font-weight:700;margin-top:4px}
+.stem .prompt{font-weight:600}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:560px){.cards{grid-template-columns:1fr}}
+.icard{border-radius:10px;padding:12px 16px;color:#fff;min-height:74px}
+.icard b{display:block;font-size:16px}
+.icard span{display:block;font-weight:600;font-size:15px;opacity:.96}
+.icard.c-blue{background:var(--c-blue)}.icard.c-green{background:var(--c-green)}.icard.c-red{background:var(--c-red)}.icard.c-orange{background:var(--c-orange)}
+.qnav{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:20px;flex-wrap:wrap}
+.warnmsg{color:var(--warn);background:var(--warn-soft);border-radius:8px;padding:8px 12px;font-size:14px}
+.hint{font-size:13px;color:var(--muted)}
+
+/* ===== Komponen: dayschedule ===== */
+.ds{position:relative;display:flex;flex-direction:column;gap:14px;user-select:none;-webkit-user-select:none}
+.ds-scroll{overflow-x:auto;margin:0 -6px;padding:0 6px 4px}
+.ds-rows{display:flex;flex-direction:column;gap:14px;min-width:560px}
+.ro .ds-rows{min-width:0}
+.mobile-only{display:none}
+@media (max-width:620px){.mobile-only{display:block}}
+.ds-label{font-weight:600;font-size:14px;margin-bottom:4px;position:sticky;left:0;display:inline-block}
+.ds-track{position:relative;height:44px;border:1px solid var(--shape-line);background-color:var(--surface);background-image:linear-gradient(to right,transparent calc(100% - 1px),var(--line-strong) 0);background-size:calc(100% / 18) 100%}
+.ds-track.ed{height:50px}
+.ds-axis{position:relative;height:18px;font-size:12px;color:var(--muted);margin:2px 0 0}
+.ds-axis span{position:absolute;transform:translateX(-50%);top:0}
+.ds-axis span:first-child{transform:none}.ds-axis span:last-child{transform:translateX(-100%)}
+.ev{position:absolute;top:0;bottom:0;border:0;border-right:1px solid var(--line-strong);background:var(--busy);padding:0;cursor:pointer;overflow:hidden}
+.ev:hover{background:var(--busy-hover)}
+.ev.ev-link{background:var(--t-link);color:#fff;font-size:12px;font-weight:600;border-radius:6px;margin:3px 0;top:0;bottom:0;box-shadow:inset 0 0 0 1px rgba(255,255,255,.25)}
+.ev span,.tb span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 6px}
+.tb{position:absolute;top:3px;bottom:3px;border-radius:6px;display:flex;align-items:center;font-size:12.5px;font-weight:600;cursor:grab;touch-action:none;box-shadow:0 1px 2px rgba(0,0,0,.25);z-index:2}
+.ro .tb{cursor:default}
+.tb.dragging{opacity:.35}
+.tb.bad{outline:3px dashed var(--warn);outline-offset:1px}
+.tb.ghost{position:fixed;left:0;top:0;z-index:60;pointer-events:none;opacity:.9;box-shadow:0 8px 22px rgba(0,0,0,.3)}
+.c-blue{background:var(--t-blue);color:#fff}.c-green{background:var(--t-green);color:#fff}.c-yellow{background:var(--t-yellow);color:#1d1a05}.c-cyan{background:var(--t-cyan);color:#06292b}.c-link{background:var(--t-link);color:#fff}
+.pv{position:absolute;top:0;bottom:0;z-index:1;pointer-events:none;border:2px dashed}
+.pv.ok{background:rgba(46,125,50,.18);border-color:var(--ok)}
+.pv.no{background:rgba(169,70,26,.18);border-color:var(--warn)}
+.ds-tray{display:flex;flex-direction:column;gap:10px;margin-top:6px}
+.tcard{display:flex;align-items:stretch;border:1.5px solid var(--ink);background:var(--surface);border-radius:4px;padding:0;min-height:48px;cursor:grab;touch-action:none;text-align:left;width:100%}
+.tcard .sw{width:30px;flex:none}
+.tcard .tl{flex:1;padding:12px 14px;font-weight:600}
+.tcard .td{padding:12px 16px;font-style:italic;font-weight:600;white-space:nowrap}
+.tcard.dragging{opacity:.4}
+.tray-empty{font-size:14px;color:var(--muted);border:1px dashed var(--line-strong);border-radius:8px;padding:10px 12px}
+.pop{position:absolute;z-index:30;width:240px;max-width:calc(100% - 8px);background:var(--surface);border:1px solid var(--line-strong);border-radius:10px;box-shadow:0 10px 28px rgba(0,0,0,.18);padding:10px 12px;font-size:14px}
+.pop b{display:block;font-size:15px}
+.pop .t{font-family:var(--font-mono);font-size:13px;color:var(--muted)}
+
+/* ===== Komponen: pie ===== */
+.pie-wrap{display:flex;justify-content:center}
+svg.pie{width:100%;max-width:420px;height:auto;overflow:visible;touch-action:none;user-select:none;-webkit-user-select:none}
+svg.pie.sm{max-width:300px}
+svg.pie .slice{stroke:var(--surface);stroke-width:3;stroke-linejoin:round}
+svg.pie .lbl{font-size:13px;fill:var(--muted)}
+svg.pie .lbl .v{font-size:16px;font-weight:700;fill:var(--ink)}
+svg.pie.sm .lbl{font-size:16px}
+svg.pie.sm .lbl .v{font-size:19px}
+svg.pie .lbl.bad .v,svg.pie .lbl.bad{fill:var(--warn)}
+svg.pie .hd{cursor:grab}
+svg.pie .hd:focus{outline:none}
+svg.pie .hd:focus-visible circle{stroke:var(--accent);stroke-width:4}
+svg.pie .hd circle{fill:var(--surface);stroke:var(--ink);stroke-width:2.5}
+svg.pie .hd circle.hit{fill:transparent;stroke:none}
+svg.pie .hd.fixed circle.hit{display:none}
+svg.pie .hd line{stroke:var(--ink);stroke-width:2.2;stroke-linecap:round}
+svg.pie .hd.fixed{cursor:default;opacity:.85}
+
+/* ===== Komponen: shapepattern ===== */
+.sp{display:flex;flex-direction:column;gap:18px;align-items:center;user-select:none;-webkit-user-select:none}
+.sp-ex{display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));gap:14px;width:100%;max-width:720px}
+.sp-ex figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:4px}
+.sp-ex figcaption{font-size:12px;color:var(--muted);font-family:var(--font-mono)}
+.sp svg{width:100%;height:auto;overflow:visible}
+.sp-ex svg{max-width:130px}
+.sp-target{width:min(100%,340px)}
+.sp.rv .sp-target{width:min(100%,220px)}
+.sp polygon{stroke:var(--shape-line);stroke-width:1.4;stroke-linejoin:round}
+.sp svg.live polygon{cursor:pointer}
+.sp svg.live polygon:hover{filter:brightness(.93)}
+.sp svg.live polygon:focus{outline:none}
+.sp svg.live polygon:focus-visible{stroke:var(--accent);stroke-width:4}
+.sp .badmark{fill:none;stroke:var(--warn);stroke-width:4;stroke-dasharray:6 4;pointer-events:none}
+
+/* ===== Stem: baris petunjuk ===== */
+.clues{display:flex;flex-direction:column;gap:8px}
+.clue{display:grid;grid-template-columns:40px minmax(110px,170px) 1fr;gap:12px;align-items:center;border:1px solid var(--line-strong);border-radius:6px;padding:6px 12px 6px 6px;background:var(--surface)}
+.clue.noname{grid-template-columns:40px 1fr}
+.clue b{font-size:15px}
+.clue span:last-child{font-weight:500}
+@media (max-width:560px){.clue{grid-template-columns:40px 1fr}.clue span:last-child{grid-column:2}}
+.av{width:40px;height:40px;border-radius:50%;display:inline-grid;place-items:center;color:#fff;font-weight:700;font-size:14px;flex:none;letter-spacing:.02em}
+.chip-ghost{position:fixed!important;left:0;top:0;z-index:60;pointer-events:none;opacity:.92}
+
+/* ===== Komponen: monthcal ===== */
+.mc-wrap{display:flex;flex-direction:column;gap:8px;align-items:center}
+.mc{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border-top:1px solid var(--shape-line);border-left:1px solid var(--shape-line);width:100%;max-width:640px}
+.mc.sm{max-width:360px}
+.mc .dh,.mc .day{border-right:1px solid var(--shape-line);border-bottom:1px solid var(--shape-line)}
+.mc .dh{background:var(--mc-head);text-align:center;font-weight:600;font-size:13px;padding:8px 0}
+.mc .day{height:46px;display:grid;place-items:center;background:var(--surface);font-size:15px;border-top:0;border-left:0;padding:0}
+.mc.sm .day{height:34px;font-size:13px}
+.mc .day.blank{background:var(--sunk)}
+.mc button.day{cursor:pointer}
+.mc button.day:hover{background:var(--accent-soft)}
+.mc .day.sel{background:var(--accent)!important;color:var(--accent-ink);font-weight:700}
+.mc .day.bad{background:var(--warn)!important;color:#fff}
+
+/* ===== Komponen: roommatch ===== */
+.rm{display:flex;flex-direction:column;gap:14px;user-select:none;-webkit-user-select:none}
+.plan{display:grid;grid-template-columns:1fr 46px 1fr;width:100%;max-width:640px;margin:0 auto}
+.plan .col{display:flex;flex-direction:column}
+.plan .hall{border-top:1.5px solid var(--shape-line);border-bottom:1.5px solid var(--shape-line);margin:0 4px}
+.room{border:1.5px solid var(--shape-line);min-height:96px;padding:8px 6px;display:flex;flex-direction:column;align-items:center;gap:6px;background:var(--surface);margin-bottom:-1.5px}
+.col.right .room{flex:1}
+.ro .room{min-height:70px}
+.rm:not(.ro) .room{cursor:pointer}
+.room.over,.bench.over,.slot.over,.badge-tray.over{background:var(--accent-soft);box-shadow:inset 0 0 0 2px var(--accent)}
+.rname{font-weight:600;font-size:14px;text-align:center}
+.occ{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.bench{display:flex;justify-content:center;min-height:72px;padding:10px;border:1px dashed var(--line-strong);border-radius:10px;cursor:default}
+.bench.armed{cursor:pointer}
+.bench .occ{gap:14px}
+.pchip{display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:0;padding:2px;cursor:grab;touch-action:none;min-width:48px}
+.ro .pchip{cursor:default}
+.pchip .av{box-shadow:0 0 0 2px var(--surface),0 0 0 3.5px var(--ink)}
+.pchip .pl{font-size:12px;font-weight:600;max-width:84px;text-align:center;line-height:1.2}
+.pchip.sel .av{box-shadow:0 0 0 2px var(--surface),0 0 0 5px var(--accent)}
+.pchip.bad .av{box-shadow:0 0 0 2px var(--surface),0 0 0 5px var(--warn)}
+.pchip.bad .pl{color:var(--warn)}
+.pchip.dragging,.badge.dragging{opacity:.35}
+
+/* ===== Komponen: rankbadges ===== */
+.rk-wrap{display:flex;flex-direction:column;gap:14px;user-select:none;-webkit-user-select:none}
+.rk{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ro .rk{grid-template-columns:1fr}
+@media (max-width:560px){.rk{grid-template-columns:1fr}}
+.rk-row{display:flex;align-items:center;gap:12px;border:1px solid var(--line-strong);border-radius:6px;padding:6px 8px;background:var(--surface)}
+.rk-row .nm{flex:1;font-weight:600}
+.slot{width:52px;height:52px;border-radius:50%;border:1.5px solid var(--line-strong);background:var(--sunk);display:grid;place-items:center;flex:none}
+.rk-wrap:not(.ro) .slot{cursor:pointer}
+.slot.bad{box-shadow:0 0 0 3px var(--warn)}
+.slot .badge{width:44px;height:44px;font-size:18px}
+.badge{width:52px;height:52px;border-radius:50%;border:1.5px solid var(--ink);background:var(--surface);font-family:var(--font-display);font-weight:700;font-size:22px;display:grid;place-items:center;cursor:grab;touch-action:none;padding:0;color:var(--ink)}
+.ro .badge{cursor:default}
+.badge.sel{box-shadow:0 0 0 3px var(--accent);border-color:var(--accent)}
+.badge.ghosted{opacity:.18;cursor:default;border-style:dashed}
+.badge-tray{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;padding:12px;border:1px dashed var(--line-strong);border-radius:10px}
+
+/* ===== Komponen: stackedbar & linepoints (SVG) ===== */
+.sb-wrap,.lp-wrap,.nl-wrap{display:flex;flex-direction:column;align-items:center;gap:6px;user-select:none;-webkit-user-select:none}
+svg.sb,svg.lp{width:100%;max-width:560px;height:auto;overflow:visible;touch-action:none}
+svg.sb.sm,svg.lp.sm{max-width:400px}
+svg .grid{stroke:var(--line);stroke-width:1}
+svg .grid.v{stroke-dasharray:2 4}
+svg .base{stroke:var(--line-strong);stroke-width:1.5}
+svg .ax{font-size:12px;fill:var(--muted);font-family:var(--font-body)}
+svg .xl{font-size:14px;fill:var(--ink);font-weight:500}
+svg .xl.bad,svg .tv.bad{fill:var(--warn);font-weight:700}
+svg.sb .seg{stroke:var(--surface);stroke-width:1.5}
+svg.sb .pv{font-size:15px;font-weight:700;fill:#fff;pointer-events:none}
+svg.sb .tv{font-size:14px;fill:var(--ink);font-weight:600}
+svg .hd{cursor:ns-resize}
+svg .hd:focus{outline:none}
+svg .hd .hit{fill:transparent}
+svg .hd .knob{fill:var(--surface);stroke:var(--ink);stroke-width:2}
+svg .hd line{stroke:var(--ink);stroke-width:1.6;stroke-linecap:round}
+svg .hd:focus-visible .knob{stroke:var(--accent);stroke-width:3.5}
+.sb-read{display:flex;flex-direction:column;align-items:center;font-size:13px;color:var(--muted);text-align:center}
+.sb-read .bad{color:var(--warn);font-weight:600}
+svg.lp .ln{fill:none;stroke:var(--lp);stroke-width:3;stroke-linejoin:round}
+svg.lp .pt{cursor:ns-resize}
+svg.lp .pt:focus{outline:none}
+svg.lp .pt .hit{fill:transparent}
+svg.lp .pt .dot{fill:var(--lp);stroke:var(--surface);stroke-width:2}
+svg.lp .pt:focus-visible .dot{stroke:var(--accent);stroke-width:4}
+svg.lp .pt.bad .dot{fill:var(--warn)}
+svg.lp .pt .val{font-size:14px;font-weight:700;fill:var(--ink);paint-order:stroke;stroke:var(--surface);stroke-width:5px;stroke-linejoin:round}
+svg.lp .pt.bad .val{fill:var(--warn)}
+
+/* ===== Komponen: nodeline ===== */
+svg.nl{width:100%;max-width:640px;height:auto;touch-action:none;overflow:visible}
+svg.nl.sm{max-width:420px}
+svg.nl .e-fixed{stroke:var(--nl);stroke-width:3}
+svg.nl .e-hint{stroke:var(--nl);stroke-width:2.5;stroke-dasharray:6 6;opacity:.85}
+svg.nl .e-user{stroke:var(--nl);stroke-width:3}
+svg.nl .e-user.bad{stroke:var(--warn);stroke-dasharray:8 5}
+svg.nl .e-temp{stroke:var(--accent);stroke-width:3;stroke-dasharray:4 4;pointer-events:none}
+svg.nl .e-hit{stroke:transparent;stroke-width:18;cursor:pointer}
+svg.nl .e-hit:hover{stroke:rgba(169,70,26,.18)}
+svg.nl .mk-u{fill:var(--nl)} svg.nl .mk-h{fill:var(--nl)} svg.nl .mk-b{fill:var(--warn)}
+svg.nl .node circle{fill:var(--surface);stroke:var(--line-strong);stroke-width:3}
+svg.nl .node text{font-size:17px;font-weight:700;fill:var(--nl);font-family:var(--font-body);pointer-events:none}
+svg.nl.big .node text{font-size:30px}
+svg.nl.big .e-fixed,svg.nl.big .e-user{stroke-width:5}
+svg.nl.big .e-hit{stroke-width:30}
+svg.nl .node.fixed circle{fill:var(--nl);stroke:var(--nl)}
+svg.nl .node.fixed text{fill:#fff}
+svg.nl .node.used circle{stroke:var(--nl)}
+svg.nl .node.sel circle{stroke:var(--accent);stroke-width:5}
+svg.nl .node[tabindex]{cursor:crosshair}
+svg.nl .node:focus{outline:none}
+svg.nl .node:focus-visible circle{stroke:var(--accent);stroke-width:5}
+
+/* ===== Review / hasil ===== */
+.score{display:flex;gap:24px;align-items:center;flex-wrap:wrap}
+.score .big{font-family:var(--font-display);font-weight:700;font-size:64px;line-height:1}
+.score .big small{font-size:28px;color:var(--muted)}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{font-size:13px;font-weight:600;border-radius:999px;padding:3px 10px;background:var(--sunk);white-space:nowrap}
+.chip.ok{background:var(--ok-soft);color:var(--ok)}
+.chip.bad{background:var(--warn-soft);color:var(--warn)}
+.tiles{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:6px}
+@media (max-width:560px){.tiles{grid-template-columns:repeat(5,minmax(0,1fr))}}
+.tile{border:1px solid var(--line);border-radius:8px;padding:6px 4px;text-align:center;background:var(--surface);cursor:pointer;text-decoration:none;color:inherit;display:block}
+.tile b{display:block;font-size:15px}
+.tile span{font-size:11px;color:var(--muted);font-family:var(--font-mono)}
+.tile.ok{border-color:var(--ok);background:var(--ok-soft)}
+.tile.bad{border-color:var(--warn);background:var(--warn-soft)}
+.tile.empty{border-style:dashed}
+details.rv{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius)}
+details.rv>summary{list-style:none;cursor:pointer;padding:14px 18px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+details.rv>summary::-webkit-details-marker{display:none}
+details.rv>summary::after{content:"";margin-left:auto;width:9px;height:9px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);transition:transform .15s}
+details.rv[open]>summary::after{transform:rotate(-135deg)}
+details.rv .rv-body{padding:0 18px 18px;display:flex;flex-direction:column;gap:16px}
+.rv-cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.rv-cols.stack{grid-template-columns:1fr}
+@media (max-width:640px){.rv-cols{grid-template-columns:1fr}}
+.rv-col{border:1px solid var(--line);border-radius:10px;padding:12px;min-width:0}
+.rv-col h4{margin:0 0 10px;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.rv-col.mine.bad h4{color:var(--warn)}
+.rv-col.key h4{color:var(--ok)}
+.explain{display:flex;flex-direction:column;gap:10px}
+.explain ol,.explain ul{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:6px}
+.keyline{font-weight:600}
+.trap{border-left:4px solid var(--warn);background:var(--warn-soft);padding:10px 14px;border-radius:0 8px 8px 0}
+.trap b{color:var(--warn)}
+.tbl{overflow-x:auto}
+.tbl table{border-collapse:collapse;font-size:14px;min-width:100%}
+.tbl th,.tbl td{border:1px solid var(--line);padding:6px 10px;text-align:left;white-space:nowrap}
+.tbl th{background:var(--sunk);font-weight:600}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:5px}
+
+.menulink{font-size:13px;font-weight:600;color:var(--muted);text-decoration:none;white-space:nowrap;padding:5px 10px;border:1px solid var(--line);border-radius:999px;flex:none}
+.menulink:hover{color:var(--accent);border-color:var(--accent)}
+.bar .iconbtn,.bar .timer{flex:none}
+.foot{max-width:920px;margin:0 auto;padding:18px 16px 32px;font-size:13px;color:var(--muted);border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+<header class="bar">
+  <div class="bar-in">
+    <a class="menulink" href="index.html">← Menu</a>
+    <div class="brand">General Ability Test · <b>Latihan BFLP</b></div>
+    <span class="qcount" id="qcount" hidden></span>
+    <span class="timer" id="timer" hidden aria-live="off">30:00</span>
+    <button class="iconbtn" id="themebtn" type="button" aria-label="Ganti tema" title="Tema: otomatis"></button>
+  </div>
+  <div class="prog" id="prog" hidden><i id="progfill"></i></div>
+</header>
+
+<main class="wrap">
+  <!-- INTRO -->
+  <section id="intro" class="stack">
+    <div class="stack" style="gap:12px">
+      <span class="eyebrow">Simulasi · Prediksi soal BFLP</span>
+      <h1>General Ability Test</h1>
+      <p class="small" style="font-size:17px;max-width:62ch">Tes kemampuan umum berbasis interaksi: menyusun jadwal, mengatur grafik, melengkapi pola, dan mengurutkan data. Soal berbahasa Inggris seperti tes aslinya; pembahasan berbahasa Indonesia.</p>
+    </div>
+    <dl class="facts">
+      <div><dt>Soal</dt><dd id="f-count">20</dd></div>
+      <div><dt>Waktu</dt><dd>30 menit</dd></div>
+      <div><dt>Tampilan</dt><dd>1 soal/layar</dd></div>
+      <div><dt>Navigasi</dt><dd>Maju saja</dd></div>
+    </dl>
+    <div class="card stack" style="gap:14px">
+      <h2>Instruksi soal</h2>
+      <ul class="rules">
+        <li>Setiap kali disebutkan <b>"hari kerja"</b> (<i>weekdays</i>), artinya Senin sampai Jumat.</li>
+        <li>Untuk soal yang berkaitan dengan <b>30 hari kalender</b>, kamu boleh memilih sampai dengan 5 tanggal.</li>
+        <li>Bekerjalah dengan cepat tetapi akurat. Jangan habiskan terlalu banyak waktu pada satu soal.</li>
+        <li>Selesaikan keseluruhan tes agar terhindar dari pengurangan nilai.</li>
+        <li>Bacalah informasi yang diberikan dengan saksama sebelum menjawab setiap soal.</li>
+        <li>Kerjakan tes ini sekali jalan. Pencatat waktu tidak berhenti walaupun kamu membuka aplikasi lain.</li>
+        <li><b>Kamu tidak bisa kembali</b> ke soal sebelumnya dan tidak ada waktu untuk memeriksa ulang di akhir tes.</li>
+      </ul>
+    </div>
+    <div class="card stack" style="gap:14px">
+      <h2>Mode waktu</h2>
+      <div class="choice" role="radiogroup" aria-label="Mode waktu">
+        <label class="opt"><input type="radio" name="mode" value="timed" checked><span><b>30 menit</b><span class="small">Seperti tes asli. Waktu habis = tes selesai otomatis.</span></span></label>
+        <label class="opt"><input type="radio" name="mode" value="free"><span><b>Tanpa batas (belajar)</b><span class="small">Timer menghitung naik. Cocok untuk memahami tiap tipe soal.</span></span></label>
+      </div>
+    </div>
+    <div class="row">
+      <button class="btn btn-primary" id="btn-practice" type="button">Mulai dengan contoh soal</button>
+      <button class="btn btn-ghost" id="btn-skip" type="button">Lewati contoh, langsung tes</button>
+    </div>
+  </section>
+
+  <!-- PRACTICE -->
+  <section id="practice" class="stack" hidden>
+    <div class="card">
+      <div class="qhead"><span class="eyebrow">Contoh soal (tidak dinilai)</span></div>
+      <div id="p-stem"></div>
+      <div id="p-body"></div>
+      <div id="p-feedback" class="stack" style="gap:14px;margin-top:18px" hidden></div>
+      <div class="qnav">
+        <button class="btn-text btn" id="p-reset" type="button">Atur ulang</button>
+        <div class="row">
+          <button class="btn btn-ghost" id="p-check" type="button">Periksa jawaban</button>
+          <button class="btn btn-primary" id="p-start" type="button">Mulai tes →</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TEST -->
+  <section id="test" class="stack" hidden>
+    <div class="card">
+      <div class="qhead"><span class="eyebrow" id="t-num">Soal 1</span><span class="hint">Tidak bisa kembali ke soal sebelumnya</span></div>
+      <div id="t-stem"></div>
+      <div id="t-body"></div>
+      <div class="qnav">
+        <button class="btn-text btn" id="t-reset" type="button">Atur ulang soal ini</button>
+        <div class="row" style="justify-content:flex-end">
+          <span class="warnmsg" id="t-warn" hidden>Soal ini belum dijawab. Klik sekali lagi untuk melewatinya.</span>
+          <button class="btn btn-primary" id="t-next" type="button">Berikutnya →</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULT -->
+  <section id="result" class="stack" hidden></section>
+</main>
+
+<footer class="foot">Simulasi latihan mandiri untuk persiapan tes. Tidak berafiliasi dengan, disponsori, atau didukung oleh SHL. Soal adalah prediksi, bukan soal resmi.</footer>
+
+<script>
+/* =====================================================================
+   DATA SOAL & KUNCI
+   Tambah soal = tambah objek ke TEST.questions. Komponen dipilih lewat `type`.
+   Waktu memakai format 12 jam seperti di tes (9:00 … 6:00); slot 30 menit.
+   Pola bentuk: "g" = hijau, "p" = ungu polkadot, region yang tidak disebut = putih.
+   ===================================================================== */
+const TEST = {
+  title: "General Ability Test",
+  timeLimitSec: 30 * 60,
+
+  practice: {
+    id: "P", type: "dayschedule",
+    title: "Team Calendar",
+    prompt: "Reschedule the Team Meeting, currently set for 3:30 p.m., to an earlier time. You may move one appointment per person, but not more than 30 minutes earlier or later. Your appointments and client demos cannot be moved.",
+    note: "Klik kotak abu-abu untuk membuka keterangan acara. Seret blok Team Meeting di Your Calendar ke jam yang baru.",
+    data: {
+      reviewAllRows: true,
+      rows: [
+        { label: "Naomi", events: [
+          { start: "9:00", end: "10:00", name: "Weekly Report" },
+          { start: "10:30", end: "11:30", name: "Product Training" },
+          { start: "1:30", end: "2:30", name: "Budget Review" },
+          { start: "2:30", end: "3:30", name: "Supplier Meeting" },
+          { start: "3:30", end: "4:30", name: "Team Meeting", link: "tm" },
+          { start: "4:30", end: "5:00", name: "Supplier Call" } ] },
+        { label: "Oscar", events: [
+          { start: "9:30", end: "11:00", name: "Recruitment Interviews" },
+          { start: "11:30", end: "12:30", name: "Lunch" },
+          { start: "1:00", end: "2:00", name: "Sales Pipeline Review" },
+          { start: "2:30", end: "3:00", name: "Vendor Call" },
+          { start: "3:30", end: "4:30", name: "Team Meeting", link: "tm" },
+          { start: "4:30", end: "5:30", name: "Project Review" } ] },
+        { label: "Petra", events: [
+          { start: "9:00", end: "10:00", name: "Sales Briefing" },
+          { start: "10:30", end: "11:30", name: "Product Training" },
+          { start: "12:00", end: "1:00", name: "Lunch" },
+          { start: "2:30", end: "3:30", name: "Report Review" },
+          { start: "3:30", end: "4:30", name: "Team Meeting", link: "tm" },
+          { start: "5:00", end: "5:30", name: "Coaching Session" } ] },
+        { label: "Your Calendar", editable: true, events: [
+          { start: "9:30", end: "10:30", name: "Planning Session" },
+          { start: "11:00", end: "12:30", name: "Client Demo" },
+          { start: "1:30", end: "2:00", name: "HR Call" },
+          { start: "2:30", end: "3:00", name: "Interview" },
+          { start: "5:00", end: "6:00", name: "Report Writing" } ] }
+      ],
+      tasks: [ { id: "tm", label: "Team Meeting", mins: 60, color: "link", initial: "3:30" } ]
+    },
+    answer: { tm: "12:30" },
+    explain: {
+      key: "Team Meeting: 12:30–1:30 PM",
+      steps: [
+        "Jadwal kamu tidak boleh digeser, jadi cari dulu celah 1 jam kosong di kalendermu: hanya <b>12:30–1:30</b> dan <b>3:00–4:00</b> (slot Team Meeting lama ikut kosong).",
+        "Opsi 3:00 gugur karena <b>Naomi</b>: Budget Review 1:30–2:30 dan Supplier Meeting 2:30–3:30 adalah dua acara terpisah. Menggeser Supplier Meeting ke 2:00 menabrak Budget Review, dan hanya satu acara per orang yang boleh digeser.",
+        "Opsi 12:30–1:30: <b>Naomi</b> kosong, tidak perlu menggeser apa pun. <b>Oscar</b> menggeser Sales Pipeline Review 1:00–2:00 → 1:30–2:30. <b>Petra</b> menggeser Lunch 12:00–1:00 → 11:30–12:30.",
+      ],
+      trap: "Nama acara tidak terlihat di kalender. Jawaban hanya bisa ditemukan kalau kamu membuka keterangan tiap kotak abu-abu."
+    }
+  },
+
+  questions: [
+    {
+      id: 1, type: "dayschedule",
+      prompt: "Fit each task into Monday's work schedule. All training sessions must be scheduled after 1:00 p.m.",
+      data: {
+        rows: [ { label: "Monday", editable: true, events: [
+          { start: "9:00", end: "9:30", name: "Busy" }, { start: "9:30", end: "10:00", name: "Busy" },
+          { start: "11:30", end: "12:00", name: "Busy" }, { start: "12:30", end: "1:30", name: "Busy" },
+          { start: "2:30", end: "3:00", name: "Busy" }, { start: "4:30", end: "5:00", name: "Busy" },
+          { start: "5:30", end: "6:00", name: "Busy" } ] } ],
+        tasks: [
+          { id: "pm", label: "Project Meeting", mins: 90, color: "blue" },
+          { id: "tt", label: "Team Training", mins: 90, color: "green" },
+          { id: "iv", label: "Interview", mins: 60, color: "yellow" },
+          { id: "st", label: "Safety Training", mins: 30, color: "cyan" } ]
+      },
+      answer: { pm: "10:00", tt: "3:00", iv: "1:30", st: "5:00" },
+      explain: {
+        key: "Project Meeting 10:00–11:30 · Interview 1:30–2:30 · Team Training 3:00–4:30 · Safety Training 5:00–5:30",
+        steps: [
+          "Kuncinya, mulai dari tugas yang pilihan tempatnya paling sedikit.",
+          "<b>Team Training</b> (1,5 jam, harus setelah jam 1). Celah 1,5 jam setelah jam 1 hanya ada satu, yaitu 3:00–4:30. Posisi ini pasti.",
+          "<b>Project Meeting</b> (1,5 jam). Celah 1,5 jam yang tersisa hanya 10:00–11:30.",
+          "<b>Interview</b> (1 jam). Celah 1 jam yang masih kosong tinggal 1:30–2:30.",
+          "<b>Safety Training</b> (30 menit). Satu-satunya slot setelah jam 1 yang tersisa adalah 5:00–5:30."
+        ],
+        trap: "Slot 12:00–12:30 terlihat pas untuk Safety Training, tapi Safety Training juga termasuk <i>training</i>, jadi wajib setelah jam 1."
+      }
+    },
+    {
+      id: 2, type: "shapepattern",
+      prompt: "Colour the empty figure to complete the sequence.",
+      data: { shape: "pentagram", examples: [
+        { TL: "g", TR: "p", C: "p" }, { L: "g", TL: "p" }, { B: "g", L: "p", C: "p" }, { R: "g", B: "p" } ] },
+      answer: { TR: "g", R: "p", C: "p" },
+      explain: {
+        key: "Ujung kanan atas hijau, ujung kanan ungu, segi lima tengah ungu.",
+        steps: [
+          "<b>Ujung hijau</b> berpindah satu ujung berlawanan arah jarum jam di setiap langkah: kiri atas → kiri → bawah → kanan → <b>kanan atas</b>.",
+          "<b>Ujung ungu</b> selalu berada satu ujung searah jarum jam dari ujung hijau → <b>kanan</b>.",
+          "<b>Segi lima di tengah</b> selang-seling: terisi, kosong, terisi, kosong, <b>terisi</b> (ungu)."
+        ]
+      }
+    },
+    {
+      id: 3, type: "pie",
+      intro: "Information on the annual revenues of four business units is provided below.",
+      cards: [
+        { title: "Americas", text: "Half the revenue of Asia-Pacific", color: "blue" },
+        { title: "Europe", text: "$450,000", color: "green" },
+        { title: "Asia-Pacific", text: "80% of the revenue of Europe", color: "red" },
+        { title: "Africa", text: "Ratio of 9:5 with Europe", color: "orange" } ],
+      prompt: "Adjust the pie chart to represent the percentage of total revenue accounted for by each business unit.",
+      data: { slices: [
+        { id: "eu", label: "Europe", color: "green" }, { id: "af", label: "Africa", color: "orange" },
+        { id: "ap", label: "Asia-Pacific", color: "red" }, { id: "am", label: "Americas", color: "blue" } ] },
+      answer: { eu: 25, af: 45, ap: 20, am: 10 },
+      explain: {
+        key: "Europe 25% · Africa 45% · Asia-Pacific 20% · Americas 10%",
+        steps: [
+          "Europe adalah satu-satunya angka pasti ($450,000), jadi semua dihitung dari situ.",
+          "Asia-Pacific = 80% × 450,000 = $360,000. Baru setelah itu Americas bisa dihitung: ½ × 360,000 = $180,000.",
+          "Africa : Europe = 9 : 5 → Africa = 9/5 × 450,000 = $810,000.",
+          "Total $1,800,000 → bagi tiap unit dengan total."
+        ],
+        table: { head: ["Unit", "Perhitungan", "Revenue", "Porsi"], rows: [
+          ["Europe", "diketahui", "$450,000", "25%"], ["Asia-Pacific", "80% × 450,000", "$360,000", "20%"],
+          ["Americas", "½ × 360,000", "$180,000", "10%"], ["Africa", "9/5 × 450,000", "$810,000", "45%"],
+          ["Total", "", "$1,800,000", "100%"] ] },
+        trap: "Urutan hitung harus dimulai dari <b>Europe</b>. Americas bergantung pada Asia-Pacific, jadi tidak bisa dihitung lebih dulu."
+      }
+    },
+    {
+      id: 4, type: "monthcal",
+      title: "Budget Review Schedule",
+      clues: [
+        { name: "Facilities", text: "Is the fourth department to be reviewed" },
+        { name: "Customer Support", text: "Is reviewed before Purchasing" },
+        { name: "Product", text: "Starts review on a Saturday" },
+        { name: "Purchasing", text: "Includes the 16th in the review schedule" },
+        { name: "Training", text: "Is reviewed after Product" } ],
+      prompt: "Five departments must have their budgets reviewed. Starting on the 3rd, the reviewer can work on any day of the week. Each review takes four consecutive days, after which the reviewer takes two days off. On which dates do the Customer Support and Training department reviews start?",
+      note: "Klik tanggal untuk memilih (maksimal 5 tanggal). Klik lagi untuk membatalkan.",
+      data: { days: 30, firstDow: 5, max: 5 },
+      answer: [3, 27],
+      explain: {
+        key: "Customer Support mulai tanggal 3, Training mulai tanggal 27. Pilih dua tanggal itu saja.",
+        steps: [
+          "<b>Susun kerangka jadwal dulu.</b> Tiap review 4 hari lalu libur 2 hari, jadi satu siklus 6 hari. Mulai tanggal 3, tanggal mulai tiap review tinggal ditambah 6: 3, 9, 15, 21, 27. Review terakhir selesai tepat tanggal 30 (5 × 4 hari kerja + 4 × 2 hari libur = 28 hari), jadi tidak ada jeda tambahan dan jadwalnya sudah pasti. Libur jatuh di 7–8, 13–14, 19–20, dan 25–26.",
+          "<b>Pakai petunjuk yang langsung mengunci posisi.</b> Facilities departemen ke-4 → mulai tanggal 21. Product mulai hari Sabtu; dari kelima tanggal mulai, hanya tanggal 9 yang jatuh di hari Sabtu → Product urutan ke-2. Purchasing mencakup tanggal 16, yang masuk review ke-3 (15–18) → Purchasing urutan ke-3.",
+          "<b>Baru pakai petunjuk urutan.</b> Customer Support sebelum Purchasing: pilihannya urutan 1 atau 2, tapi urutan 2 sudah diisi Product → Customer Support urutan ke-1 (<b>tanggal 3</b>). Training setelah Product: yang tersisa hanya urutan ke-5 (<b>tanggal 27</b>)."
+        ],
+        table: { head: ["Urutan", "Departemen", "Tanggal review", "Hari mulai"], rows: [
+          ["1", "Customer Support", "3–6", "Minggu"], ["2", "Product", "9–12", "Sabtu"], ["3", "Purchasing", "15–18", "Jumat"],
+          ["4", "Facilities", "21–24", "Kamis"], ["5", "Training", "27–30", "Rabu"] ] },
+        trap: "Instruksi awal bilang \"hari kerja\" = Senin–Jumat, tapi soal ini menyebut <b>\"any day of the week\"</b>, jadi Sabtu dan Minggu tetap dihitung hari kerja. Kalau soal menyebut <i>weekdays only</i>, Sabtu–Minggu dilewati dan polanya berubah. Baca kalimat ini dulu sebelum menghitung."
+      }
+    },
+    {
+      id: 5, type: "pie",
+      intro: "A company produces a product in batches. Each batch yields four grades of the product. It costs $20,000 per grade, regardless of the litres yielded.",
+      cards: [
+        { title: "Grade 1", text: "448 litres per batch\n$125 sale price per litre", color: "blue" },
+        { title: "Grade 2", text: "200 litres per batch\n$250 sale price per litre", color: "green" },
+        { title: "Grade 3", text: "310 litres per batch\n$200 sale price per litre", color: "red" },
+        { title: "Grade 4", text: "250 litres per batch\n$128 sale price per litre", color: "orange" } ],
+      prompt: "Adjust the pie chart to represent the percentage of profit that each grade accounts for.",
+      data: { slices: [
+        { id: "g2", label: "Grade 2", color: "green" }, { id: "g4", label: "Grade 4", color: "orange" },
+        { id: "g3", label: "Grade 3", color: "red" }, { id: "g1", label: "Grade 1", color: "blue" } ] },
+      answer: { g1: 30, g2: 25, g3: 35, g4: 10 },
+      explain: {
+        key: "Grade 1 30% · Grade 2 25% · Grade 3 35% · Grade 4 10%",
+        steps: [
+          "Pendapatan per grade = liter × harga. Profit = pendapatan − $20,000 (biaya per grade).",
+          "Total profit $120,000 → bagi profit tiap grade dengan total."
+        ],
+        table: { head: ["Grade", "Pendapatan", "Profit (− $20,000)", "Porsi"], rows: [
+          ["Grade 1", "448 × 125 = $56,000", "$36,000", "30%"], ["Grade 2", "200 × 250 = $50,000", "$30,000", "25%"],
+          ["Grade 3", "310 × 200 = $62,000", "$42,000", "35%"], ["Grade 4", "250 × 128 = $32,000", "$12,000", "10%"],
+          ["Total", "$200,000", "$120,000", "100%"] ] },
+        trap: "Memakai <b>pendapatan</b>, bukan profit, menghasilkan 28%, 25%, 31%, 16%. Grade 2 kebetulan tetap 25%, jadi satu irisan terasa cocok dan jawabannya terasa benar. Soal menanyakan profit, jadi biaya wajib dikurangi."
+      }
+    },
+    {
+      id: 6, type: "roommatch",
+      title: "Office Requirements",
+      clues: [
+        { name: "Ian", text: "Meets job candidates in his office" },
+        { name: "Jasmine", text: "Out for the afternoon" },
+        { name: "Ken", text: "On private calls all day" },
+        { name: "Linda", text: "Out for the morning" },
+        { name: "Job Candidate", text: "Here to meet with Ian" } ],
+      prompt: "The rooms on the right side of the hallway are under construction. Match each person to the required room, while keeping people in their own offices as much as possible.",
+      data: {
+        rooms: [
+          { id: "rIan", label: "Ian's Office", side: "L" }, { id: "rJas", label: "Jasmine's Office", side: "L" },
+          { id: "rMeet", label: "Meeting Room", side: "L" }, { id: "rLin", label: "Linda's Office", side: "R" },
+          { id: "rKen", label: "Ken's Office", side: "R" } ],
+        people: [
+          { id: "ian", label: "Ian" }, { id: "jas", label: "Jasmine" }, { id: "ken", label: "Ken" },
+          { id: "lin", label: "Linda" }, { id: "cand", label: "Job Candidate" } ]
+      },
+      answer: { ian: "rIan", cand: "rIan", jas: "rJas", lin: "rJas", ken: "rMeet" },
+      explain: {
+        key: "Ian + Job Candidate → Ian's Office · Jasmine + Linda → Jasmine's Office · Ken → Meeting Room",
+        steps: [
+          "<b>Coret ruangan yang tidak bisa dipakai.</b> Ruangan di sisi kanan lorong sedang direnovasi, jadi Linda's Office dan Ken's Office gugur. Tersisa 3 ruangan untuk 5 orang, artinya ada yang harus berbagi ruangan.",
+          "<b>Ian dan Job Candidate di Ian's Office.</b> Ian menemui kandidat di kantornya sendiri, dan kandidat datang untuk menemui Ian.",
+          "<b>Ken butuh ruangan pribadi seharian</b> karena sepanjang hari ia menerima telepon pribadi. Pilihannya Jasmine's Office atau Meeting Room. Kalau Ken di Jasmine's Office, Jasmine harus pindah dari kantornya sendiri (melanggar <i>keep people in their own offices as much as possible</i>). Jadi Ken di Meeting Room, dan Jasmine tetap di kantornya.",
+          "<b>Linda di Jasmine's Office.</b> Linda baru datang siang, dan Jasmine pergi siang, jadi keduanya bisa memakai ruangan yang sama tanpa bentrok. Linda tidak bisa ke Meeting Room karena Ken butuh privasi, dan tidak cocok ke Ian's Office karena Ian sedang menemui kandidat."
+        ]
+      }
+    },
+    {
+      id: 7, type: "shapepattern",
+      prompt: "Colour the empty figure to complete the sequence.",
+      data: { shape: "hexagram", examples: [
+        { iT: "g", iUR: "p", iLR: "g", iB: "p", iLL: "g", iUL: "p", pT: "g", pB: "p" },
+        { iT: "p", iUR: "g", iLR: "p", iB: "g", iLL: "p", iUL: "g", pLL: "g", pUL: "p" },
+        { iT: "g", iUR: "p", iLR: "g", iB: "p", iLL: "g", iUL: "p", pLR: "g", pUR: "p" },
+        { iT: "p", iUR: "g", iLR: "p", iB: "g", iLL: "p", iUL: "g", pT: "g", pB: "p" } ] },
+      answer: { iT: "g", iUR: "p", iLR: "g", iB: "p", iLL: "g", iUL: "p", pLL: "g", pUL: "p" },
+      explain: {
+        key: "Segi enam tengah kembali ke susunan gambar 1; ujung kiri bawah hijau, ujung kiri atas ungu.",
+        steps: [
+          "Bagi bintang menjadi dua bagian: 6 segitiga di luar (ujung bintang) dan 6 segitiga di dalam (segi enam tengah).",
+          "<b>Segi enam tengah</b> selang-seling antara dua susunan A–B–A–B. Susunan B adalah kebalikan warna A. Gambar ke-5 kembali ke susunan A, sama seperti gambar 1 dan 3.",
+          "<b>Ujung hijau</b> pindah 2 posisi berlawanan arah jarum jam: atas → kiri bawah → kanan bawah → atas → <b>kiri bawah</b>.",
+          "<b>Ujung ungu</b> pindah 2 posisi searah jarum jam: bawah → kiri atas → kanan atas → bawah → <b>kiri atas</b>."
+        ]
+      }
+    },
+    {
+      id: 8, type: "pie",
+      intro: "There are 110,000 litres of petrol in total available in a chain of four petrol stations.",
+      cards: [
+        { title: "Station A", text: "Three times as much as Station C", color: "blue" },
+        { title: "Station B", text: "24,200 litres more than Station A", color: "green" },
+        { title: "Station C", text: "", color: "red" },
+        { title: "Station D", text: "24,200 litres more than Station C", color: "orange" } ],
+      prompt: "Adjust the pie chart to represent the amount of petrol at each station (rounding to the nearest whole number only in the last step).",
+      data: { slices: [
+        { id: "b", label: "Station B", color: "green" }, { id: "d", label: "Station D", color: "orange" },
+        { id: "c", label: "Station C", color: "red" }, { id: "a", label: "Station A", color: "blue" } ] },
+      answer: { a: 21, b: 43, c: 7, d: 29 },
+      explain: {
+        key: "Station A 21% · Station B 43% · Station C 7% · Station D 29%",
+        steps: [
+          "Misalkan C = x. Maka A = 3x, B = 3x + 24,200, D = x + 24,200.",
+          "Jumlahnya 8x + 48,400 = 110,000 → x = 7,700.",
+          "Bagi tiap stasiun dengan 110,000, bulatkan hanya di langkah terakhir."
+        ],
+        table: { head: ["Stasiun", "Rumus", "Liter", "Porsi"], rows: [
+          ["C", "x", "7,700", "7%"], ["A", "3x", "23,100", "21%"], ["B", "A + 24,200", "47,300", "43%"],
+          ["D", "C + 24,200", "31,900", "29%"], ["Total", "8x + 48,400", "110,000", "100%"] ] }
+      }
+    },
+    {
+      id: 9, type: "dayschedule",
+      prompt: "The survey summary and the research report must be done before the presentation can be prepared. Schedule a two-hour presentation preparation time for you and Jasmine as early as possible.",
+      note: "Klik kotak abu-abu untuk membuka keterangan acara.",
+      data: {
+        rows: [
+          { label: "Helen", events: [
+            { start: "9:00", end: "9:30", name: "Daily Briefing" }, { start: "10:30", end: "12:30", name: "Research Report" },
+            { start: "12:30", end: "1:00", name: "Lunch" }, { start: "2:00", end: "4:00", name: "Client Visit" } ] },
+          { label: "Ian", events: [
+            { start: "11:30", end: "12:30", name: "Lunch" }, { start: "2:00", end: "3:00", name: "Survey Summary" },
+            { start: "3:00", end: "4:30", name: "Supplier Call" } ] },
+          { label: "Jasmine", events: [
+            { start: "12:30", end: "1:30", name: "Lunch" }, { start: "1:30", end: "2:30", name: "Team Meeting" } ] },
+          { label: "Your Calendar", editable: true, events: [
+            { start: "11:30", end: "12:30", name: "Lunch" }, { start: "12:30", end: "2:00", name: "Client Call" } ] }
+        ],
+        tasks: [ { id: "pp", label: "Presentation Preparation", mins: 120, color: "blue" } ]
+      },
+      answer: { pp: "3:00" },
+      explain: {
+        key: "Presentation Preparation: 3:00–5:00 PM",
+        steps: [
+          "Baca syarat urutan di pertanyaan (<i>must be done before</i>): ini yang menentukan jam mulai paling awal.",
+          "Cari kapan kedua tugas syarat selesai. Jawabannya hanya ada di keterangan blok: Research Report (Helen) selesai 12:30, Survey Summary (Ian) selesai <b>3:00</b>. Jadi persiapan presentasi paling cepat mulai 3:00.",
+          "Waktu kosong kamu: 9:00–11:30 dan 2:00–6:00. Waktu kosong Jasmine: 9:00–12:30 dan 2:30–6:00. Kosong bersama: 9:00–11:30 dan 2:30–6:00.",
+          "Slot 2 jam paling awal yang memenuhi semuanya: <b>3:00–5:00</b>."
+        ],
+        trap: "Slot pagi 9:00–11:00 kosong untuk kamu dan Jasmine, tapi laporan yang menjadi syarat belum selesai. Informasi ini hanya terlihat setelah membuka kotak abu-abu."
+      }
+    },
+    {
+      id: 10, type: "shapepattern",
+      prompt: "Colour the empty figure to complete the sequence.",
+      data: { shape: "square", examples: [ { oTL: "g", oBL: "p" }, { oLB: "g", oLT: "p" }, { oBR: "g", oTR: "p" } ] },
+      answer: { oRT: "g", oRB: "p" },
+      explain: {
+        key: "Sisi kanan bagian atas hijau, sisi kanan bagian bawah ungu.",
+        steps: [
+          "Bayangkan tiap warna berputar 90° (seperempat putaran) mengelilingi titik tengah setiap pindah gambar. Hijau dan ungu berputar ke arah yang berlawanan.",
+          "Hijau berlawanan arah jarum jam: atas (kiri) → kiri (bawah) → bawah (kanan) → <b>kanan (atas)</b>.",
+          "Ungu searah jarum jam: bawah (kiri) → kiri (atas) → atas (kanan) → <b>kanan (bawah)</b>."
+        ],
+        table: { head: ["Gambar", "Hijau di sisi…", "Ungu di sisi…"], rows: [
+          ["1", "Atas", "Bawah"], ["2", "Kiri", "Kiri"], ["3", "Bawah", "Atas"], ["4 (jawaban)", "Kanan (bagian atas)", "Kanan (bagian bawah)"] ] }
+      }
+    },
+    {
+      id: 11, type: "stackedbar",
+      title: "Project Budgets",
+      bullets: [
+        "A company budgeted $73,000 in total for Project X and Project Y, and the total actual spending was exactly as budgeted.",
+        "The actual spending on project X was 60% over its original budget, while project Y only used 80% of the planned budget." ],
+      prompt: "Arrange the percentages of Project X and Project Y with the budget and actual spending (in 000s).",
+      data: {
+        series: [ { label: "Project X", color: "blue" }, { label: "Project Y", color: "green" } ],
+        bars: [ { id: "budget", label: "Budget", total: 73 }, { id: "actual", label: "Actual", total: 73 } ],
+        axisMax: 100, tick: 10
+      },
+      answer: { budget: { total: 73, pct: 25 }, actual: { total: 73, pct: 40 } },
+      explain: {
+        key: "Budget 73: Project X 25% / Project Y 75% · Actual 73: Project X 40% / Project Y 60%",
+        steps: [
+          "Misalkan budget X = x dan budget Y = y (dalam ribuan dolar). Total budget: x + y = 73.",
+          "X realisasinya 60% di atas anggaran → 1,6x. Y hanya terpakai 80% → 0,8y. Total realisasi sama dengan anggaran: 1,6x + 0,8y = 73.",
+          "Substitusi y = 73 − x: 1,6x + 0,8(73 − x) = 73 → 0,8x = 14,6 → x = 18,25, y = 54,75.",
+          "Realisasi: X = 1,6 × 18,25 = 29,2; Y = 0,8 × 54,75 = 43,8 (total tetap 73).",
+          "<b>Cara cepat tanpa persamaan:</b> karena totalnya sama, kelebihan X harus tepat ditutup sisa Y: 0,6x = 0,2y → y = 3x. Budget dibagi 1 : 3 → X 25%, Y 75%. Actual: X = 1,6 × 25% = 40%, Y = 0,8 × 75% = 60%."
+        ],
+        table: { head: ["Batang", "Project X", "Project Y", "Total"], rows: [
+          ["Budget", "18,25 (25%)", "54,75 (75%)", "73"], ["Actual", "29,2 (40%)", "43,8 (60%)", "73"] ] }
+      }
+    },
+    {
+      id: 12, type: "dayschedule",
+      title: "Banquet Schedule",
+      prompt: "An event centre can hold up to a total of 250 guests at a time. The party starting at 3:00 p.m. needs to add 10 people, and the 2:30 p.m. party must extend their ending time by one hour. It takes one hour to clean a room between banquets. Find a 1.5-hour time slot for Banquet Room D for a party of 50 people.",
+      note: "Klik kotak abu-abu untuk membuka keterangan acara (nama, jam, jumlah tamu).",
+      data: {
+        rows: [
+          { label: "Banquet Room A", events: [
+            { start: "9:00", end: "10:30", name: "Product Launch Breakfast", detail: "120 guests" },
+            { start: "2:30", end: "4:00", name: "Anniversary Party", detail: "100 guests" } ] },
+          { label: "Banquet Room B", events: [
+            { start: "10:00", end: "12:30", name: "Business Brunch", detail: "90 guests" },
+            { start: "1:30", end: "2:30", name: "Alumni Gathering", detail: "60 guests" },
+            { start: "3:30", end: "5:00", name: "Charity Tea Party", detail: "40 guests" } ] },
+          { label: "Banquet Room C", events: [
+            { start: "10:30", end: "12:00", name: "Training Seminar", detail: "70 guests" },
+            { start: "1:00", end: "2:00", name: "Networking Lunch", detail: "80 guests" },
+            { start: "3:00", end: "5:00", name: "Retirement Party", detail: "55 guests" } ] },
+          { label: "Banquet Room D", editable: true, events: [
+            { start: "11:30", end: "1:00", name: "Wedding Lunch", detail: "60 guests" } ] }
+        ],
+        tasks: [ { id: "np", label: "Party (50 guests)", mins: 90, color: "blue" } ]
+      },
+      answer: { np: "2:00" },
+      explain: {
+        key: "Banquet Room D: 2:00–3:30 PM",
+        steps: [
+          "Terapkan dua perubahan dulu: pesta yang mulai 2:30 (Anniversary Party, Room A) diperpanjang sampai <b>5:00</b>; pesta yang mulai 3:00 (Retirement Party, Room C) menjadi <b>65 tamu</b>.",
+          "Aturan cleaning di Room D: acara yang ada berakhir 1:00, jadi Room D baru bisa dipakai lagi mulai 2:00. Untuk pagi, acara baru harus selesai paling lambat 10:30 (1 jam sebelum 11:30), jadi satu-satunya slot pagi adalah 9:00–10:30.",
+          "Cek kapasitas. Pesta baru membawa 50 tamu, jadi tamu di ruangan lain tidak boleh lebih dari 200 selama slot berlangsung.",
+          "9:00–10:30 gugur karena 10:00–10:30 sudah 210 tamu. Semua slot yang mulai 2:30 sampai 4:30 gugur karena menyentuh 3:30–5:00 (205 tamu). Yang tersisa hanya <b>2:00–3:30</b>."
+        ],
+        table: { head: ["Waktu", "Tamu di ruangan lain", "Cukup untuk +50?"], rows: [
+          ["10:00–10:30", "A 120 + B 90 = 210", "Tidak"], ["2:00–2:30", "B 60", "Ya"], ["2:30–3:00", "A 100", "Ya"],
+          ["3:00–3:30", "A 100 + C 65 = 165", "Ya"], ["3:30–5:00", "A 100 + B 40 + C 65 = 205", "Tidak"] ] },
+        trap: "Jangan lupa menerapkan dua perubahan (perpanjangan Anniversary Party dan tambahan 10 tamu) sebelum menghitung kapasitas. Tanpa itu, slot sore lain terlihat lolos."
+      }
+    },
+    {
+      id: 13, type: "stackedbar",
+      title: "Survey Results",
+      bullets: [
+        "100 clients were surveyed in both Year 1 and Year 2.",
+        "30 clients gave an average rating in Year 1.",
+        "Below average ratings in Year 2 dropped to 1/4 of the total from Year 1.",
+        "100 clients gave an above average rating and 40 gave a below average rating in total across Years 1 and 2." ],
+      prompt: "Arrange the number of each rating and the Year 1 and Year 2 percentages for each rating.",
+      data: {
+        series: [ { label: "Year 1", color: "blue" }, { label: "Year 2", color: "green" } ],
+        bars: [ { id: "below", label: "Below average", total: 40 }, { id: "average", label: "Average", total: 50 }, { id: "above", label: "Above average", total: 100 } ],
+        axisMax: 120, tick: 20
+      },
+      answer: { below: { total: 40, pct: 80 }, average: { total: 60, pct: 50 }, above: { total: 100, pct: 38 } },
+      explain: {
+        key: "Below average 40 (Y1 80% / Y2 20%) · Average 60 (50% / 50%) · Above average 100 (38% / 62%)",
+        steps: [
+          "<b>Below average:</b> Year 2 = ¼ × Year 1, dan totalnya 40 → 1¼ × Year 1 = 40 → Year 1 = 32, Year 2 = 8.",
+          "<b>Average:</b> Year 1 = 30 (diketahui). Total semua klien = 100 + 100 = 200, jadi total Average = 200 − 100 − 40 = <b>60</b>. Year 2 = 60 − 30 = 30.",
+          "<b>Above average:</b> Year 1 = 100 − 30 − 32 = 38; Year 2 = 100 − 38 = 62.",
+          "Cek Year 2: 8 + 30 + 62 = 100 ✓",
+          "Persentase tiap batang adalah porsi Year 1 dan Year 2 dari total batang itu sendiri: Below 32/40 = 80%, Average 30/60 = 50%, Above 38/100 = 38%."
+        ],
+        table: { head: ["Rating", "Total", "Year 1", "Year 2", "% Year 1", "% Year 2"], rows: [
+          ["Below average", "40", "32", "8", "80%", "20%"], ["Average", "60", "30", "30", "50%", "50%"],
+          ["Above average", "100", "38", "62", "38%", "62%"] ] },
+        trap: "Tinggi batang Average di awal 50, padahal seharusnya <b>60</b>. Soal meminta jumlah tiap rating juga, jadi total batang harus ikut diubah, bukan hanya persentasenya."
+      }
+    },
+    {
+      id: 14, type: "rankbadges",
+      title: "Number of Emails",
+      clues: [
+        { name: "Edward", text: "has the second most emails." },
+        { name: "Harry", text: "has 30 emails." },
+        { name: "Jasmine's", text: "number of emails divided by the number of George's emails = 1.5" },
+        { name: "George", text: "has more emails than Harry and Katarina combined." },
+        { name: "Isabel", text: "has twice as many emails as Jasmine." },
+        { name: "", avatar: "Katarina", text: "Two people have more emails than Katarina but fewer than Jasmine." } ],
+      prompt: "Drag the badges to each person to sort them by the number of emails they have from 1 (most) to 6 (least).",
+      data: { people: [
+        { id: "edward", label: "Edward" }, { id: "george", label: "George" }, { id: "harry", label: "Harry" },
+        { id: "isabel", label: "Isabel" }, { id: "jasmine", label: "Jasmine" }, { id: "katarina", label: "Katarina" } ] },
+      answer: { isabel: 1, edward: 2, jasmine: 3, george: 4, harry: 5, katarina: 6 },
+      explain: {
+        key: "1 Isabel · 2 Edward · 3 Jasmine · 4 George · 5 Harry · 6 Katarina",
+        steps: [
+          "Ubah tiap pernyataan jadi perbandingan sederhana: Jasmine ÷ George = 1,5 → Jasmine > George. Isabel = 2 × Jasmine → Isabel > Jasmine. George > Harry + Katarina → George > Harry dan George > Katarina. Digabung: Isabel > Jasmine > George > Harry.",
+          "Edward di peringkat 2, jadi hanya satu orang di atasnya. Isabel lebih banyak dari Jasmine dan George, jadi Isabel pasti peringkat 1.",
+          "Peringkat 3–6 diisi Jasmine, George, Harry, Katarina. Jasmine paling atas di kelompok ini → peringkat 3.",
+          "\"Dua orang punya lebih banyak dari Katarina tapi lebih sedikit dari Jasmine\" → harus ada tepat 2 orang di antara Jasmine dan Katarina. Katarina di 4: tidak ada orang di antara ✗; di 5: hanya George ✗; di 6: George dan Harry ✓.",
+          "Hasilnya: George 4, Harry 5, Katarina 6."
+        ]
+      }
+    },
+    {
+      id: 15, type: "shapepattern",
+      prompt: "Colour the empty figure to complete the sequence.",
+      data: { shape: "hexagram", examples: [
+        { pT: "g", pB: "g", pUR: "g", pLL: "g", iT: "p", iB: "p" },
+        { pUL: "g", pLR: "g", pUR: "p", pLL: "p" },
+        { pT: "g", pB: "g", iT: "g", iB: "g", pUL: "p", pLR: "p" },
+        { pUR: "g", pLL: "g", iT: "p", iB: "p" } ] },
+      answer: { pT: "g", pB: "g", pUL: "g", pLR: "g", pUR: "p", pLL: "p" },
+      explain: {
+        key: "Ujung atas & bawah hijau, ujung kiri atas & kanan bawah hijau, ujung kanan atas & kiri bawah ungu, tengah kosong.",
+        steps: [
+          "Warna selalu datang berpasangan: ujung atas & bawah; ujung kanan atas & kiri bawah; ujung kiri atas & kanan bawah; segitiga tengah atas & tengah bawah. Empat segitiga tengah lainnya tidak pernah berwarna.",
+          "Ujung atas & bawah bergantian: hijau, kosong, hijau, kosong → <b>hijau</b>.",
+          "Tiga pasangan lain berputar dengan urutan warna tetap hijau → ungu → kosong (lihat tabel). Gambar 5: kanan atas–kiri bawah <b>ungu</b>, kiri atas–kanan bawah <b>hijau</b>, tengah <b>kosong</b>."
+        ],
+        table: { head: ["Pasangan", "1", "2", "3", "4", "5"], rows: [
+          ["Kanan atas–kiri bawah", "hijau", "ungu", "kosong", "hijau", "ungu"],
+          ["Kiri atas–kanan bawah", "kosong", "hijau", "ungu", "kosong", "hijau"],
+          ["Tengah atas–tengah bawah", "ungu", "kosong", "hijau", "ungu", "kosong"],
+          ["Atas–bawah", "hijau", "kosong", "hijau", "kosong", "hijau"] ] }
+      }
+    },
+    {
+      id: 16, type: "stackedbar",
+      title: "Commuting to Work",
+      bullets: [
+        "The number of people using public transport increased by 15% between Year 1 and Year 2.",
+        "5,000 more people commuted to work in Year 2 than in Year 1.",
+        "41,400 commuters used public transport in Year 2.",
+        "189,000 commuters used private transport in Year 1." ],
+      prompt: "Arrange the number of people who commute to work (in '000s) and the private to public transport percentages.",
+      data: {
+        series: [ { label: "Private", color: "blue" }, { label: "Public", color: "green" } ],
+        bars: [ { id: "y1", label: "Year 1", total: 150 }, { id: "y2", label: "Year 2", total: 150 } ],
+        axisMax: 250, tick: 50
+      },
+      answer: { y1: { total: 225, pct: 84 }, y2: { total: 230, pct: 82 } },
+      explain: {
+        key: "Year 1: 225 (Private 84% / Public 16%) · Year 2: 230 (Private 82% / Public 18%)",
+        steps: [
+          "<b>Public Year 1.</b> Year 2 = 41,400 dan itu sudah naik 15% → Year 1 × 1,15 = 41,400 → Year 1 = 41,400 ÷ 1,15 = 36,000.",
+          "<b>Total Year 1</b> = private 189,000 + public 36,000 = 225,000.",
+          "<b>Total Year 2</b> = 225,000 + 5,000 = 230,000.",
+          "<b>Private Year 2</b> = 230,000 − 41,400 = 188,600.",
+          "<b>Persentase:</b> Year 1: 189 ÷ 225 = 84% private, 36 ÷ 225 = 16% public. Year 2: 188,6 ÷ 230 = 82% private, 41,4 ÷ 230 = 18% public."
+        ],
+        table: { head: ["Tahun", "Total ('000)", "Private", "Public", "% Private", "% Public"], rows: [
+          ["Year 1", "225", "189", "36", "84%", "16%"], ["Year 2", "230", "188,6", "41,4", "82%", "18%"] ] }
+      }
+    },
+    {
+      id: 17, type: "dayschedule",
+      prompt: "Schedule the procedures below. Keep in mind that MRIs frequently run over by up to 30 minutes and leave room for this in the schedule.",
+      note: "Klik kotak abu-abu untuk membuka keterangan acara.",
+      data: {
+        rows: [ { label: "Today", editable: true, events: [
+          { start: "9:00", end: "9:30", name: "Morning Equipment Check" },
+          { start: "10:00", end: "10:30", name: "MRI – Outpatient" },
+          { start: "12:30", end: "1:30", name: "Staff Lunch" },
+          { start: "2:30", end: "3:00", name: "CT – Emergency Follow-up" },
+          { start: "5:00", end: "5:30", name: "Scanner Maintenance" } ] } ],
+        tasks: [
+          { id: "ct1", label: "CT #1", mins: 60, color: "blue" },
+          { id: "mri1", label: "MRI #1 (before 4:00 p.m.)", mins: 30, color: "green" },
+          { id: "ct2", label: "CT #2 (before 3:00 p.m.)", mins: 60, color: "yellow" },
+          { id: "mri2", label: "MRI #2 (as early as possible)", mins: 30, color: "cyan" } ]
+      },
+      answer: { mri2: "11:00", ct2: "1:30", mri1: "3:00", ct1: "4:00" },
+      explain: {
+        key: "MRI #2 11:00–11:30 · CT #2 1:30–2:30 · MRI #1 3:00–3:30 · CT #1 4:00–5:00",
+        steps: [
+          "<b>Aturan kunci:</b> setiap MRI butuh 30 menit kosong setelahnya, termasuk MRI yang sudah ada. Blok 10:00 adalah MRI, jadi 10:30–11:00 harus kosong.",
+          "<b>MRI #2</b> (secepatnya): 9:30 tidak bisa (tidak ada ruang molor, 10:00 terisi); 10:30 tidak bisa (ruang molor MRI outpatient). Jadi <b>11:00</b>, dengan ruang molor 11:30.",
+          "<b>CT #2</b> (sebelum 3:00): sisa pagi hanya 12:00–12:30, tidak cukup untuk 60 menit. Jadi <b>1:30–2:30</b>.",
+          "Celah sore 3:00–5:00 (2 jam) harus menampung MRI #1 dan CT #1. Blok 2:30 adalah CT, jadi 3:00 bebas dipakai. <b>MRI #1 di 3:00</b> (ruang molor 3:30), lalu <b>CT #1 di 4:00–5:00</b>.",
+          "Kalau MRI #1 di 3:30, ruang molornya jatuh di 4:00 dan CT #1 tidak dapat tempat lagi (4:30–5:30 menabrak blok 5:00)."
+        ],
+        table: { head: ["Prosedur", "Jadwal", "Ruang molor MRI"], rows: [
+          ["MRI #2", "11:00–11:30", "11:30–12:00"], ["CT #2", "1:30–2:30", "–"], ["MRI #1", "3:00–3:30", "3:30–4:00"], ["CT #1", "4:00–5:00", "–"] ] },
+        trap: "Ruang molor 30 menit juga berlaku untuk <b>MRI yang sudah ada</b> di jadwal (MRI – Outpatient 10:00), bukan hanya MRI yang kamu tempatkan."
+      }
+    },
+    {
+      id: 18, type: "linepoints",
+      title: "Currency Exchange",
+      intro: "At a commission-free currency exchange, a person made the following exchanges:",
+      bullets: [ "45 USD was exchanged for 36 GBP", "270 USD was exchanged for 243 EUR", "58 USD was exchanged for 75.4 CAD", "413 USD was exchanged for 536.9 AUD" ],
+      prompt: "Adjust the graph to show the exchange rate of 1 USD to each of these currencies.",
+      data: { cats: [ { id: "GBP", label: "GBP" }, { id: "EUR", label: "EUR" }, { id: "CAD", label: "CAD" }, { id: "AUD", label: "AUD" } ],
+        min: 70, max: 140, step: 5, tick: 10 },
+      answer: { GBP: 80, EUR: 90, CAD: 130, AUD: 130 },
+      explain: {
+        key: "GBP 0,80 · EUR 0,90 · CAD 1,30 · AUD 1,30",
+        steps: [
+          "Kita mencari nilai tukar per 1 USD: <b>kurs = jumlah mata uang asing ÷ jumlah USD</b>.",
+          "GBP: 36 ÷ 45 = 0,80 → 1 USD = 0,80 GBP.",
+          "EUR: 243 ÷ 270 = 0,90 → 1 USD = 0,90 EUR.",
+          "CAD: 75,4 ÷ 58 = 1,30 → 1 USD = 1,30 CAD.",
+          "AUD: 536,9 ÷ 413 = 1,30 → 1 USD = 1,30 AUD."
+        ]
+      }
+    },
+    {
+      id: 19, type: "nodeline",
+      prompt: "Draw the line to finish the sequence!",
+      note: "Tarik garis dari satu lingkaran ke lingkaran lain (atau klik dua lingkaran berurutan). Klik garis buatanmu untuk menghapusnya.",
+      data: {
+        nodes: [
+          { id: "M4", x: 445, y: 407 }, { id: "L8", x: 201, y: 461 }, { id: "L5", x: 698, y: 453 }, { id: "M7", x: 117, y: 572 },
+          { id: "J7", x: 803, y: 572 }, { id: "N6", x: 201, y: 679 }, { id: "K6", x: 698, y: 679 }, { id: "K9", x: 455, y: 728 } ],
+        fixed: [ ["K9", "J7"], ["J7", "L8"] ],
+        hint: ["L8", "K6"]
+      },
+      answer: [ ["L8", "K6"], ["K6", "M7"], ["M7", "L5"], ["L5", "N6"], ["N6", "M4"] ],
+      explain: {
+        key: "K9 → J7 → L8 → K6 → M7 → L5 → N6 → M4",
+        steps: [
+          "Sambungan yang sudah ada (garis tegas): K9 → J7 → L8.",
+          "Perhatikan perubahan huruf dan angka: K9 → J7 adalah huruf −1, angka −2; J7 → L8 adalah huruf +2, angka +1. Dua aturan ini bergantian.",
+          "Lanjutkan dari L8 (garis putus-putus sudah menunjukkan langkah pertama ke K6), lalu terus bergantian sampai semua lingkaran terpakai."
+        ],
+        table: { head: ["Dari", "Aturan", "Ke"], rows: [
+          ["L8", "huruf −1, angka −2", "K6 (garis putus-putus)"], ["K6", "huruf +2, angka +1", "M7"], ["M7", "huruf −1, angka −2", "L5"],
+          ["L5", "huruf +2, angka +1", "N6"], ["N6", "huruf −1, angka −2", "M4"] ] }
+      }
+    },
+    {
+      id: 20, type: "nodeline",
+      prompt: "Draw the line to finish the sequence!",
+      note: "Tarik garis dari satu lingkaran ke lingkaran lain (atau klik dua lingkaran berurutan). Klik garis buatanmu untuk menghapusnya.",
+      data: {
+        nodes: [
+          { id: "FQD", x: 445, y: 378 }, { id: "HSF", x: 186, y: 433 }, { id: "REF", x: 719, y: 416 }, { id: "DEP", x: 97, y: 547 },
+          { id: "JUH", x: 835, y: 540 }, { id: "TGH", x: 184, y: 657 }, { id: "HIT", x: 720, y: 654 }, { id: "FGR", x: 456, y: 710 } ],
+        fixed: [ ["DEP", "FQD"], ["FQD", "REF"] ],
+        hint: ["REF", "FGR"]
+      },
+      answer: [ ["REF", "FGR"], ["FGR", "HSF"], ["HSF", "TGH"], ["TGH", "HIT"], ["HIT", "JUH"] ],
+      explain: {
+        key: "DEP → FQD → REF → FGR → HSF → TGH → HIT → JUH",
+        steps: [
+          "Dari setiap kata, kata berikutnya disusun dengan aturan: <b>huruf terakhir</b> kata berikutnya = <b>huruf pertama</b> kata sekarang; <b>huruf tengah</b> kata berikutnya = <b>huruf terakhir</b> kata sekarang maju 1 di alfabet.",
+          "Mudahnya, pola yang dicari: □ (huruf terakhir + 1) (huruf pertama). Huruf pertamanya pun selalu huruf tengah kata sekarang maju 1."
+        ],
+        table: { head: ["Kata sekarang", "Huruf pertama → jadi huruf akhir", "Huruf terakhir +1 → jadi huruf tengah", "Pola", "Lingkaran"], rows: [
+          ["DEP", "D", "P → Q", "□QD", "FQD (sudah ada)"], ["FQD", "F", "D → E", "□EF", "REF (sudah ada)"],
+          ["REF", "R", "F → G", "□GR", "FGR"], ["FGR", "F", "R → S", "□SF", "HSF"], ["HSF", "H", "F → G", "□GH", "TGH"],
+          ["TGH", "T", "H → I", "□IT", "HIT"], ["HIT", "H", "T → U", "□UH", "JUH"] ] }
+      }
+    }
+  ]
+};
+
+/* =====================================================================
+   UTILITAS
+   ===================================================================== */
+const $ = (s, r = document) => r.querySelector(s);
+function h(tag, props, ...kids) {
+  const el = document.createElement(tag);
+  setProps(el, props);
+  for (const c of kids.flat()) if (c != null && c !== false) el.append(c.nodeType ? c : String(c));
+  return el;
+}
+const SVGNS = "http://www.w3.org/2000/svg";
+function sv(tag, props, ...kids) {
+  const el = document.createElementNS(SVGNS, tag);
+  setProps(el, props);
+  for (const c of kids.flat()) if (c != null && c !== false) el.append(c.nodeType ? c : String(c));
+  return el;
+}
+function setProps(el, props) {
+  for (const [k, v] of Object.entries(props || {})) {
+    if (v == null || v === false) continue;
+    if (k === "class") el.setAttribute("class", v);
+    else if (k === "text") el.textContent = v;
+    else if (k === "html") el.innerHTML = v;
+    else if (k === "style" && typeof v === "object") for (const [sk, sv2] of Object.entries(v)) { if (sk.startsWith("--")) el.style.setProperty(sk, sv2); else el.style[sk] = sv2; }
+    else if (k.startsWith("on") && typeof v === "function") el.addEventListener(k.slice(2), v);
+    else el.setAttribute(k, v === true ? "" : v);
+  }
+}
+let uidN = 0;
+const uid = p => `${p}${++uidN}`;
+
+// Waktu: slot 0 = 9:00, slot 18 = 6:00
+function t2s(t) { const [H, M] = t.split(":").map(Number); const h24 = H < 9 ? H + 12 : H; return (h24 - 9) * 2 + (M >= 30 ? 1 : 0); }
+function s2t(s) { const m = 540 + s * 30; let H = Math.floor(m / 60); if (H > 12) H -= 12; return `${H}:${String(m % 60).padStart(2, "0")}`; }
+const range = (a, b) => `${s2t(a)}–${s2t(b)}`;
+function fmtMins(m) { return m < 60 ? `${m} mins` : m === 60 ? "1 hr" : `${String(m / 60).replace(".", ",")} hrs`; }
+function fmtClock(sec) { sec = Math.max(0, Math.round(sec)); return `${String(Math.floor(sec / 60)).padStart(2, "0")}:${String(sec % 60).padStart(2, "0")}`; }
+function fmtDur(sec) { sec = Math.round(sec); const m = Math.floor(sec / 60), s = sec % 60; return m ? `${m} mnt ${s} dtk` : `${s} dtk`; }
+
+/* =====================================================================
+   KOMPONEN
+   Kontrak: init(q) → state · render(el, q, state, opt) · touched(q, state)
+            keyState(q) → state kunci · grade(q, state) → { correct, wrong: [id] }
+   opt: { readOnly, review, wrong: Set, onChange }
+   ===================================================================== */
+const COMP = {};
+
+/* ---------- 1. Penjadwalan kalender harian ---------- */
+COMP.dayschedule = {
+  init(q) { const pos = {}; for (const t of q.data.tasks) if (t.initial) pos[t.id] = t2s(t.initial); return { pos }; },
+  touched(q, st) { return q.data.tasks.some(t => (st.pos[t.id] ?? null) !== (t.initial ? t2s(t.initial) : null)); },
+  keyState(q) { const pos = {}; for (const [k, v] of Object.entries(q.answer)) pos[k] = t2s(v); return { pos }; },
+  grade(q, st) {
+    const wrong = q.data.tasks.filter(t => st.pos[t.id] !== t2s(q.answer[t.id])).map(t => t.id);
+    return { correct: !wrong.length, wrong };
+  },
+  describe(q, st) {
+    return q.data.tasks.map(t => `${t.label}: ${st.pos[t.id] == null ? "belum ditempatkan" : range(st.pos[t.id], st.pos[t.id] + t.mins / 30)}`);
+  },
+  render(el, q, st, opt = {}) {
+    const d = q.data, ro = !!opt.readOnly, wrong = opt.wrong || new Set();
+    const root = h("div", { class: "ds" + (ro ? " ro" : "") });
+    el.replaceChildren(root);
+    const tasks = Object.fromEntries(d.tasks.map(t => [t.id, t]));
+    const L = t => t.mins / 30;
+    const edRow = d.rows.find(r => r.editable);
+    let edTrack = null, preview = null, focusId = null, popFor = null;
+    const pop = h("div", { class: "pop", hidden: true, role: "dialog" });
+
+    function occupied(exceptId) {
+      const set = new Set();
+      for (const ev of edRow.events) if (!ev.link) for (let s = t2s(ev.start); s < t2s(ev.end); s++) set.add(s);
+      for (const t of d.tasks) { const p = st.pos[t.id]; if (t.id === exceptId || p == null) continue; for (let s = p; s < p + L(t); s++) set.add(s); }
+      return set;
+    }
+    function valid(id, start) {
+      const t = tasks[id]; if (start < 0 || start + L(t) > 18) return false;
+      const occ = occupied(id);
+      for (let s = start; s < start + L(t); s++) if (occ.has(s)) return false;
+      return true;
+    }
+    const pct = n => `${(n / 18) * 100}%`;
+    const changed = () => { draw(); opt.onChange && opt.onChange(); };
+
+    function axis() {
+      const a = h("div", { class: "ds-axis", "aria-hidden": "true" });
+      for (let s = 0; s <= 18; s += 2) a.append(h("span", { style: { left: pct(s) }, text: s2t(s).split(":")[0] }));
+      return a;
+    }
+    function openPop(btn, ev, s0, s1) {
+      if (popFor === btn && !pop.hidden) { pop.hidden = true; popFor = null; return; }
+      popFor = btn;
+      pop.replaceChildren(h("b", { text: ev.name }), h("div", { class: "t", text: range(s0, s1) }));
+      if (ev.detail) pop.append(h("div", { text: ev.detail }));
+      pop.hidden = false;
+      const rr = root.getBoundingClientRect(), br = btn.getBoundingClientRect();
+      const w = Math.min(240, rr.width - 8);
+      pop.style.left = Math.max(0, Math.min(br.left - rr.left, rr.width - w)) + "px";
+      pop.style.top = (br.bottom - rr.top + 6) + "px";
+    }
+    root.addEventListener("keydown", e => { if (e.key === "Escape" && !pop.hidden) { pop.hidden = true; popFor && popFor.focus(); } });
+
+    function draw() {
+      const sx = root.querySelector(".ds-scroll")?.scrollLeft || 0;
+      root.replaceChildren();
+      const scroller = h("div", { class: "ds-scroll" }), rowsEl = h("div", { class: "ds-rows" });
+      scroller.append(rowsEl); root.append(scroller);
+      if (!ro) root.append(h("p", { class: "hint mobile-only", text: "Geser kalender ke samping untuk melihat jam lainnya." }));
+      const rows = opt.review && !d.reviewAllRows ? d.rows.filter(r => r.editable) : d.rows;
+      for (const row of rows) {
+        const track = h("div", { class: "ds-track" + (row.editable ? " ed" : "") });
+        for (const ev of row.events) {
+          let s0 = t2s(ev.start), s1 = t2s(ev.end);
+          if (ev.link) { const p = st.pos[ev.link]; if (p == null) continue; s1 = p + (s1 - s0); s0 = p; }
+          if (ev.link && row.editable) continue;
+          const b = h("button", {
+            type: "button", class: "ev" + (ev.link ? " ev-link" : ""), style: { left: pct(s0), width: pct(s1 - s0) },
+            "aria-label": ev.link ? `${ev.name}, ${range(s0, s1)}` : `Acara ${row.label} ${range(s0, s1)}. Buka keterangan`,
+            onclick: e => openPop(e.currentTarget, ev, s0, s1)
+          }, ev.link ? h("span", { text: ev.name }) : null);
+          track.append(b);
+        }
+        if (row.editable) {
+          edTrack = track;
+          for (const t of d.tasks) {
+            const p = st.pos[t.id]; if (p == null) continue;
+            const blk = h("div", {
+              class: `tb c-${t.color}` + (wrong.has(t.id) ? " bad" : ""), style: { left: pct(p), width: pct(L(t)) },
+              title: `${t.label} · ${range(p, p + L(t))}`, "data-id": t.id,
+              tabindex: ro ? null : "0", role: ro ? null : "button",
+              "aria-label": `${t.label}, ${range(p, p + L(t))}. Panah kiri/kanan untuk geser, Delete untuk mengembalikan.`
+            }, h("span", { text: t.label }));
+            if (!ro) {
+              blk.addEventListener("pointerdown", e => beginDrag(e, t.id, true, blk));
+              blk.addEventListener("keydown", e => keyMove(e, t.id));
+            }
+            track.append(blk);
+          }
+        }
+        rowsEl.append(h("div", { class: "ds-row" }, h("div", { class: "ds-label", text: row.label }), track, axis()));
+      }
+      scroller.scrollLeft = sx;
+      if (!ro) {
+        const tray = h("div", { class: "ds-tray" });
+        const left = d.tasks.filter(t => st.pos[t.id] == null);
+        for (const t of left) {
+          const card = h("button", { type: "button", class: `tcard`, "data-id": t.id, "aria-label": `${t.label}, ${fmtMins(t.mins)}. Enter untuk menaruh di kalender.` },
+            h("i", { class: `sw c-${t.color}` }), h("span", { class: "tl", text: t.label }), h("span", { class: "td", text: fmtMins(t.mins) }));
+          card.addEventListener("pointerdown", e => beginDrag(e, t.id, false, card));
+          card.addEventListener("click", () => { if (card._dragged) { card._dragged = false; return; } placeFirst(t.id); });
+          tray.append(card);
+        }
+        if (!left.length && d.tasks.length > 1) tray.append(h("div", { class: "tray-empty", text: "Semua tugas sudah ditempatkan. Seret blok untuk memindahkan, atau seret keluar dari kalender untuk mengembalikannya." }));
+        if (left.length || d.tasks.length > 1) root.append(tray);
+      }
+      root.append(pop); pop.hidden = true; popFor = null;
+      if (focusId) { const f = root.querySelector(`.tb[data-id="${focusId}"]`) || root.querySelector(".tcard"); f && f.focus(); focusId = null; }
+    }
+
+    function placeFirst(id) {
+      for (let s = 0; s + L(tasks[id]) <= 18; s++) if (valid(id, s)) { st.pos[id] = s; focusId = id; changed(); return; }
+    }
+    function keyMove(e, id) {
+      const p = st.pos[id];
+      if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+        e.preventDefault();
+        const dir = e.key === "ArrowLeft" ? -1 : 1;
+        for (let s = p + dir; s >= 0 && s + L(tasks[id]) <= 18; s += dir) if (valid(id, s)) { st.pos[id] = s; focusId = id; changed(); return; }
+      } else if (e.key === "Delete" || e.key === "Backspace") {
+        e.preventDefault(); delete st.pos[id]; focusId = "_"; changed();
+      }
+    }
+    function showPreview(s, len, ok) {
+      if (!preview) { preview = h("div", { class: "pv" }); edTrack.append(preview); }
+      preview.className = "pv " + (ok ? "ok" : "no");
+      preview.style.left = pct(s); preview.style.width = pct(len);
+    }
+    function hidePreview() { if (preview) { preview.remove(); preview = null; } }
+    function beginDrag(e, id, fromPlaced, src) {
+      if (e.pointerType === "mouse" && e.button !== 0) return;
+      e.preventDefault();
+      const t = tasks[id], len = L(t);
+      const x0 = e.clientX, y0 = e.clientY;
+      let moved = false, cand = null, ghost = null, sw = 0, grab = 0, th = 0;
+      const move = ev => {
+        if (!moved) {
+          if (Math.hypot(ev.clientX - x0, ev.clientY - y0) < 5) return;
+          moved = true;
+          const tr = edTrack.getBoundingClientRect(); sw = tr.width / 18; th = tr.height - 6;
+          grab = fromPlaced ? x0 - src.getBoundingClientRect().left : Math.min(len * sw / 2, 60);
+          ghost = h("div", { class: `tb ghost c-${t.color}`, style: { width: len * sw + "px", height: th + "px" } }, h("span", { text: t.label }));
+          document.body.append(ghost); src.classList.add("dragging");
+        }
+        ghost.style.transform = `translate(${ev.clientX - grab}px,${ev.clientY - th / 2}px)`;
+        const r = edTrack.getBoundingClientRect();
+        if (ev.clientY > r.top - 36 && ev.clientY < r.bottom + 36 && ev.clientX > r.left - 40 && ev.clientX < r.right + 40) {
+          cand = Math.max(0, Math.min(18 - len, Math.round((ev.clientX - grab - r.left) / sw)));
+          showPreview(cand, len, valid(id, cand));
+        } else { cand = null; hidePreview(); }
+      };
+      const up = () => {
+        window.removeEventListener("pointermove", move); window.removeEventListener("pointerup", up); window.removeEventListener("pointercancel", up);
+        if (!moved) return;
+        src._dragged = true; setTimeout(() => { src._dragged = false; }, 0);
+        ghost.remove(); hidePreview(); src.classList.remove("dragging");
+        if (cand != null) { if (valid(id, cand)) { st.pos[id] = cand; focusId = id; changed(); } }
+        else if (fromPlaced) { delete st.pos[id]; changed(); }
+      };
+      window.addEventListener("pointermove", move); window.addEventListener("pointerup", up); window.addEventListener("pointercancel", up);
+    }
+    draw();
+    if (!ro && !document._dsPopClose) {
+      document._dsPopClose = true;
+      document.addEventListener("pointerdown", e => {
+        if (e.target.closest(".pop, .ev")) return;
+        document.querySelectorAll(".ds .pop").forEach(p => { p.hidden = true; });
+      });
+    }
+  }
+};
+
+/* ---------- 2. Pie chart dengan handle ---------- */
+COMP.pie = {
+  init(q) { const n = q.data.slices.length, base = Math.floor(100 / n); const v = q.data.slices.map(() => base); v[0] += 100 - base * n; return { v }; },
+  touched(q, st) { const i = this.init(q).v; return st.v.some((x, k) => x !== i[k]); },
+  keyState(q) { return { v: q.data.slices.map(s => q.answer[s.id]) }; },
+  grade(q, st) { const wrong = q.data.slices.filter((s, i) => st.v[i] !== q.answer[s.id]).map(s => s.id); return { correct: !wrong.length, wrong }; },
+  describe(q, st) { return q.data.slices.map((s, i) => `${s.label}: ${st.v[i]}%`); },
+  render(el, q, st, opt = {}) {
+    const d = q.data, ro = !!opt.readOnly, wrong = opt.wrong || new Set(), n = d.slices.length, R = 112;
+    const P = (r, deg) => { const a = deg * Math.PI / 180; return [r * Math.sin(a), -r * Math.cos(a)]; };
+    const svg = sv("svg", { class: "pie" + (opt.review ? " sm" : ""), viewBox: "-200 -168 400 336", role: "group", "aria-label": "Pie chart" });
+    const paths = d.slices.map(s => sv("path", { class: "slice", fill: `var(--c-${s.color})` }));
+    const labels = d.slices.map((s, i) => sv("text", { class: "lbl" + (wrong.has(s.id) ? " bad" : "") },
+      sv("tspan", { class: "n", x: 0, dy: 0, text: s.label }), sv("tspan", { class: "v", x: 0, dy: "1.2em" })));
+    paths.forEach(p => svg.append(p)); labels.forEach(l => svg.append(l));
+    const mkHandle = fixed => sv("g", { class: "hd" + (fixed ? " fixed" : "") },
+      sv("circle", { r: 26, class: "hit" }), sv("circle", { r: 13 }), sv("line", { x1: -6, x2: 6, y1: -4, y2: -4 }), sv("line", { x1: -6, x2: 6, y1: 0, y2: 0 }), sv("line", { x1: -6, x2: 6, y1: 4, y2: 4 }));
+    const top = mkHandle(true); top.setAttribute("transform", `translate(0,${-R})`); top.setAttribute("aria-hidden", "true");
+    const handles = [];
+    for (let j = 1; j < n; j++) {
+      const g = mkHandle(false);
+      if (!ro) {
+        g.setAttribute("tabindex", "0"); g.setAttribute("role", "slider");
+        g.setAttribute("aria-label", `Batas ${d.slices[j - 1].label} / ${d.slices[j].label}`);
+        g.setAttribute("aria-valuemin", "0"); g.setAttribute("aria-valuemax", "100");
+        g.addEventListener("pointerdown", e => drag(e, j, g));
+        g.addEventListener("keydown", e => {
+          const k = { ArrowUp: 1, ArrowRight: 1, ArrowDown: -1, ArrowLeft: -1 }[e.key]; if (!k) return;
+          e.preventDefault(); const B = bounds(); setB(j, B[j] + k);
+        });
+      } else g.setAttribute("aria-hidden", "true");
+      handles.push(g); svg.append(g);
+    }
+    svg.append(top);
+    const bounds = () => { const B = [0]; st.v.forEach((v, i) => B.push(B[i] + v)); return B; };
+    function setB(j, p) {
+      const B = bounds(); p = Math.max(B[j - 1] + 1, Math.min(B[j + 1] - 1, p));
+      if (p === B[j]) return;
+      st.v[j - 1] = p - B[j - 1]; st.v[j] = B[j + 1] - p; update(); opt.onChange && opt.onChange();
+    }
+    function update() {
+      const B = bounds();
+      paths.forEach((path, i) => {
+        const a0 = B[i] * 3.6, a1 = B[i + 1] * 3.6, [x0, y0] = P(R, a0), [x1, y1] = P(R, a1);
+        path.setAttribute("d", `M0 0L${x0.toFixed(2)} ${y0.toFixed(2)}A${R} ${R} 0 ${a1 - a0 > 180 ? 1 : 0} 1 ${x1.toFixed(2)} ${y1.toFixed(2)}Z`);
+      });
+      labels.forEach((t, i) => {
+        const mid = (B[i] + B[i + 1]) / 2 * 3.6, [x, y] = P(R + 26, mid), sx = Math.sin(mid * Math.PI / 180);
+        const anchor = sx > .25 ? "start" : sx < -.25 ? "end" : "middle";
+        t.setAttribute("text-anchor", anchor);
+        t.setAttribute("transform", `translate(${x.toFixed(1)},${(y - (Math.cos(mid * Math.PI / 180) < -.5 ? -4 : 8)).toFixed(1)})`);
+        t.lastChild.textContent = `${st.v[i]}%` + (wrong.has(d.slices[i].id) ? " ✗" : "");
+      });
+      handles.forEach((g, k) => {
+        const [x, y] = P(R, B[k + 1] * 3.6); g.setAttribute("transform", `translate(${x.toFixed(2)},${y.toFixed(2)})`);
+        if (!ro) { g.setAttribute("aria-valuenow", B[k + 1]); g.setAttribute("aria-valuetext", `${d.slices[k].label} ${st.v[k]}%, ${d.slices[k + 1].label} ${st.v[k + 1]}%`); }
+      });
+    }
+    function drag(e, j, g) {
+      e.preventDefault(); g.setPointerCapture(e.pointerId); g.focus({ preventScroll: true });
+      const mv = ev => {
+        const pt = new DOMPoint(ev.clientX, ev.clientY).matrixTransform(svg.getScreenCTM().inverse());
+        let deg = Math.atan2(pt.x, -pt.y) * 180 / Math.PI; if (deg < 0) deg += 360;
+        let p = Math.round(deg / 3.6); const B = bounds();
+        if (p - B[j] > 50) p = 0; else if (B[j] - p > 50) p = 100; // melewati titik jam 12
+        setB(j, p);
+      };
+      const upH = () => { g.removeEventListener("pointermove", mv); g.removeEventListener("pointerup", upH); g.removeEventListener("pointercancel", upH); };
+      g.addEventListener("pointermove", mv); g.addEventListener("pointerup", upH); g.addEventListener("pointercancel", upH);
+    }
+    update();
+    el.replaceChildren(h("div", { class: "pie-wrap" }, svg));
+    if (!ro) el.append(h("p", { class: "hint", style: { textAlign: "center" }, text: "Seret lingkaran pada tepi pie untuk mengubah ukuran irisan (atau fokuskan dengan Tab lalu tekan panah)." }));
+  }
+};
+
+/* ---------- 3. Pola bentuk (klik region: putih → hijau → ungu polkadot) ---------- */
+const SHAPES = (() => {
+  const polar = (r, deg) => { const a = deg * Math.PI / 180; return [r * Math.cos(a), r * Math.sin(a)]; };
+  const pts = a => a.map(p => `${p[0].toFixed(2)},${p[1].toFixed(2)}`).join(" ");
+  // Pentagram terbalik (ujung di bawah), sesuai gambar soal
+  const R5 = 100, r5 = R5 * 0.381966;
+  const pent = { viewBox: "-104 -88 208 196", regions: [] };
+  const pName = { TL: "ujung kiri atas", TR: "ujung kanan atas", R: "ujung kanan", B: "ujung bawah", L: "ujung kiri" };
+  for (const [id, a] of [["TL", 234], ["TR", 306], ["R", 18], ["B", 90], ["L", 162]])
+    pent.regions.push({ id, name: pName[id], points: pts([polar(R5, a), polar(r5, a - 36), polar(r5, a + 36)]) });
+  pent.regions.push({ id: "C", name: "segi lima tengah", points: pts([126, 198, 270, 342, 54].map(a => polar(r5, a))) });
+  // Hexagram: 6 ujung + 6 segitiga dalam
+  const R6 = 100, h6 = R6 / Math.sqrt(3), hv = a => polar(h6, a);
+  const hex = { viewBox: "-92 -106 184 212", regions: [] };
+  const hp = [["pT", -90, "ujung atas"], ["pUR", -30, "ujung kanan atas"], ["pLR", 30, "ujung kanan bawah"], ["pB", 90, "ujung bawah"], ["pLL", 150, "ujung kiri bawah"], ["pUL", 210, "ujung kiri atas"]];
+  for (const [id, a, name] of hp) hex.regions.push({ id, name, points: pts([polar(R6, a), hv(a - 30), hv(a + 30)]) });
+  const hi = [["iT", -120, "segitiga tengah atas"], ["iUR", -60, "segitiga dalam kanan atas"], ["iLR", 0, "segitiga dalam kanan bawah"], ["iB", 60, "segitiga tengah bawah"], ["iLL", 120, "segitiga dalam kiri bawah"], ["iUL", 180, "segitiga dalam kiri atas"]];
+  for (const [id, a, name] of hi) hex.regions.push({ id, name, points: pts([[0, 0], hv(a), hv(a + 60)]) });
+  // Persegi: 8 trapesium luar + 8 segitiga dalam
+  const A = 100, a = 50;
+  const sq = { viewBox: "-104 -104 208 208", regions: [
+    { id: "oTL", name: "sisi atas bagian kiri", points: pts([[-A, -A], [0, -A], [0, -a], [-a, -a]]) },
+    { id: "oTR", name: "sisi atas bagian kanan", points: pts([[0, -A], [A, -A], [a, -a], [0, -a]]) },
+    { id: "oRT", name: "sisi kanan bagian atas", points: pts([[A, -A], [A, 0], [a, 0], [a, -a]]) },
+    { id: "oRB", name: "sisi kanan bagian bawah", points: pts([[A, 0], [A, A], [a, a], [a, 0]]) },
+    { id: "oBR", name: "sisi bawah bagian kanan", points: pts([[A, A], [0, A], [0, a], [a, a]]) },
+    { id: "oBL", name: "sisi bawah bagian kiri", points: pts([[0, A], [-A, A], [-a, a], [0, a]]) },
+    { id: "oLB", name: "sisi kiri bagian bawah", points: pts([[-A, A], [-A, 0], [-a, 0], [-a, a]]) },
+    { id: "oLT", name: "sisi kiri bagian atas", points: pts([[-A, 0], [-A, -A], [-a, -a], [-a, 0]]) } ] };
+  const ring = [[-a, -a], [0, -a], [a, -a], [a, 0], [a, a], [0, a], [-a, a], [-a, 0]];
+  ring.forEach((p, i) => sq.regions.push({ id: `i${i + 1}`, name: `segitiga dalam ${i + 1}`, points: pts([[0, 0], p, ring[(i + 1) % 8]]) }));
+  return { pentagram: pent, hexagram: hex, square: sq };
+})();
+const CNAME = { g: "hijau", p: "ungu polkadot", w: "putih" };
+COMP.shapepattern = {
+  init() { return { c: {} }; },
+  touched(q, st) { return Object.keys(st.c).length > 0; },
+  keyState(q) { return { c: { ...q.answer } }; },
+  grade(q, st) {
+    const wrong = SHAPES[q.data.shape].regions.filter(r => (st.c[r.id] || "w") !== (q.answer[r.id] || "w")).map(r => r.id);
+    return { correct: !wrong.length, wrong };
+  },
+  describe(q, st) {
+    const regs = SHAPES[q.data.shape].regions.filter(r => st.c[r.id]);
+    return regs.length ? regs.map(r => `${r.name}: ${CNAME[st.c[r.id]]}`) : ["semua putih"];
+  },
+  figure(shape, colors, { live = false, wrong = new Set(), onCycle } = {}) {
+    const pid = uid("pk");
+    const svg = sv("svg", { viewBox: shape.viewBox, class: live ? "live" : "", role: live ? "group" : "img", "aria-label": live ? "Gambar yang harus diwarnai" : "Gambar contoh" },
+      sv("defs", null, sv("pattern", { id: pid, width: 7, height: 7, patternUnits: "userSpaceOnUse" },
+        sv("rect", { width: 7, height: 7, fill: "var(--p-fill)" }), sv("circle", { cx: 3.5, cy: 3.5, r: 1.5, fill: "#fff" }))));
+    const fill = c => c === "g" ? "var(--g-fill)" : c === "p" ? `url(#${pid})` : "var(--shape-bg)";
+    for (const r of shape.regions) {
+      const poly = sv("polygon", { points: r.points, fill: fill(colors[r.id]) });
+      if (live) {
+        const label = () => `${r.name}: ${CNAME[colors[r.id] || "w"]}`;
+        poly.setAttribute("tabindex", "0"); poly.setAttribute("role", "button"); poly.setAttribute("aria-label", label());
+        const cyc = () => { onCycle(r.id); poly.setAttribute("fill", fill(colors[r.id])); poly.setAttribute("aria-label", label()); };
+        poly.addEventListener("click", cyc);
+        poly.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); cyc(); } });
+      }
+      svg.append(poly);
+    }
+    for (const r of shape.regions) if (wrong.has(r.id)) svg.append(sv("polygon", { class: "badmark", points: r.points }));
+    return svg;
+  },
+  render(el, q, st, opt = {}) {
+    const shape = SHAPES[q.data.shape], ro = !!opt.readOnly;
+    const root = h("div", { class: "sp" + (opt.review ? " rv" : "") });
+    if (!opt.review) {
+      const ex = h("div", { class: "sp-ex", style: { "--n": q.data.examples.length } });
+      q.data.examples.forEach((c, i) => ex.append(h("figure", null, this.figure(shape, c), h("figcaption", { text: String(i + 1) }))));
+      root.append(ex);
+    }
+    const target = h("div", { class: "sp-target" }, this.figure(shape, st.c, {
+      live: !ro, wrong: opt.wrong,
+      onCycle: id => { const nx = { g: "p", p: undefined }[st.c[id]] ?? (st.c[id] ? undefined : "g"); if (nx) st.c[id] = nx; else delete st.c[id]; opt.onChange && opt.onChange(); }
+    }));
+    root.append(target);
+    if (!ro) root.append(h("p", { class: "hint", style: { textAlign: "center" }, text: "Klik area gambar: 1× hijau, 2× ungu polkadot, 3× kembali putih." }));
+    el.replaceChildren(root);
+  }
+};
+
+/* ---------- Bantuan bersama: avatar & drag chip ---------- */
+const PALETTE = ["#2E6FD8", "#C2185B", "#00897B", "#8E5BD6", "#D9822B", "#5D7A1F", "#B23A48", "#2F7F95"];
+function avatar(label) {
+  const key = (label || "?").replace(/'s$/, "");
+  let hs = 0; for (const ch of key) hs = (hs * 31 + ch.charCodeAt(0)) >>> 0;
+  const ini = key.split(/\s+/).map(w => w[0]).join("").slice(0, 2).toUpperCase();
+  return h("span", { class: "av", style: { background: PALETTE[hs % PALETTE.length] }, "aria-hidden": "true", text: ini });
+}
+// Seret elemen "chip" ke target ber-[data-drop]. onDrop(targetEl | null) hanya dipanggil bila benar-benar diseret.
+function chipDrag(e, src, makeGhost, onDrop) {
+  if (e.pointerType === "mouse" && e.button !== 0) return;
+  const x0 = e.clientX, y0 = e.clientY; let moved = false, ghost = null, over = null;
+  const move = ev => {
+    if (!moved) {
+      if (Math.hypot(ev.clientX - x0, ev.clientY - y0) < 6) return;
+      moved = true; ghost = makeGhost(); ghost.classList.add("chip-ghost"); document.body.append(ghost); src.classList.add("dragging");
+    }
+    ev.preventDefault();
+    ghost.style.transform = `translate(${ev.clientX - 24}px,${ev.clientY - 24}px)`;
+    const t = document.elementFromPoint(ev.clientX, ev.clientY)?.closest("[data-drop]") || null;
+    if (t !== over) { over && over.classList.remove("over"); over = t; over && over.classList.add("over"); }
+  };
+  const up = () => {
+    window.removeEventListener("pointermove", move); window.removeEventListener("pointerup", up); window.removeEventListener("pointercancel", up);
+    if (!moved) return;
+    src._dragged = true; setTimeout(() => { src._dragged = false; }, 0);
+    ghost.remove(); src.classList.remove("dragging"); over && over.classList.remove("over");
+    onDrop(over);
+  };
+  window.addEventListener("pointermove", move, { passive: false }); window.addEventListener("pointerup", up); window.addEventListener("pointercancel", up);
+}
+function svgPoint(svg, ev) { return new DOMPoint(ev.clientX, ev.clientY).matrixTransform(svg.getScreenCTM().inverse()); }
+
+/* ---------- 4. Kalender bulanan (klik tanggal) ---------- */
+COMP.monthcal = {
+  init() { return { sel: [] }; },
+  touched(q, st) { return st.sel.length > 0; },
+  keyState(q) { return { sel: [...q.answer] }; },
+  grade(q, st) {
+    const a = new Set(q.answer), s = new Set(st.sel);
+    const wrong = [...new Set([...a, ...s])].filter(d => a.has(d) !== s.has(d));
+    return { correct: !wrong.length, wrong };
+  },
+  render(el, q, st, opt = {}) {
+    const d = q.data, ro = !!opt.readOnly, wrong = opt.wrong || new Set();
+    const root = h("div", { class: "mc-wrap" }), msg = h("p", { class: "hint", "aria-live": "polite" });
+    const draw = focusDay => {
+      const grid = h("div", { class: "mc" + (opt.review ? " sm" : "") });
+      ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"].forEach(x => grid.append(h("div", { class: "dh", text: x })));
+      for (let i = 0; i < d.firstDow; i++) grid.append(h("div", { class: "day blank" }));
+      for (let day = 1; day <= d.days; day++) {
+        const on = st.sel.includes(day);
+        const b = h(ro ? "div" : "button", {
+          type: ro ? null : "button", class: "day" + (on ? " sel" : "") + (on && wrong.has(day) ? " bad" : ""),
+          "aria-pressed": ro ? null : String(on), "data-day": day, text: String(day)
+        });
+        if (!ro) b.addEventListener("click", () => {
+          if (on) st.sel = st.sel.filter(x => x !== day);
+          else if (st.sel.length >= d.max) { msg.textContent = `Maksimal ${d.max} tanggal. Batalkan salah satu dulu.`; return; }
+          else st.sel.push(day);
+          msg.textContent = ""; draw(day); opt.onChange && opt.onChange();
+        });
+        grid.append(b);
+      }
+      for (let i = d.firstDow + d.days; i % 7; i++) grid.append(h("div", { class: "day blank" }));
+      root.replaceChildren(grid);
+      if (!ro) root.append(h("p", { class: "hint", text: `Terpilih: ${st.sel.length ? [...st.sel].sort((a, b) => a - b).join(", ") : "–"} (maks. ${d.max})` }), msg);
+      if (focusDay) root.querySelector(`[data-day="${focusDay}"]`)?.focus();
+    };
+    draw(); el.replaceChildren(root);
+  }
+};
+
+/* ---------- 5. Mencocokkan orang ke ruangan ---------- */
+COMP.roommatch = {
+  init() { return { at: {} }; },
+  touched(q, st) { return Object.keys(st.at).length > 0; },
+  keyState(q) { return { at: { ...q.answer } }; },
+  grade(q, st) { const wrong = q.data.people.filter(p => st.at[p.id] !== q.answer[p.id]).map(p => p.id); return { correct: !wrong.length, wrong }; },
+  render(el, q, st, opt = {}) {
+    const d = q.data, ro = !!opt.readOnly, wrong = opt.wrong || new Set();
+    const root = h("div", { class: "rm" + (ro ? " ro" : "") }); el.replaceChildren(root);
+    let sel = null;
+    const roomLabel = id => d.rooms.find(r => r.id === id).label;
+    const move = (pid, rid) => { if (rid) st.at[pid] = rid; else delete st.at[pid]; sel = null; draw(pid); opt.onChange && opt.onChange(); };
+    function chip(p) {
+      const c = h(ro ? "div" : "button", {
+        type: ro ? null : "button", class: "pchip" + (sel === p.id ? " sel" : "") + (wrong.has(p.id) ? " bad" : ""), "data-id": p.id,
+        "aria-pressed": ro ? null : String(sel === p.id),
+        "aria-label": `${p.label}${st.at[p.id] ? ", di " + roomLabel(st.at[p.id]) : ", belum ditempatkan"}`
+      }, avatar(p.label), h("span", { class: "pl", text: p.label }));
+      if (!ro) {
+        c.addEventListener("pointerdown", e => chipDrag(e, c,
+          () => h("div", { class: "pchip" }, avatar(p.label), h("span", { class: "pl", text: p.label })),
+          t => { if (t) move(p.id, t.dataset.drop === "bench" ? null : t.dataset.drop); }));
+        c.addEventListener("click", e => { e.stopPropagation(); if (c._dragged) return; sel = sel === p.id ? null : p.id; draw(p.id); });
+      }
+      return c;
+    }
+    function zone(id, label, cls) {
+      const z = h("div", { class: cls, "data-drop": id, role: ro ? null : "button", tabindex: ro ? null : "0",
+        "aria-label": ro ? null : (id === "bench" ? "Kembalikan ke daftar orang" : `Tempatkan di ${label}`) },
+        label ? h("div", { class: "rname", text: label }) : null);
+      const occ = h("div", { class: "occ" });
+      d.people.filter(p => id === "bench" ? !st.at[p.id] : st.at[p.id] === id).forEach(p => occ.append(chip(p)));
+      z.append(occ);
+      if (!ro) {
+        const act = () => { if (sel) move(sel, id === "bench" ? null : id); };
+        z.addEventListener("click", act);
+        z.addEventListener("keydown", e => { if ((e.key === "Enter" || e.key === " ") && e.target === z) { e.preventDefault(); act(); } });
+      }
+      return z;
+    }
+    function draw(focusPid) {
+      const L = d.rooms.filter(r => r.side === "L"), R = d.rooms.filter(r => r.side === "R");
+      root.replaceChildren(h("div", { class: "plan" },
+        h("div", { class: "col" }, L.map(r => zone(r.id, r.label, "room"))),
+        h("div", { class: "hall", "aria-hidden": "true" }),
+        h("div", { class: "col right" }, R.map(r => zone(r.id, r.label, "room")))));
+      if (!ro) {
+        root.append(zone("bench", "", "bench" + (sel ? " armed" : "")),
+          h("p", { class: "hint", style: { textAlign: "center" }, text: "Seret orang ke ruangan, atau klik orang lalu klik ruangan. Satu ruangan boleh diisi lebih dari satu orang." }));
+      }
+      if (focusPid) root.querySelector(`.pchip[data-id="${focusPid}"]`)?.focus();
+    }
+    draw();
+  }
+};
+
+/* ---------- 7. Badge peringkat 1–n ---------- */
+COMP.rankbadges = {
+  init() { return { rank: {} }; },
+  touched(q, st) { return Object.keys(st.rank).length > 0; },
+  keyState(q) { return { rank: { ...q.answer } }; },
+  grade(q, st) { const wrong = q.data.people.filter(p => st.rank[p.id] !== q.answer[p.id]).map(p => p.id); return { correct: !wrong.length, wrong }; },
+  render(el, q, st, opt = {}) {
+    const d = q.data, ro = !!opt.readOnly, wrong = opt.wrong || new Set(), n = d.people.length;
+    const root = h("div", { class: "rk-wrap" + (ro ? " ro" : "") }); el.replaceChildren(root);
+    let sel = null;
+    const holder = k => Object.keys(st.rank).find(pid => st.rank[pid] === k);
+    const put = (k, pid) => {
+      const cur = holder(k);
+      if (cur) delete st.rank[cur];
+      if (pid) { const displaced = st.rank[pid]; st.rank[pid] = k; if (displaced != null && cur && cur !== pid) st.rank[cur] = displaced; }
+      sel = null; draw(k); opt.onChange && opt.onChange();
+    };
+    function badge(k) {
+      const b = h(ro ? "div" : "button", { type: ro ? null : "button", class: "badge" + (sel === k ? " sel" : ""), "data-k": k, text: String(k),
+        "aria-pressed": ro ? null : String(sel === k), "aria-label": `Badge ${k}` });
+      if (!ro) {
+        b.addEventListener("pointerdown", e => chipDrag(e, b, () => h("div", { class: "badge", text: String(k) }),
+          t => { if (t) put(k, t.dataset.drop === "tray" ? null : t.dataset.drop); }));
+        b.addEventListener("click", e => { e.stopPropagation(); if (b._dragged) return; sel = sel === k ? null : k; draw(k); });
+      }
+      return b;
+    }
+    function dropTarget(z, pid) {
+      if (ro) return;
+      const act = () => { if (sel != null) put(sel, pid); };
+      z.addEventListener("click", act);
+      z.addEventListener("keydown", e => { if ((e.key === "Enter" || e.key === " ") && e.target === z) { e.preventDefault(); act(); } });
+    }
+    function draw(focusK) {
+      const grid = h("div", { class: "rk" });
+      for (const p of d.people) {
+        const k = st.rank[p.id];
+        const slot = h("div", { class: "slot" + (wrong.has(p.id) ? " bad" : ""), "data-drop": p.id, role: ro ? null : "button", tabindex: ro ? null : "0",
+          "aria-label": ro ? null : `Slot peringkat ${p.label}${k ? ", berisi " + k : ", kosong"}` }, k ? badge(k) : null);
+        dropTarget(slot, p.id);
+        grid.append(h("div", { class: "rk-row" }, avatar(p.label), h("span", { class: "nm", text: p.label }), slot));
+      }
+      root.replaceChildren(grid);
+      if (!ro) {
+        const tray = h("div", { class: "badge-tray", "data-drop": "tray", role: "button", tabindex: "0", "aria-label": "Kembalikan badge ke daftar" });
+        for (let k = 1; k <= n; k++) tray.append(holder(k) ? h("span", { class: "badge ghosted", "aria-hidden": "true", text: String(k) }) : badge(k));
+        dropTarget(tray, null);
+        root.append(tray, h("p", { class: "hint", style: { textAlign: "center" }, text: "Seret badge ke lingkaran di samping nama, atau klik badge lalu klik lingkarannya. 1 = paling banyak." }));
+      }
+      if (focusK) root.querySelector(`.badge[data-k="${focusK}"]`)?.focus();
+    }
+    draw();
+  }
+};
+
+/* ---------- 3. Stacked bar dengan handle total & persen ---------- */
+COMP.stackedbar = {
+  init(q) { return { tot: q.data.bars.map(b => b.total), pct: q.data.bars.map(() => 50) }; },
+  touched(q, st) { const i = this.init(q); return st.tot.some((v, k) => v !== i.tot[k]) || st.pct.some((v, k) => v !== i.pct[k]); },
+  keyState(q) { return { tot: q.data.bars.map(b => q.answer[b.id].total), pct: q.data.bars.map(b => q.answer[b.id].pct) }; },
+  grade(q, st) {
+    const wrong = q.data.bars.filter((b, i) => st.tot[i] !== q.answer[b.id].total || st.pct[i] !== q.answer[b.id].pct).map(b => b.id);
+    return { correct: !wrong.length, wrong };
+  },
+  render(el, q, st, opt = {}) {
+    const d = q.data, ro = !!opt.readOnly, wrong = opt.wrong || new Set(), n = d.bars.length;
+    const W = 460, H = 330, x0 = 58, x1 = 450, y0 = 26, y1 = 290, PH = y1 - y0;
+    const yOf = v => y1 - v / d.axisMax * PH, vOf = y => (y1 - y) / PH * d.axisMax;
+    const slotW = (x1 - x0) / n, bw = Math.min(150, slotW * 0.74);
+    const svg = sv("svg", { class: "sb" + (opt.review ? " sm" : ""), viewBox: `0 0 ${W} ${H}`, role: "group", "aria-label": "Stacked bar chart" });
+    for (let v = 0; v <= d.axisMax; v += d.tick) {
+      svg.append(sv("line", { class: "grid", x1: x0, x2: x1, y1: yOf(v), y2: yOf(v) }),
+        sv("text", { class: "ax", x: x0 - 8, y: yOf(v) + 4, "text-anchor": "end", text: v.toFixed(1) }));
+    }
+    const pill = () => sv("g", { class: "hd" }, sv("rect", { class: "hit", x: -38, y: -22, width: 76, height: 44 }),
+      sv("rect", { class: "knob", x: -18, y: -7, width: 36, height: 14, rx: 7 }),
+      sv("line", { x1: -6, x2: 6, y1: -2, y2: -2 }), sv("line", { x1: -6, x2: 6, y1: 2, y2: 2 }));
+    const bars = d.bars.map((b, i) => {
+      const cx = x0 + slotW * (i + .5);
+      const g = { cx,
+        rb: sv("rect", { class: "seg", x: cx - bw / 2, width: bw, fill: `var(--s-${d.series[0].color})` }),
+        rt: sv("rect", { class: "seg", x: cx - bw / 2, width: bw, fill: `var(--s-${d.series[1].color})` }),
+        tb: sv("text", { class: "pv", x: cx, "text-anchor": "middle" }), tt: sv("text", { class: "pv", x: cx, "text-anchor": "middle" }),
+        tot: sv("text", { class: "tv" + (wrong.has(b.id) ? " bad" : ""), x: cx, "text-anchor": "middle" }),
+        lab: sv("text", { class: "xl" + (wrong.has(b.id) ? " bad" : ""), x: cx, y: y1 + 20, "text-anchor": "middle", text: b.label + (wrong.has(b.id) ? " ✗" : "") }),
+        hT: ro ? null : pill(), hS: ro ? null : pill() };
+      svg.append(g.rb, g.rt, g.tb, g.tt, g.tot, g.lab);
+      if (!ro) {
+        g.hS.classList.add("split");
+        svg.append(g.hS, g.hT);
+        wire(g.hT, i, "tot", `Total ${b.label}`); wire(g.hS, i, "pct", `Persen ${d.series[0].label} pada ${b.label}`);
+      }
+      return g;
+    });
+    svg.append(sv("line", { class: "base", x1: x0, x2: x1, y1, y2: y1 }));
+    const readout = h("div", { class: "sb-read", "aria-live": "polite" });
+    function setVal(i, kind, v) {
+      if (kind === "tot") v = Math.max(1, Math.min(d.axisMax, Math.round(v)));
+      else v = Math.max(0, Math.min(100, Math.round(v)));
+      const arr = kind === "tot" ? st.tot : st.pct;
+      if (arr[i] === v) return;
+      arr[i] = v; update(); opt.onChange && opt.onChange();
+    }
+    function wire(g, i, kind, label) {
+      g.setAttribute("tabindex", "0"); g.setAttribute("role", "slider"); g.setAttribute("aria-label", label);
+      g.addEventListener("keydown", e => {
+        const k = { ArrowUp: 1, ArrowRight: 1, ArrowDown: -1, ArrowLeft: -1 }[e.key]; if (!k) return;
+        e.preventDefault(); const cur = kind === "tot" ? st.tot[i] : st.pct[i]; setVal(i, kind, cur + k * (e.shiftKey ? 10 : 1));
+      });
+      g.addEventListener("pointerdown", e => {
+        e.preventDefault(); g.setPointerCapture(e.pointerId); g.focus({ preventScroll: true });
+        const mv = ev => { const v = vOf(svgPoint(svg, ev).y); setVal(i, kind, kind === "tot" ? v : v / st.tot[i] * 100); };
+        const upH = () => { g.removeEventListener("pointermove", mv); g.removeEventListener("pointerup", upH); g.removeEventListener("pointercancel", upH); };
+        g.addEventListener("pointermove", mv); g.addEventListener("pointerup", upH); g.addEventListener("pointercancel", upH);
+      });
+    }
+    function update() {
+      bars.forEach((g, i) => {
+        const T = st.tot[i], p = st.pct[i], yb = yOf(T * p / 100), yt = yOf(T);
+        g.rb.setAttribute("y", yb); g.rb.setAttribute("height", Math.max(0, y1 - yb));
+        g.rt.setAttribute("y", yt); g.rt.setAttribute("height", Math.max(0, yb - yt));
+        g.tb.textContent = y1 - yb >= 18 ? `${p}%` : ""; g.tb.setAttribute("y", (y1 + yb) / 2 + 5);
+        g.tt.textContent = yb - yt >= 18 ? `${100 - p}%` : ""; g.tt.setAttribute("y", (yb + yt) / 2 + 5);
+        g.tot.textContent = T.toFixed(1); g.tot.setAttribute("y", yt - (ro ? 7 : 16));
+        if (g.hT) {
+          g.hT.setAttribute("transform", `translate(${g.cx},${yt})`); g.hS.setAttribute("transform", `translate(${g.cx + bw / 2},${yb})`);
+          g.hT.setAttribute("aria-valuenow", T); g.hS.setAttribute("aria-valuenow", p);
+          g.hS.setAttribute("aria-valuetext", `${d.series[0].label} ${p}%, ${d.series[1].label} ${100 - p}%`);
+        }
+      });
+      readout.replaceChildren(...d.bars.map((b, i) => h("span", { class: wrong.has(b.id) ? "bad" : "",
+        text: `${b.label}: ${st.tot[i].toFixed(1)} · ${d.series[0].label} ${st.pct[i]}% / ${d.series[1].label} ${100 - st.pct[i]}%` })));
+    }
+    update();
+    const legend = h("div", { class: "legend", style: { justifyContent: "center" } }, d.series.map(s => h("span", null, h("i", { style: { background: `var(--s-${s.color})` } }), s.label)));
+    el.replaceChildren(h("div", { class: "sb-wrap" }, legend, svg, readout));
+    if (!ro) el.append(h("p", { class: "hint", style: { textAlign: "center" }, text: "Seret pegangan di puncak batang untuk mengubah jumlah, dan pegangan di sisi kanan batang untuk mengubah persentase. Bisa juga dengan Tab lalu panah (Shift = ±10)." }));
+  }
+};
+
+/* ---------- 8. Line chart: geser titik ke nilai ---------- */
+COMP.linepoints = {
+  init(q) { return { v: Object.fromEntries(q.data.cats.map(c => [c.id, null])) }; },
+  touched(q, st) { return Object.values(st.v).some(v => v != null); },
+  keyState(q) { return { v: { ...q.answer } }; },
+  grade(q, st) { const wrong = q.data.cats.filter(c => st.v[c.id] !== q.answer[c.id]).map(c => c.id); return { correct: !wrong.length, wrong }; },
+  render(el, q, st, opt = {}) {
+    const d = q.data, ro = !!opt.readOnly, wrong = opt.wrong || new Set(), n = d.cats.length;
+    const W = 460, H = ro ? 290 : 330, x0 = 64, x1 = 448, yTop = 20, yBot = 248, trayY = 306;
+    const yOf = c => yBot - (c - d.min) / (d.max - d.min) * (yBot - yTop);
+    const cOf = y => d.min + (yBot - y) / (yBot - yTop) * (d.max - d.min);
+    const fmt = c => (c / 100).toFixed(2);
+    const svg = sv("svg", { class: "lp" + (opt.review ? " sm" : ""), viewBox: `0 0 ${W} ${H}`, role: "group", "aria-label": "Line chart" });
+    for (let c = d.min; c <= d.max; c += d.tick) svg.append(sv("line", { class: "grid", x1: x0, x2: x1, y1: yOf(c), y2: yOf(c) }),
+      sv("text", { class: "ax", x: x0 - 8, y: yOf(c) + 4, "text-anchor": "end", text: fmt(c) }));
+    const xs = d.cats.map((c, i) => x0 + (x1 - x0) * (i + .5) / n);
+    d.cats.forEach((c, i) => svg.append(sv("line", { class: "grid v", x1: xs[i], x2: xs[i], y1: yTop, y2: yBot }),
+      sv("text", { class: "xl" + (wrong.has(c.id) ? " bad" : ""), x: xs[i], y: yBot + 20, "text-anchor": "middle", text: c.label + (wrong.has(c.id) ? " ✗" : "") })));
+    svg.append(sv("line", { class: "base", x1: x0, x2: x1, y1: yBot, y2: yBot }));
+    const path = sv("polyline", { class: "ln" }); svg.append(path);
+    const pts = d.cats.map((c, i) => {
+      const g = sv("g", { class: "pt" + (wrong.has(c.id) ? " bad" : "") }, sv("circle", { class: "hit", r: 22 }), sv("circle", { class: "dot", r: 9 }),
+        sv("text", { class: "val", x: 14, y: -10 }));
+      svg.append(g);
+      if (!ro) {
+        g.setAttribute("tabindex", "0"); g.setAttribute("role", "slider"); g.setAttribute("aria-label", `Kurs ${c.label}`);
+        g.setAttribute("aria-valuemin", fmt(d.min)); g.setAttribute("aria-valuemax", fmt(d.max));
+        g.addEventListener("keydown", e => {
+          let v = st.v[c.id];
+          if (e.key === "ArrowUp" || e.key === "ArrowRight") v = v == null ? d.min : Math.min(d.max, v + d.step);
+          else if (e.key === "ArrowDown" || e.key === "ArrowLeft") v = v == null ? null : Math.max(d.min, v - d.step);
+          else if (e.key === "Delete" || e.key === "Backspace") v = null;
+          else return;
+          e.preventDefault(); set(c.id, v);
+        });
+        g.addEventListener("pointerdown", e => {
+          e.preventDefault(); g.setPointerCapture(e.pointerId); g.focus({ preventScroll: true });
+          const mv = ev => {
+            const y = svgPoint(svg, ev).y;
+            set(c.id, y > yBot + 14 ? null : Math.max(d.min, Math.min(d.max, Math.round(cOf(y) / d.step) * d.step)));
+          };
+          const upH = () => { g.removeEventListener("pointermove", mv); g.removeEventListener("pointerup", upH); g.removeEventListener("pointercancel", upH); };
+          g.addEventListener("pointermove", mv); g.addEventListener("pointerup", upH); g.addEventListener("pointercancel", upH);
+        });
+      }
+      return g;
+    });
+    function set(id, v) { if (st.v[id] === v) return; st.v[id] = v; update(); opt.onChange && opt.onChange(); }
+    function update() {
+      const line = [];
+      d.cats.forEach((c, i) => {
+        const v = st.v[c.id], g = pts[i];
+        g.style.display = v == null && ro ? "none" : "";
+        const y = v == null ? trayY : yOf(v);
+        g.setAttribute("transform", `translate(${xs[i]},${y})`);
+        g.classList.toggle("tray", v == null);
+        g.lastChild.textContent = v == null ? "" : fmt(v);
+        if (!ro) { g.setAttribute("aria-valuenow", v == null ? "" : fmt(v)); g.setAttribute("aria-valuetext", v == null ? "belum diatur" : fmt(v)); }
+        if (v != null) line.push(`${xs[i]},${y}`);
+      });
+      path.setAttribute("points", line.join(" "));
+    }
+    update();
+    el.replaceChildren(h("div", { class: "lp-wrap" }, svg));
+    if (!ro) el.append(h("p", { class: "hint", style: { textAlign: "center" }, text: "Seret titik hijau di bawah grafik ke atas sampai nilai kursnya. Bisa juga dengan Tab lalu panah atas/bawah (±0,05)." }));
+  }
+};
+
+/* ---------- 9. Gambar garis antar node ---------- */
+const edgeKey = e => [...e].sort().join("|");
+COMP.nodeline = {
+  init() { return { e: [] }; },
+  touched(q, st) { return st.e.length > 0; },
+  keyState(q) { return { e: q.answer.map(x => [...x]) }; },
+  grade(q, st) {
+    const ans = new Set(q.answer.map(edgeKey)), mine = st.e.map(edgeKey);
+    const wrong = mine.filter(k => !ans.has(k));
+    return { correct: !wrong.length && mine.length === ans.size && [...ans].every(k => mine.includes(k)), wrong };
+  },
+  render(el, q, st, opt = {}) {
+    // Di layar sempit lingkaran diperbesar supaya mudah disentuh (jarak antar node di data ≥ 139 unit).
+    const big = window.innerWidth < 620;
+    const d = q.data, ro = !!opt.readOnly, wrong = opt.wrong || new Set(), R = big ? 48 : 30;
+    const N = Object.fromEntries(d.nodes.map(n => [n.id, n]));
+    const xs = d.nodes.map(n => n.x), ys = d.nodes.map(n => n.y);
+    const pad = R + 14;
+    const vb = [Math.min(...xs) - pad, Math.min(...ys) - pad, Math.max(...xs) - Math.min(...xs) + 2 * pad, Math.max(...ys) - Math.min(...ys) + 2 * pad];
+    const mk = uid("ar");
+    const svg = sv("svg", { class: "nl" + (opt.review ? " sm" : "") + (big ? " big" : ""), viewBox: vb.join(" "), role: "group", "aria-label": "Lingkaran urutan" },
+      sv("defs", null,
+        ...["u", "h", "b"].map(t => sv("marker", { id: `${mk}${t}`, viewBox: "0 0 10 10", refX: 9, refY: 5, markerWidth: 7, markerHeight: 7, orient: "auto-start-reverse" },
+          sv("path", { d: "M0 0L10 5L0 10z", class: `mk-${t}` })))));
+    const fixedNodes = new Set(d.fixed.flat());
+    const gFixed = sv("g"), gHint = sv("g"), gUser = sv("g"), gTemp = sv("g"), gNodes = sv("g");
+    svg.append(gFixed, gHint, gUser, gTemp, gNodes);
+    const seg = (a, b, shortenEnd = true) => {
+      const A = N[a], B = N[b], dx = B.x - A.x, dy = B.y - A.y, L = Math.hypot(dx, dy), ux = dx / L, uy = dy / L;
+      return { x1: A.x + ux * R, y1: A.y + uy * R, x2: B.x - ux * (shortenEnd ? R + 2 : 0), y2: B.y - uy * (shortenEnd ? R + 2 : 0) };
+    };
+    for (const [a, b] of d.fixed) gFixed.append(sv("line", { class: "e-fixed", ...seg(a, b) }));
+    if (d.hint && !opt.review) gHint.append(sv("line", { class: "e-hint", ...seg(...d.hint), "marker-end": `url(#${mk}h)` }));
+    let sel = null;
+    const temp = sv("line", { class: "e-temp" }); temp.style.display = "none"; gTemp.append(temp);
+    function addEdge(a, b) {
+      if (a === b) return;
+      const k = edgeKey([a, b]);
+      if (st.e.some(e => edgeKey(e) === k) || d.fixed.some(e => edgeKey(e) === k)) return;
+      st.e.push([a, b]); draw(); opt.onChange && opt.onChange();
+    }
+    function draw() {
+      gUser.replaceChildren();
+      st.e.forEach((e, i) => {
+        const bad = wrong.has(edgeKey(e)), s = seg(...e);
+        const ln = sv("line", { class: "e-user" + (bad ? " bad" : ""), ...s, "marker-end": `url(#${mk}${bad ? "b" : "u"})` });
+        gUser.append(ln);
+        if (!ro) {
+          const hit = sv("line", { class: "e-hit", ...s });
+          hit.append(sv("title", { text: `Hapus garis ${e[0]} → ${e[1]}` }));
+          hit.addEventListener("click", () => { st.e.splice(i, 1); draw(); opt.onChange && opt.onChange(); });
+          gUser.append(hit);
+        }
+      });
+      const used = new Set(st.e.flat());
+      gNodes.replaceChildren();
+      for (const n of d.nodes) {
+        const g = sv("g", { class: "node" + (fixedNodes.has(n.id) ? " fixed" : "") + (used.has(n.id) ? " used" : "") + (sel === n.id ? " sel" : ""),
+          transform: `translate(${n.x},${n.y})`, "data-node": n.id },
+          sv("circle", { r: R }), sv("text", { "text-anchor": "middle", y: big ? 10 : 6, text: n.id }));
+        if (!ro) {
+          g.setAttribute("tabindex", "0"); g.setAttribute("role", "button");
+          g.setAttribute("aria-label", `${n.id}${sel === n.id ? ", terpilih" : ""}. ${sel && sel !== n.id ? "Enter untuk menyambung dari " + sel : "Enter untuk memilih titik awal"}`);
+          g.addEventListener("pointerdown", e => press(e, n.id));
+          g.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); tap(n.id); } });
+        }
+        gNodes.append(g);
+      }
+      if (focusNode) { gNodes.querySelector(`[data-node="${focusNode}"]`)?.focus(); focusNode = null; }
+    }
+    let focusNode = null;
+    function tap(id) {
+      if (sel && sel !== id) { const a = sel; sel = null; focusNode = id; addEdge(a, id); if (st.e.length && edgeKey(st.e[st.e.length - 1]) !== edgeKey([a, id])) draw(); }
+      else { sel = sel === id ? null : id; focusNode = id; draw(); }
+    }
+    function press(e, id) {
+      if (e.pointerType === "mouse" && e.button !== 0) return;
+      e.preventDefault();
+      const x0 = e.clientX, y0 = e.clientY; let moved = false;
+      const mv = ev => {
+        if (!moved && Math.hypot(ev.clientX - x0, ev.clientY - y0) < 6) return;
+        moved = true; const p = svgPoint(svg, ev), A = N[id];
+        Object.entries({ x1: A.x, y1: A.y, x2: p.x, y2: p.y }).forEach(([k, v]) => temp.setAttribute(k, v)); temp.style.display = "";
+      };
+      const up = ev => {
+        window.removeEventListener("pointermove", mv); window.removeEventListener("pointerup", up); window.removeEventListener("pointercancel", up);
+        temp.style.display = "none";
+        if (!moved) { tap(id); return; }
+        const t = document.elementFromPoint(ev.clientX, ev.clientY)?.closest("[data-node]");
+        sel = null;
+        if (t && t.dataset.node !== id) addEdge(id, t.dataset.node); else draw();
+      };
+      window.addEventListener("pointermove", mv); window.addEventListener("pointerup", up); window.addEventListener("pointercancel", up);
+    }
+    draw();
+    el.replaceChildren(h("div", { class: "nl-wrap" }, svg));
+    if (!ro) el.append(h("div", { class: "row", style: { justifyContent: "center", marginTop: "8px" } },
+      h("button", { type: "button", class: "btn btn-ghost", onclick: () => { st.e.pop(); sel = null; draw(); opt.onChange && opt.onChange(); }, text: "Hapus garis terakhir" }),
+      h("button", { type: "button", class: "btn btn-ghost", onclick: () => { st.e.length = 0; sel = null; draw(); opt.onChange && opt.onChange(); }, text: "Hapus semua garis" })));
+  }
+};
+
+/* =====================================================================
+   MESIN TES
+   ===================================================================== */
+const app = {
+  mode: "timed", list: [], idx: 0, states: {}, times: {}, visited: new Set(),
+  deadline: 0, startedAt: 0, qStart: 0, tick: null, warned: false, finished: false, pState: null
+};
+
+function show(id) {
+  for (const s of ["intro", "practice", "test", "result"]) $("#" + s).hidden = s !== id;
+  const inTest = id === "test";
+  $("#qcount").hidden = !inTest; $("#prog").hidden = !inTest; $("#timer").hidden = !inTest;
+  window.scrollTo(0, 0);
+}
+
+function renderStem(el, q) {
+  const kids = [];
+  if (q.title) kids.push(h("h2", { text: q.title }));
+  if (q.intro) kids.push(h("p", { text: q.intro }));
+  if (q.bullets) kids.push(h("ul", null, q.bullets.map(b => h("li", { text: b }))));
+  if (q.clues) kids.push(h("div", { class: "clues" }, q.clues.map(c =>
+    h("div", { class: "clue" + (c.name ? "" : " noname") }, avatar(c.avatar || c.name), c.name ? h("b", { text: c.name }) : null, h("span", { text: c.text })))));
+  if (q.cards) kids.push(h("div", { class: "cards" }, q.cards.map(c =>
+    h("div", { class: `icard c-${c.color}` }, h("b", { text: c.title }), ...(c.text ? c.text.split("\n") : []).map(t => h("span", { text: t }))))));
+  kids.push(h("div", { class: "qlabel", text: "Question" }), h("p", { class: "prompt", text: q.prompt }));
+  if (q.note) kids.push(h("p", { class: "hint", text: q.note }));
+  el.replaceChildren(h("div", { class: "stem" }, kids));
+}
+
+/* ---- Contoh soal ---- */
+function startPractice() {
+  const q = TEST.practice, C = COMP[q.type];
+  app.pState = C.init(q);
+  renderStem($("#p-stem"), q);
+  const draw = () => C.render($("#p-body"), q, app.pState, { onChange: () => { $("#p-feedback").hidden = true; } });
+  draw();
+  $("#p-feedback").hidden = true;
+  $("#p-reset").onclick = () => { app.pState = C.init(q); $("#p-feedback").hidden = true; draw(); };
+  $("#p-check").onclick = () => {
+    const fb = $("#p-feedback"), g = C.grade(q, app.pState);
+    fb.replaceChildren(
+      h("div", { class: g.correct ? "chip ok" : "chip bad", style: { alignSelf: "flex-start", fontSize: "14px", padding: "6px 12px" }, text: g.correct ? "Benar!" : "Belum tepat" }),
+      reviewBlock(q, app.pState, { practice: true }));
+    fb.hidden = false;
+    fb.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+  show("practice");
+}
+
+/* ---- Tes ---- */
+function startTest() {
+  app.mode = document.querySelector('input[name="mode"]:checked').value;
+  app.list = TEST.questions.filter(q => COMP[q.type]);
+  app.idx = 0; app.states = {}; app.times = {}; app.visited = new Set(); app.finished = false;
+  app.startedAt = Date.now(); app.deadline = app.startedAt + TEST.timeLimitSec * 1000;
+  clearInterval(app.tick); app.tick = setInterval(tick, 250); tick();
+  show("test"); renderQuestion();
+}
+function tick() {
+  const t = $("#timer");
+  if (app.mode === "timed") {
+    const left = (app.deadline - Date.now()) / 1000;
+    t.textContent = fmtClock(Math.ceil(left));
+    t.classList.toggle("low", left <= 300);
+    t.setAttribute("aria-label", `Sisa waktu ${fmtClock(Math.ceil(left))}`);
+    if (left <= 0 && !app.finished) finish(true);
+  } else {
+    t.textContent = fmtClock((Date.now() - app.startedAt) / 1000);
+    t.classList.remove("low");
+  }
+}
+function renderQuestion() {
+  const q = app.list[app.idx], C = COMP[q.type];
+  if (!app.states[q.id]) app.states[q.id] = C.init(q);
+  app.visited.add(q.id); app.qStart = Date.now(); app.warned = false;
+  $("#t-num").textContent = `Soal ${q.id}`;
+  $("#qcount").textContent = `${app.idx + 1} / ${app.list.length}`;
+  $("#progfill").style.width = `${(app.idx / app.list.length) * 100}%`;
+  $("#t-warn").hidden = true;
+  $("#t-next").textContent = app.idx === app.list.length - 1 ? "Selesai" : "Berikutnya →";
+  renderStem($("#t-stem"), q);
+  const draw = () => C.render($("#t-body"), q, app.states[q.id], { onChange: () => { $("#t-warn").hidden = true; app.warned = false; } });
+  draw();
+  $("#t-reset").onclick = () => { app.states[q.id] = C.init(q); draw(); };
+  window.scrollTo(0, 0);
+}
+function recordTime() {
+  const q = app.list[app.idx];
+  if (q) app.times[q.id] = (app.times[q.id] || 0) + (Date.now() - app.qStart) / 1000;
+}
+function next() {
+  const q = app.list[app.idx], C = COMP[q.type];
+  if (!C.touched(q, app.states[q.id]) && !app.warned) { app.warned = true; $("#t-warn").hidden = false; return; }
+  recordTime();
+  if (app.idx < app.list.length - 1) { app.idx++; renderQuestion(); }
+  else finish(false);
+}
+function finish(timeout) {
+  if (app.finished) return;
+  app.finished = true; recordTime(); clearInterval(app.tick);
+  app.totalSec = (Date.now() - app.startedAt) / 1000; app.timeout = timeout;
+  renderResult(); show("result");
+}
+
+/* ---- Hasil ---- */
+function statusOf(q) {
+  const st = app.states[q.id], C = COMP[q.type];
+  if (!st || !C.touched(q, st)) return { s: "empty", g: { correct: false, wrong: [] } };
+  const g = C.grade(q, st); return { s: g.correct ? "ok" : "bad", g };
+}
+function reviewBlock(q, st, { practice = false } = {}) {
+  const C = COMP[q.type], touched = st && C.touched(q, st);
+  const g = touched ? C.grade(q, st) : { correct: false, wrong: [] };
+  const wide = q.type === "dayschedule";
+  const mine = h("div", { class: "rv-col mine" + (g.correct ? "" : " bad") }, h("h4", { text: touched ? (g.correct ? "Jawabanmu ✓" : "Jawabanmu ✗") : "Jawabanmu: tidak dijawab" }));
+  const mineBody = h("div"); mine.append(mineBody);
+  C.render(mineBody, q, touched ? st : C.init(q), { readOnly: true, review: true, wrong: new Set(touched ? g.wrong : []) });
+  const key = h("div", { class: "rv-col key" }, h("h4", { text: "Jawaban benar" }));
+  const keyBody = h("div"); key.append(keyBody);
+  C.render(keyBody, q, C.keyState(q), { readOnly: true, review: true });
+  const ex = q.explain || {};
+  const exEl = h("div", { class: "explain" },
+    ex.key ? h("p", { class: "keyline", text: ex.key }) : null,
+    ex.steps ? h("ol", null, ex.steps.map(s => h("li", { html: s }))) : null,
+    ex.table ? h("div", { class: "tbl" }, h("table", null,
+      h("thead", null, h("tr", null, ex.table.head.map(c => h("th", { text: c })))),
+      h("tbody", null, ex.table.rows.map(r => h("tr", null, r.map(c => h("td", { text: c }))))))) : null,
+    ex.trap ? h("div", { class: "trap", html: `<b>Jebakan:</b> ${ex.trap}` }) : null);
+  return h("div", { class: "stack", style: { gap: "16px" } }, h("div", { class: "rv-cols" + (wide ? " stack" : "") }, mine, key), exEl);
+}
+function renderResult() {
+  const res = $("#result"), qs = app.list;
+  const stats = qs.map(q => ({ q, ...statusOf(q), t: app.times[q.id] || 0 }));
+  const nOk = stats.filter(s => s.s === "ok").length, nBad = stats.filter(s => s.s === "bad").length, nEmpty = stats.length - nOk - nBad;
+  const pctScore = Math.round(nOk / qs.length * 100);
+  const used = stats.reduce((a, s) => a + s.t, 0);
+  const head = h("div", { class: "card stack", style: { gap: "18px" } },
+    h("span", { class: "eyebrow", text: app.timeout ? "Waktu habis · Tes selesai" : "Tes selesai" }),
+    h("div", { class: "score" },
+      h("div", { class: "big", html: `${nOk}<small>/${qs.length}</small>` }),
+      h("div", { class: "stack", style: { gap: "8px" } },
+        h("div", { style: { fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "22px" }, text: `${pctScore}% benar` }),
+        h("div", { class: "chips" },
+          h("span", { class: "chip ok", text: `${nOk} benar` }), h("span", { class: "chip bad", text: `${nBad} salah` }),
+          h("span", { class: "chip", text: `${nEmpty} kosong` })),
+        h("div", { class: "small", text: `Total waktu ${fmtDur(app.totalSec)} · rata-rata ${fmtDur(used / qs.length)} per soal · mode ${app.mode === "timed" ? "30 menit" : "tanpa batas"}` }))),
+    h("div", { class: "tiles" }, stats.map(s => h("a", { class: `tile ${s.s}`, href: `#rv-${s.q.id}`, title: `Soal ${s.q.id}: ${s.s === "ok" ? "benar" : s.s === "bad" ? "salah" : "kosong"} · ${fmtDur(s.t)}`,
+      onclick: e => { e.preventDefault(); const d = $(`#rv-${s.q.id}`); d.open = true; d.scrollIntoView({ behavior: "smooth", block: "start" }); } },
+      h("b", { text: s.q.id }), h("span", { text: s.s === "ok" ? "✓" : s.s === "bad" ? "✗" : "–" })))),
+    h("div", { class: "row" }, h("button", { class: "btn btn-primary", type: "button", onclick: () => show("intro"), text: "Ulangi tes" })));
+  const wrongs = stats.filter(s => s.s !== "ok");
+  const wrongCard = h("div", { class: "card stack", style: { gap: "10px" } },
+    h("h2", { text: wrongs.length ? "Soal yang perlu dipelajari" : "Semua soal benar" }),
+    wrongs.length ? h("ul", { class: "rules" }, wrongs.map(s => h("li", null,
+      h("a", { href: `#rv-${s.q.id}`, style: { color: "var(--accent)" }, onclick: e => { e.preventDefault(); const d = $(`#rv-${s.q.id}`); d.open = true; d.scrollIntoView({ behavior: "smooth", block: "start" }); }, text: `Soal ${s.q.id}` }),
+      ` · ${TYPE_LABEL[s.q.type]} · ${s.s === "empty" ? "tidak dijawab" : "salah"}`))) : h("p", { class: "small", text: "Mantap. Tetap baca pembahasan untuk memastikan cara berpikirnya sudah tepat." }));
+  const list = h("div", { class: "stack", style: { gap: "10px" } }, h("h2", { text: "Pembahasan" }),
+    stats.map(s => {
+      const det = h("details", { class: "rv", id: `rv-${s.q.id}` });
+      if (s.s !== "ok") det.open = true;
+      det.append(h("summary", null,
+        h("b", { text: `Soal ${s.q.id}` }), h("span", { class: "small", text: TYPE_LABEL[s.q.type] }),
+        h("span", { class: `chip ${s.s === "ok" ? "ok" : s.s === "bad" ? "bad" : ""}`, text: s.s === "ok" ? "Benar" : s.s === "bad" ? "Salah" : "Kosong" }),
+        h("span", { class: "small", style: { fontFamily: "var(--font-mono)" }, text: app.visited.has(s.q.id) ? fmtDur(s.t) : "tidak sempat dibuka" })));
+      const body = h("div", { class: "rv-body" });
+      const stemBox = h("div"); renderStem(stemBox, s.q);
+      body.append(stemBox, reviewBlock(s.q, app.states[s.q.id]));
+      det.append(body);
+      return det;
+    }));
+  res.replaceChildren(head, wrongCard, list);
+}
+const TYPE_LABEL = { dayschedule: "Penjadwalan", pie: "Pie chart", stackedbar: "Stacked bar", monthcal: "Kalender bulanan", roommatch: "Pembagian ruangan", shapepattern: "Pola bentuk", rankbadges: "Peringkat", linepoints: "Line chart", nodeline: "Urutan garis" };
+
+/* ---- Tema ---- */
+const THEMES = ["auto", "light", "dark"];
+const ICONS = {
+  auto: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="6"/><path d="M8 2v12" /><path d="M8 2a6 6 0 0 1 0 12z" fill="currentColor"/></svg>',
+  light: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="8" cy="8" r="3"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3 3l1.4 1.4M11.6 11.6 13 13M3 13l1.4-1.4M11.6 4.4 13 3"/></svg>',
+  dark: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M13.5 10A6 6 0 0 1 6 2.5a6 6 0 1 0 7.5 7.5z"/></svg>'
+};
+function applyTheme(t) {
+  if (t === "auto") document.documentElement.removeAttribute("data-theme"); else document.documentElement.setAttribute("data-theme", t);
+  const b = $("#themebtn"); b.innerHTML = ICONS[t]; b.title = `Tema: ${{ auto: "otomatis", light: "terang", dark: "gelap" }[t]}`; b.setAttribute("aria-label", b.title + ". Klik untuk ganti.");
+  try { localStorage.setItem("gat-theme", t); } catch (e) {}
+}
+let theme = "auto"; try { theme = localStorage.getItem("gat-theme") || "auto"; } catch (e) {}
+applyTheme(theme);
+$("#themebtn").onclick = () => { theme = THEMES[(THEMES.indexOf(theme) + 1) % 3]; applyTheme(theme); };
+
+/* ---- Wiring ---- */
+$("#f-count").textContent = TEST.questions.filter(q => COMP[q.type]).length;
+$("#btn-practice").onclick = startPractice;
+$("#btn-skip").onclick = startTest;
+$("#p-start").onclick = startTest;
+$("#t-next").onclick = next;
+
+/* Hook untuk pengujian otomatis dari console (tidak dipakai UI) */
+window.GAT = {
+  TEST, COMP, app,
+  fillKey() { const q = app.list[app.idx]; app.states[q.id] = COMP[q.type].keyState(q); renderQuestion(); },
+  goto(id) { app.idx = app.list.findIndex(q => q.id === id); renderQuestion(); },
+  grade() { return app.list.map(q => ({ id: q.id, ...statusOf(q) })); }
+};
+</script>
+<script>
+/* Konfirmasi sebelum meninggalkan halaman saat tes berjalan (termasuk lewat tautan "← Menu") */
+addEventListener("beforeunload", function (e) { if (!document.getElementById("test").hidden) { e.preventDefault(); e.returnValue = ""; } });
+</script>
+</body>
+</html>

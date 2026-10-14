@@ -68,7 +68,9 @@ q{quotes:"“" "”" "‘" "’"}
 /* top bar */
 .topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--surface);border-bottom:1px solid var(--line)}
 .topbar-in{max-width:780px;margin:0 auto;padding-inline:16px;padding-block:10px;display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;justify-content:space-between}
-.brand{display:flex;flex-direction:column;line-height:1.2;min-width:0}
+.menulink{font-size:13px;font-weight:600;color:var(--muted);text-decoration:none;white-space:nowrap;padding:5px 10px;border:1px solid var(--line);border-radius:999px;flex:none}
+.menulink:hover{color:var(--accent);border-color:var(--accent)}
+.brand{display:flex;flex-direction:column;line-height:1.2;min-width:0;margin-right:auto}
 .brand strong{font-weight:700;letter-spacing:.01em}
 .brand span{font-size:.8rem;color:var(--muted)}
 .tb-test{display:flex;align-items:baseline;gap:12px;min-width:0}
@@ -317,6 +319,7 @@ audio{width:100%;max-width:340px;height:38px}
 <body>
 <header class="topbar">
   <div class="topbar-in">
+    <a class="menulink" href="index.html">← Menu</a>
     <div class="brand"><strong>Lolos Rekrutmen</strong><span>Simulasi SVAR Spoken English</span></div>
     <div class="tb-test" id="tb-test" hidden>
       <span class="tb-sec" id="tb-sec"></span>
@@ -455,7 +458,7 @@ audio{width:100%;max-width:340px;height:38px}
   <section id="s-results" class="screen" hidden></section>
 </main>
 
-<footer class="foot">Simulasi latihan oleh Lolos Rekrutmen. Penilaian di halaman ini adalah estimasi untuk latihan dan tidak berafiliasi dengan SHL.</footer>
+<footer class="foot">Simulasi latihan mandiri oleh Lolos Rekrutmen. Penilaian di halaman ini adalah estimasi untuk latihan. Tidak berafiliasi dengan, disponsori, atau didukung oleh SHL.</footer>
 
 <!-- Data and scoring (no DOM) -->
 <script id="svar-core">
