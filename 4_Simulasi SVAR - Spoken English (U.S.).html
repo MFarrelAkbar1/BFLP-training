@@ -1,0 +1,2425 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Simulasi SVAR Spoken English</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=IBM+Plex+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
+<style>
+:root{
+  /* Layout: satu kolom ujian 780px. Bar atas menempel berisi section, nomor soal, dan progres A–F. Tiap layar soal hanya punya satu panel berbingkai. */
+  --bg:#EAEEF2;
+  --surface:#FFFFFF;
+  --sunk:#F2F4F8;
+  --ink:#151E2A;
+  --muted:#586474;
+  --line:#D0D7E0;
+  --accent:#2343C4;
+  --accent-ink:#FFFFFF;
+  --accent-soft:#E1E7F9;
+  --rec:#CF2B42;
+  --rec-ink:#FFFFFF;
+  --rec-soft:#FBE4E7;
+  --good:#1A7650;
+  --good-soft:#DCEFE6;
+  --warn:#94600E;
+  --warn-soft:#F8ECD6;
+  --f-ui:"Instrument Sans","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  --f-read:"Atkinson Hyperlegible",Verdana,"Segoe UI",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --f-ipa:"Segoe UI","Lucida Sans Unicode","DejaVu Sans","Noto Sans","Arial Unicode MS",sans-serif;
+  --radius:12px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F141B; --surface:#171F29; --sunk:#131A23; --ink:#E6EBF1; --muted:#97A3B3; --line:#2A3442;
+    --accent:#8099FF; --accent-ink:#0B1020; --accent-soft:#1D2849;
+    --rec:#FF6377; --rec-ink:#1A0B0E; --rec-soft:#3A1C23;
+    --good:#5DCB98; --good-soft:#14302A;
+    --warn:#E7AE55; --warn-soft:#33281A;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F141B; --surface:#171F29; --sunk:#131A23; --ink:#E6EBF1; --muted:#97A3B3; --line:#2A3442;
+  --accent:#8099FF; --accent-ink:#0B1020; --accent-soft:#1D2849;
+  --rec:#FF6377; --rec-ink:#1A0B0E; --rec-soft:#3A1C23;
+  --good:#5DCB98; --good-soft:#14302A;
+  --warn:#E7AE55; --warn-soft:#33281A;
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 var(--f-ui)}
+button,input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+p{margin:0}
+h1,h2,h3{margin:0;text-wrap:balance}
+h1{font-size:clamp(1.9rem,5vw,2.6rem);line-height:1.1;font-weight:700;letter-spacing:-.015em}
+h2{font-size:1.15rem;font-weight:600;line-height:1.3}
+h3{font-size:1rem;font-weight:600}
+q{quotes:"“" "”" "‘" "’"}
+
+/* top bar */
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--surface);border-bottom:1px solid var(--line)}
+.topbar-in{max-width:780px;margin:0 auto;padding-inline:16px;padding-block:10px;display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;justify-content:space-between}
+.brand{display:flex;flex-direction:column;line-height:1.2;min-width:0}
+.brand strong{font-weight:700;letter-spacing:.01em}
+.brand span{font-size:.8rem;color:var(--muted)}
+.tb-test{display:flex;align-items:baseline;gap:12px;min-width:0}
+.tb-sec{font-size:.85rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.tb-count{font:500 .85rem var(--f-mono);font-variant-numeric:tabular-nums;color:var(--muted);white-space:nowrap}
+.secbar{max-width:780px;margin:0 auto;padding-inline:16px;padding-block:0 10px;display:flex;gap:6px}
+.sb{flex:1 1 0;min-width:0;display:flex;flex-direction:column;gap:3px}
+.sb span{font:500 .7rem var(--f-mono);color:var(--muted);letter-spacing:.06em}
+.sb i{display:block;height:5px;border-radius:3px;background:var(--line);overflow:hidden}
+.sb b{display:block;height:100%;width:100%;background:var(--accent);transform-origin:left center;transform:scaleX(0);transition:transform .3s ease}
+.sb.cur span{color:var(--accent);font-weight:600}
+
+/* layout */
+.app{max-width:780px;margin:0 auto;padding-inline:16px;padding-block:8px 32px}
+.screen{display:flex;flex-direction:column;gap:20px;padding-top:26px}
+.eyebrow{font:500 .76rem var(--f-mono);text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+.lead{font-size:1.06rem;max-width:62ch}
+.hint{font-size:.9rem;color:var(--muted);max-width:66ch}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.block{display:flex;flex-direction:column;gap:12px}
+.block-head{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:baseline;justify-content:space-between}
+.foot{max-width:780px;margin:0 auto;padding-inline:16px;padding-block:8px 36px;font-size:.8rem;color:var(--muted)}
+
+/* buttons */
+.btn{font-weight:600;font-size:.95rem;padding:11px 20px;border-radius:10px;border:1px solid transparent;cursor:pointer;transition:background-color .15s,border-color .15s,opacity .15s,filter .15s}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.primary{background:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover:not(:disabled){filter:brightness(1.08)}
+.btn.ghost{background:var(--surface);color:var(--ink);border-color:var(--line)}
+.btn.ghost:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+.btn.rec-btn{background:var(--rec);color:var(--rec-ink)}
+.btn.small{padding:7px 14px;font-size:.88rem}
+
+/* setup */
+.hero{display:flex;flex-direction:column;gap:12px}
+.facts{margin:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.facts div{background:var(--surface);padding:12px 14px;min-width:0}
+.facts dt{font-size:.74rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.facts dd{margin:2px 0 0;font-weight:700;font-size:1.3rem;font-variant-numeric:tabular-nums}
+.facts dd small{font-size:.8rem;font-weight:500;color:var(--muted)}
+.seclist{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.secrow{display:grid;grid-template-columns:auto auto minmax(0,1fr) auto;gap:4px 14px;align-items:center;padding:12px 14px;border-top:1px solid var(--line);cursor:pointer}
+.secrow:first-child{border-top:0}
+.secrow:hover{background:var(--sunk)}
+.secrow input{width:18px;height:18px;margin:0;accent-color:var(--accent);cursor:pointer}
+.sec-letter{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:8px;background:var(--accent-soft);color:var(--accent);font:600 .9rem var(--f-mono);flex:none}
+.secrow-main{display:flex;flex-direction:column;min-width:0;line-height:1.35}
+.secrow-main b{font-weight:600}
+.secrow-main span{font-size:.86rem;color:var(--muted)}
+.secrow-meta{display:flex;flex-direction:column;align-items:flex-end;gap:2px;text-align:right}
+.secrow-meta .count{font:500 .82rem var(--f-mono);font-variant-numeric:tabular-nums}
+.secrow-meta .needs{font-size:.76rem;color:var(--muted)}
+.secrow.off .secrow-main,.secrow.off .sec-letter,.secrow.off .secrow-meta{opacity:.5}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px;display:flex;flex-direction:column;gap:12px}
+.panel-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.pill{font:500 .76rem var(--f-mono);padding:3px 10px;border-radius:999px;background:var(--sunk);color:var(--muted);border:1px solid var(--line);white-space:nowrap}
+.pill[data-state="good"]{background:var(--good-soft);color:var(--good);border-color:transparent}
+.pill[data-state="warn"]{background:var(--warn-soft);color:var(--warn);border-color:transparent}
+.pill[data-state="bad"]{background:var(--rec-soft);color:var(--rec);border-color:transparent}
+.pill[data-state="acc"]{background:var(--accent-soft);color:var(--accent);border-color:transparent}
+.heard-live{font:1rem var(--f-read)}
+.meter{display:block;width:100%;height:48px}
+.notice{background:var(--warn-soft);border-radius:10px;padding:12px 14px;font-size:.92rem;max-width:72ch;display:flex;flex-direction:column;gap:6px}
+.notice.plain{background:var(--sunk)}
+.notice ul{margin:0;padding-left:1.2em;display:grid;gap:4px}
+.start-row{gap:14px}
+
+/* section intro */
+.sec-hero{display:flex;gap:16px;align-items:center}
+.sec-badge{display:grid;place-items:center;width:64px;height:64px;border-radius:14px;background:var(--accent);color:var(--accent-ink);font:600 2rem var(--f-mono);flex:none}
+.sec-hero-text{display:flex;flex-direction:column;gap:4px;min-width:0}
+.instr-box{display:flex;flex-direction:column;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px}
+.instr-box .part{display:flex;flex-direction:column;gap:4px}
+.instr-box .part-label{font:500 .74rem var(--f-mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.instr-box .en{font:1.08rem/1.5 var(--f-read)}
+.points{margin:0;padding:0;list-style:none;display:grid;gap:8px;max-width:66ch}
+.points li{display:grid;grid-template-columns:18px minmax(0,1fr);gap:10px;align-items:baseline}
+.points li::before{content:"";width:8px;height:8px;border-radius:2px;background:var(--accent);transform:translateY(-1px)}
+
+/* question screens */
+.qhead{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline;justify-content:space-between}
+.instr{font-size:1.2rem;font-weight:600}
+.topic-label{font:500 .8rem var(--f-mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:-12px}
+.sentence{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:clamp(20px,4.5vw,36px);font:400 clamp(1.35rem,3.3vw,1.85rem)/1.45 var(--f-read);min-height:5em;display:flex;align-items:center;overflow-wrap:anywhere}
+.listen{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px;display:flex;align-items:center;gap:18px;flex-wrap:wrap;min-height:5em}
+.listen p{color:var(--muted);flex:1 1 220px}
+.wave{display:flex;align-items:center;gap:4px;height:44px;flex:none}
+.wave i{display:block;width:6px;height:10px;border-radius:3px;background:var(--line)}
+.playing .wave i{background:var(--accent);animation:wv 1s ease-in-out infinite}
+.playing .wave i:nth-child(2){animation-delay:-.8s}
+.playing .wave i:nth-child(3){animation-delay:-.6s}
+.playing .wave i:nth-child(4){animation-delay:-.4s}
+.playing .wave i:nth-child(5){animation-delay:-.2s}
+.playing .wave i:nth-child(6){animation-delay:-.5s}
+.playing .wave i:nth-child(7){animation-delay:-.3s}
+@keyframes wv{0%,100%{height:10px}50%{height:40px}}
+.note{font-size:.9rem;background:var(--warn-soft);border-radius:8px;padding:9px 12px}
+.status{display:flex;flex-direction:column;gap:12px}
+.status-top{display:flex;align-items:center;gap:10px}
+.dot{width:12px;height:12px;border-radius:50%;background:var(--line);flex:none}
+.ph-label{font-weight:600}
+.ph-clock{margin-left:auto;font:500 1.6rem var(--f-mono);font-variant-numeric:tabular-nums;line-height:1}
+.track{height:4px;border-radius:2px;background:var(--line);overflow:hidden}
+.fill{height:100%;width:100%;background:var(--accent);transform-origin:left center;transform:scaleX(1)}
+.status[data-phase="rec"] .dot{background:var(--rec);animation:pulse 1.1s ease-in-out infinite}
+.status[data-phase="rec"] .ph-label{color:var(--rec)}
+.status[data-phase="rec"] .fill{background:var(--rec)}
+.status[data-phase="beep"] .dot,.status[data-phase="listen"] .dot{background:var(--accent)}
+.status[data-phase="think"] .dot{background:var(--accent)}
+.status[data-phase="saving"] .dot{background:var(--good)}
+.status[data-phase="mic"] .dot{background:var(--warn)}
+.status[data-phase="mic"] .meter,.status[data-phase="listen"] .meter,.status[data-phase="saving"] .meter{visibility:hidden}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+
+/* conversation */
+.player{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:12px}
+.player-top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.turns{display:flex;gap:5px;flex-wrap:wrap}
+.turns i{display:block;width:22px;height:6px;border-radius:3px;background:var(--line)}
+.turns i.on{background:var(--accent);opacity:.5}
+.turns i.done{background:var(--accent)}
+.fallback{display:flex;flex-direction:column;gap:10px}
+.tx{display:flex;flex-direction:column;gap:6px;font:1rem/1.5 var(--f-read);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px}
+.tx p b{font-family:var(--f-ui);font-weight:600}
+.tx p.ev{background:var(--accent-soft);border-radius:6px;padding:2px 6px;margin-inline:-6px}
+.notes{display:flex;flex-direction:column;gap:6px;padding-top:20px}
+.notes label{font-weight:600;font-size:.92rem}
+.notes textarea{width:100%;min-height:96px;resize:vertical;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--surface);font:.95rem/1.5 var(--f-mono)}
+.notes textarea:focus{outline:2px solid var(--accent);outline-offset:1px}
+
+/* multiple choice */
+.qcard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:16px}
+.qprompt{font-size:1.12rem;font-weight:600;max-width:64ch}
+.opts{display:grid;gap:10px}
+.opt{display:grid;grid-template-columns:30px minmax(0,1fr);gap:12px;align-items:center;width:100%;text-align:left;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:var(--surface);cursor:pointer;transition:border-color .15s,background-color .15s}
+.opt:hover{border-color:var(--accent)}
+.okey{display:grid;place-items:center;width:28px;height:28px;border-radius:7px;background:var(--sunk);border:1px solid var(--line);font:500 .85rem var(--f-mono);color:var(--muted)}
+.otext{font:1rem/1.45 var(--f-read);overflow-wrap:anywhere}
+.opt[aria-checked="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.opt[aria-checked="true"] .okey{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.nav{justify-content:space-between}
+
+/* results */
+.res-hero{display:grid;grid-template-columns:auto minmax(0,1fr);gap:24px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px}
+.res-score{display:flex;align-items:baseline;gap:4px}
+.res-score .big{font-weight:700;font-size:clamp(3.2rem,9vw,4.4rem);line-height:1;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.res-score small{font:500 1rem var(--f-mono);color:var(--muted)}
+.res-side{display:flex;flex-direction:column;gap:8px;min-width:0}
+.res-side h1{font-size:clamp(1.4rem,3.6vw,1.9rem)}
+@media (max-width:540px){.res-hero{grid-template-columns:1fr;gap:12px}}
+.skills{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.skill{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;padding:14px 16px;border-top:1px solid var(--line);align-items:center}
+.skill:first-child{border-top:0}
+.skill-name{display:flex;flex-direction:column;line-height:1.3;min-width:0}
+.skill-name span{font-size:.84rem;color:var(--muted)}
+.skill-val{display:flex;align-items:center;gap:10px}
+.skill-val .num{font:600 1.25rem var(--f-mono);font-variant-numeric:tabular-nums;min-width:2.4ch;text-align:right}
+.bar{grid-column:1 / -1;height:8px;border-radius:999px;background:var(--sunk);border:1px solid var(--line);overflow:hidden}
+.bar i{display:block;height:100%;border-radius:999px;background:var(--muted)}
+.bar i.good{background:var(--good)}
+.bar i.acc{background:var(--accent)}
+.bar i.warn{background:var(--warn)}
+.bar i.bad{background:var(--rec)}
+.skill-src{grid-column:1 / -1;font-size:.78rem;color:var(--muted)}
+.chip{font:600 .82rem var(--f-mono);font-variant-numeric:tabular-nums;padding:3px 9px;border-radius:8px;background:var(--sunk);color:var(--muted);white-space:nowrap}
+.chip.good{background:var(--good-soft);color:var(--good)}
+.chip.acc{background:var(--accent-soft);color:var(--accent)}
+.chip.warn{background:var(--warn-soft);color:var(--warn)}
+.chip.bad{background:var(--rec-soft);color:var(--rec)}
+.sumtable{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.sumrow{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;gap:12px;align-items:center;padding:12px 14px;border-top:1px solid var(--line)}
+.sumrow:first-child{border-top:0}
+.sum-name{display:flex;flex-direction:column;line-height:1.3;min-width:0;font-weight:600}
+.sum-name small{font-weight:400;font-size:.84rem;color:var(--muted)}
+.sum-time{font:500 .82rem var(--f-mono);color:var(--muted);font-variant-numeric:tabular-nums}
+.rv-sec{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius)}
+.rv-sec>summary{list-style:none;display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;gap:12px;align-items:center;padding:14px 16px;cursor:pointer}
+.rv-sec>summary::-webkit-details-marker{display:none}
+.rv-sec>summary::after{content:"";width:9px;height:9px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg) translateY(-3px);transition:transform .15s}
+.rv-sec[open]>summary::after{transform:rotate(-135deg) translateY(-2px)}
+.rv-sec>summary:focus-visible{outline:2px solid var(--accent);outline-offset:-2px;border-radius:var(--radius)}
+.rv-title{display:flex;flex-direction:column;line-height:1.3;min-width:0;font-weight:600}
+.rv-title small{font-weight:400;font-size:.84rem;color:var(--muted)}
+.rv-body{padding-inline:16px;padding-block:0 6px;border-top:1px solid var(--line)}
+.item{border-top:1px solid var(--line);padding-block:20px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.item:first-child{border-top:0}
+.item-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.qn{font:500 .78rem var(--f-mono);text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+.diff{font:1.2rem/2 var(--f-read);overflow-wrap:anywhere}
+.w{padding:1px 3px;border-radius:4px}
+.w.miss{color:var(--rec);background:var(--rec-soft);text-decoration:line-through;text-decoration-thickness:2px}
+.w.sub{color:var(--warn);background:var(--warn-soft)}
+.w.sub small{font:500 .62em var(--f-mono);margin-left:5px}
+.w.ins{font-size:.78em;font-style:italic;color:var(--warn)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.82rem;color:var(--muted);padding-top:14px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{display:inline-block;width:12px;height:12px;border-radius:3px}
+.sw.ok{background:var(--line)}
+.sw.miss{background:var(--rec)}
+.sw.sub{background:var(--warn)}
+.heard{font-size:.92rem;color:var(--muted);overflow-wrap:anywhere}
+.heard b{font-weight:600;color:var(--ink)}
+.metrics{margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(128px,1fr));gap:12px}
+.metrics dt{font-size:.76rem;color:var(--muted)}
+.metrics dd{margin:0;font:500 1rem var(--f-mono);font-variant-numeric:tabular-nums}
+audio{width:100%;max-width:340px;height:38px}
+.tips summary{cursor:pointer;font-weight:600;width:fit-content}
+.tips summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.tips ul,.tips ol{margin:10px 0 0;padding-left:1.2em;display:grid;gap:8px;max-width:68ch}
+.ipa{font-family:var(--f-ipa);font-size:.95em;color:var(--accent);white-space:nowrap}
+.qprompt-sm{font-weight:600}
+.olist{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.olist li{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 10px;border:1px solid var(--line);border-radius:8px}
+.olist li.ans{border-color:var(--good);background:var(--good-soft)}
+.olist li.ans .okey{background:var(--good);border-color:var(--good);color:var(--surface)}
+.olist li.wrong{border-color:var(--rec);background:var(--rec-soft)}
+.olist li.wrong .okey{background:var(--rec);border-color:var(--rec);color:var(--surface)}
+.olist .otext{font-size:.95rem}
+.otag{font-size:.76rem;font-weight:600;white-space:nowrap}
+.olist li.ans .otag{color:var(--good)}
+.olist li.wrong .otag{color:var(--rec)}
+.explain{display:flex;flex-direction:column;gap:8px;max-width:70ch;font-size:.95rem}
+.evidence{margin:0;border-left:3px solid var(--line);padding:4px 0 4px 12px;font:.95rem/1.5 var(--f-read);color:var(--ink)}
+.conv-rv{display:flex;flex-direction:column;gap:12px;padding-top:18px}
+.conv-rv+.conv-rv{border-top:1px solid var(--line)}
+.sample{font:1rem/1.6 var(--f-read);background:var(--sunk);border-radius:10px;padding:14px;max-width:70ch}
+.comp{display:flex;flex-wrap:wrap;gap:8px}
+@media (max-width:560px){
+  .facts{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .secrow{grid-template-columns:auto auto minmax(0,1fr);}
+  .secrow-meta{grid-column:3;flex-direction:row;align-items:baseline;gap:10px;justify-content:flex-start;text-align:left}
+  .sumrow{grid-template-columns:auto minmax(0,1fr) auto}
+  .sum-time{display:none}
+  .rv-sec>summary{grid-template-columns:auto minmax(0,1fr) auto}
+  .rv-sec>summary::after{display:none}
+  .qcard{padding:16px}
+  .sec-badge{width:52px;height:52px;font-size:1.6rem}
+}
+@media (prefers-reduced-motion:reduce){
+  .status[data-phase="rec"] .dot,.playing .wave i{animation:none}
+  .playing .wave i{height:26px}
+  .btn,.opt,.sb b{transition:none}
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-in">
+    <div class="brand"><strong>Lolos Rekrutmen</strong><span>Simulasi SVAR Spoken English</span></div>
+    <div class="tb-test" id="tb-test" hidden>
+      <span class="tb-sec" id="tb-sec"></span>
+      <span class="tb-count" id="tb-count"></span>
+    </div>
+  </div>
+  <div class="secbar" id="secbar" hidden></div>
+</header>
+
+<main class="app">
+  <!-- SETUP -->
+  <section id="s-setup" class="screen">
+    <div class="hero">
+      <p class="eyebrow">Simulasi format SVAR · Spoken English (U.S.)</p>
+      <h1>SVAR Spoken English</h1>
+      <p class="lead">Tes bahasa Inggris lisan yang dinilai otomatis: membaca, mengulang, berbicara bebas, menyimak, kosakata, dan tata bahasa. Kerjakan di Chrome atau Edge memakai headset, di ruangan yang tenang.</p>
+    </div>
+    <dl class="facts">
+      <div><dt>Section</dt><dd>6</dd></div>
+      <div><dt>Soal</dt><dd>38</dd></div>
+      <div><dt>Rata-rata</dt><dd>15 <small>menit</small></dd></div>
+      <div><dt>Batas waktu total</dt><dd>Tidak <small>ada</small></dd></div>
+    </dl>
+
+    <div class="block">
+      <div class="block-head"><h2>Pilih section</h2><span class="hint" id="sel-summary"></span></div>
+      <div class="seclist" id="seclist"></div>
+      <p class="hint">Untuk latihan per bagian, hapus centang section yang tidak ingin dikerjakan. Untuk simulasi penuh, biarkan semua tercentang.</p>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><h2>1. Cek mikrofon</h2><span class="pill" id="mic-pill">Belum dicek</span></div>
+      <p class="hint" id="mic-status">Dibutuhkan untuk Section A, B, dan C. Tekan Tes mikrofon, izinkan akses mikrofon, lalu ucapkan: “Hello, good morning.”</p>
+      <canvas class="meter" id="meter-intro" aria-hidden="true"></canvas>
+      <p class="heard-live" id="mic-heard" hidden></p>
+      <div class="row"><button class="btn ghost" id="btn-mic" type="button">Tes mikrofon</button></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><h2>2. Cek audio</h2><span class="pill" id="aud-pill">Belum dicek</span></div>
+      <p class="hint" id="aud-status">Dibutuhkan untuk Section B, D, dan F. Tekan Putar suara tes untuk mendengar contoh suara soal.</p>
+      <div class="row">
+        <button class="btn ghost" id="btn-aud" type="button">Putar suara tes</button>
+        <button class="btn ghost" id="btn-aud-yes" type="button" hidden>Terdengar jelas</button>
+        <button class="btn ghost" id="btn-aud-no" type="button" hidden>Tidak terdengar</button>
+      </div>
+    </div>
+
+    <div class="notice" id="env-notice" hidden></div>
+
+    <div class="row start-row">
+      <button class="btn primary" id="btn-start" type="button" disabled>Mulai tes</button>
+      <span class="hint" id="start-hint"></span>
+    </div>
+  </section>
+
+  <!-- SECTION INTRO -->
+  <section id="s-sec" class="screen" hidden>
+    <div class="sec-hero">
+      <span class="sec-badge" id="si-letter">A</span>
+      <div class="sec-hero-text"><p class="eyebrow" id="si-meta"></p><h1 id="si-name"></h1></div>
+    </div>
+    <div class="instr-box" id="si-instr"></div>
+    <p class="lead" id="si-desc"></p>
+    <ul class="points" id="si-points"></ul>
+    <div class="row"><button class="btn primary" id="si-start" type="button">Mulai</button></div>
+  </section>
+
+  <!-- SPEAKING (A, B, C) -->
+  <section id="s-speak" class="screen" hidden>
+    <div class="qhead"><span class="eyebrow" id="sp-meta"></span></div>
+    <h2 class="instr" id="sp-instr"></h2>
+    <p class="topic-label" id="sp-topic-label" hidden>Your topic is:</p>
+    <div class="sentence" id="sp-text"></div>
+    <div class="listen" id="sp-listen" hidden>
+      <div class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <p id="sp-listen-label">Dengarkan baik-baik. Kalimat hanya diputar sekali.</p>
+    </div>
+    <p class="note" id="sp-note" hidden></p>
+    <div class="status" id="status" data-phase="prep">
+      <div class="status-top">
+        <span class="dot" aria-hidden="true"></span>
+        <span class="ph-label" id="ph-label" aria-live="polite"></span>
+        <span class="ph-clock" id="ph-clock"></span>
+      </div>
+      <div class="track"><div class="fill" id="ph-fill"></div></div>
+      <canvas class="meter" id="meter-test" aria-hidden="true"></canvas>
+      <p class="hint" id="ph-hint"></p>
+      <div class="row">
+        <button class="btn rec-btn" id="btn-done" type="button" hidden>Selesai membaca</button>
+        <button class="btn ghost" id="btn-skip" type="button" hidden>Mulai bicara sekarang</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONVERSATION (D) -->
+  <section id="s-conv" class="screen" hidden>
+    <div class="qhead"><span class="eyebrow" id="cv-meta"></span></div>
+    <h2 class="instr">Listen to the conversation.</h2>
+    <div class="player" id="cv-player">
+      <div class="player-top"><b id="cv-title"></b><span class="pill" id="cv-state">Bersiap</span></div>
+      <p class="hint" id="cv-setting"></p>
+      <div class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="turns" id="cv-turns" aria-hidden="true"></div>
+      <p class="hint">Percakapan hanya diputar sekali. Catat nama, angka, dan waktu di kolom catatan.</p>
+    </div>
+    <div class="fallback" id="cv-fallback" hidden></div>
+    <div class="row"><button class="btn primary" id="cv-next" type="button" hidden>Lanjut ke pertanyaan</button></div>
+  </section>
+
+  <!-- MULTIPLE CHOICE (D, E, F) -->
+  <section id="s-mcq" class="screen" hidden>
+    <div class="qhead"><span class="eyebrow" id="mq-meta"></span><span class="hint" id="mq-ctx"></span></div>
+    <div class="player" id="mq-audio" hidden>
+      <div class="player-top"><b>Dengarkan kalimat</b><span class="pill" id="mq-aud-state">Bersiap</span></div>
+      <div class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <p class="hint" id="mq-aud-hint">Kalimat hanya diputar sekali. Pilihan jawaban muncul setelah kalimat selesai.</p>
+      <p class="note" id="mq-aud-fallback" hidden></p>
+    </div>
+    <div class="qcard" id="mq-card">
+      <p class="qprompt" id="mq-prompt"></p>
+      <div class="opts" id="mq-opts" role="radiogroup" aria-labelledby="mq-prompt"></div>
+    </div>
+    <div class="row nav">
+      <button class="btn primary" id="mq-next" type="button" disabled>Berikutnya</button>
+      <span class="hint">Pilih dengan klik atau tombol 1–4, lalu tekan Enter.</span>
+    </div>
+  </section>
+
+  <div class="notes" id="notes-wrap" hidden>
+    <label for="notes">Catatan</label>
+    <textarea id="notes" rows="4" placeholder="Tulis nama, angka, atau kata kunci yang kamu dengar."></textarea>
+  </div>
+
+  <!-- RESULTS -->
+  <section id="s-results" class="screen" hidden></section>
+</main>
+
+<footer class="foot">Simulasi latihan oleh Lolos Rekrutmen. Penilaian di halaman ini adalah estimasi untuk latihan dan tidak berafiliasi dengan SHL.</footer>
+
+<!-- Data and scoring (no DOM) -->
+<script id="svar-core">
+const SECTIONS = [
+  {
+    id: "A", name: "Read and Speak", kind: "read",
+    instr: [{ en: "Read the given sentence out loud." }],
+    desc: "Kalimat bahasa Inggris muncul satu per satu. Kamu punya 3 detik untuk membaca dalam hati, lalu bacakan dengan suara jelas setelah bunyi beep.",
+    points: ["Mulai bicara setelah beep, jangan sebelumnya.", "Rekaman berhenti sendiri sesaat setelah kalimat selesai dibaca.", "Soal berikutnya langsung muncul. Tidak ada kesempatan mengulang."],
+    needs: "Mikrofon", short: "Bacakan kalimat setelah beep",
+    items: [
+      { n: 1, text: "They followed in her footsteps and did a good job.", tips: [
+        "<b>They</b> diawali bunyi [/ð/] yang bersuara: ujung lidah di antara gigi lalu bergetar. Jangan dibaca 'dei'.",
+        "<b>followed</b> [/ˈfɑː.loʊd/]: akhiran <i>-ed</i> dibaca /d/ saja, jadi dua suku kata (FAH-lohd), bukan 'fol-lo-wed'.",
+        "<b>footsteps</b> [/ˈfʊt.steps/]: vokal pendek seperti pada <i>book</i>. Bunyi t di tengah tetap terdengar walau singkat.",
+        "<i>follow in someone's footsteps</i> artinya mengikuti jejak seseorang. Baca <i>did a good job</i> menyambung tanpa jeda."
+      ] },
+      { n: 2, text: "What a great mentor she is.", tips: [
+        "Ini kalimat seru (exclamation), bukan pertanyaan, walaupun diawali <i>What</i>. Intonasi <b>turun</b> di akhir dan tekanan kuat ada di <b>great</b>.",
+        "<b>great</b> [/ɡreɪt/] dibaca 'greit', bukan 'grit'.",
+        "<b>mentor</b> [/ˈmen.tɔːr/]: tekanan di depan, MEN-tor.",
+        "<i>What a</i> disambung jadi satu: 'wa-de'. Dalam aksen Amerika, t di antara dua vokal terdengar seperti d ringan."
+      ] },
+      { n: 3, text: "Could you bring me the pot of coffee?", tips: [
+        "Permintaan sopan berbentuk pertanyaan. Intonasi naik sedikit di kata terakhir: <i>coffee↗</i>.",
+        "<b>Could you</b> lazim disambung jadi 'ku-jyu'. Huruf l di <i>could</i> tidak dibaca.",
+        "<b>pot of</b> disambung: 'pa-dev'.",
+        "<b>coffee</b> [/ˈkɑː.fi/]: KAH-fee, tekanan di depan, huruf f diucapkan jelas (bukan p)."
+      ] },
+      { n: 4, text: "Is the tone of voice as important as the content?", tips: [
+        "Ini <b>yes/no question</b>, jadi intonasi <b>naik</b> di kata terakhir: <i>content↗</i>.",
+        "<b>content</b> di sini kata benda (isi), tekanannya di depan: [/ˈkɑːn.tent/] CON-tent. Kalau con-TENT, artinya berubah jadi 'puas'.",
+        "<b>tone</b> [/toʊn/] dibaca 'toun', bukan 'ton'. <b>voice</b> [/vɔɪs/] diawali bunyi v, bukan f.",
+        "Tekanan ada di <i>tone, voice, important, content</i>. Kata <i>is, the, of, as</i> dibaca ringan."
+      ] },
+      { n: 5, text: "They won the match fair and square.", tips: [
+        "<b>won</b> [/wʌn/] dibaca persis seperti <i>one</i>, bukan 'won' dengan o bulat.",
+        "<b>match</b> [/mætʃ/]: vokal di antara a dan e dengan mulut agak lebar. Akhiran 'tch' terdengar jelas.",
+        "<i>fair and square</i> artinya menang secara jujur dan sesuai aturan. <i>and</i> dibaca lemah: 'fair-en-square'.",
+        "<b>fair</b> [/fer/] dan <b>square</b> [/skwer/]: huruf r di akhir tetap dibaca dalam aksen Amerika."
+      ] },
+      { n: 6, text: "We request that you share feedback about your travel experience with our airline.", tips: [
+        "<b>request</b> [/rɪˈkwest/]: tekanan di belakang, re-QUEST.",
+        "<b>experience</b> [/ɪkˈspɪr.i.əns/]: tekanan di suku kedua, ex-SPEER-ee-ens.",
+        "<b>airline</b> [/ˈer.laɪn/]: 'ER-lain', huruf r tetap dibaca.",
+        "Kalimat panjang: ambil napas sebelum beep. Kalau perlu jeda, taruh setelah <i>feedback</i>, jangan di tengah frasa seperti <i>travel | experience</i>."
+      ] },
+      { n: 7, text: "According to the president, the claims do not have any substance.", tips: [
+        "<b>According</b> [/əˈkɔːr.dɪŋ/]: tekanan di suku kedua, a-COR-ding.",
+        "<b>president</b> [/ˈprez.ɪ.dənt/]: PREZ-i-dent, huruf s dibaca /z/.",
+        "<b>claims</b> [/kleɪmz/]: akhiran -s dibaca /z/. <b>substance</b> [/ˈsʌb.stəns/]: SUB-stens.",
+        "Ambil jeda pendek di koma setelah <i>president</i>. Baca <i>do not</i> sesuai teks, jangan diganti <i>don't</i>."
+      ] },
+      { n: 8, text: "People say that he is creative because he is left-handed, but I don't think it's true.", tips: [
+        "Kalimat terpanjang di section ini. Ambil napas sebelum beep, lalu jeda singkat di koma setelah <i>left-handed</i>.",
+        "<b>creative</b> [/kriˈeɪ.tɪv/]: kree-AY-tiv, tekanan di suku kedua.",
+        "<b>because</b> [/bɪˈkɑːz/]: akhiran /z/, bukan /s/.",
+        "<b>left-handed</b> [/ˌleftˈhæn.dɪd/]: akhiran -ed dibaca /ɪd/ karena didahului bunyi d. <b>think</b> diawali /θ/ tanpa suara, jangan jadi 'tink'."
+      ] },
+      { n: 9, text: "Please hold the line while I transfer your call to the billing department.", tips: [
+        "<b>the</b> diawali bunyi [/ð/] yang bersuara: ujung lidah di antara gigi, bukan 'de'.",
+        "<b>department</b> [/dɪˈpɑːrt.mənt/]: de-PART-ment.",
+        "<b>billing</b> [/ˈbɪl.ɪŋ/]: akhiran -ing dibaca sengau, tanpa bunyi 'g' yang keras di ujung.",
+        "Sambung <i>while I</i> dalam satu alur ('wai-lai'). Ini kalimat permintaan sopan, intonasi turun di akhir."
+      ] },
+      { n: 10, text: "Our technicians thoroughly inspect every vehicle before it leaves the warehouse.", tips: [
+        "<b>thoroughly</b> [/ˈθɝː.oʊ.li/]: 'THUR-oh-lee'. Bunyi /θ/ tidak bersuara dengan lidah di antara gigi, jangan jadi 't'.",
+        "<b>vehicle</b> [/ˈviː.ə.kəl/]: 'VEE-uh-kul', huruf h tidak dibaca.",
+        "<b>technicians</b> [/tekˈnɪʃ.ənz/]: tek-NISH-uns. <b>warehouse</b> [/ˈwer.haʊs/]: WARE-haus.",
+        "<b>leaves</b> [/liːvz/]: vokal panjang 'lii' dan akhiran bunyi z. Jangan tertukar dengan <i>lives</i>."
+      ] },
+      { n: 11, text: "Could you confirm whether the refund has been credited to your account?", tips: [
+        "Ini <b>yes/no question</b>: intonasi naik di akhir, <i>account↗</i>.",
+        "<b>whether</b> [/ˈweð.ɚ/]: bunyi th bersuara, terdengar sama dengan <i>weather</i>.",
+        "<b>credited</b> [/ˈkred.ɪ.tɪd/]: akhiran -ed dibaca 'id' karena didahului bunyi t. Tekanan di depan, CRED-it-ed.",
+        "<b>refund</b> (kata benda) [/ˈriː.fʌnd/]: REE-fund. <b>Could you</b> lazim disambung jadi 'ku-jyu'."
+      ] },
+      { n: 12, text: "I appreciate your patience while we resolve this issue.", tips: [
+        "<b>appreciate</b> [/əˈpriː.ʃi.eɪt/]: a-PREE-shee-eit. Huruf c dibaca 'sy'.",
+        "<b>patience</b> [/ˈpeɪ.ʃəns/]: PAY-shens. Bunyinya hampir sama dengan <i>patients</i>; artinya ditentukan konteks.",
+        "<b>resolve</b> [/rɪˈzɑːlv/]: huruf s dibaca /z/, tekanan di belakang. <b>issue</b> [/ˈɪʃ.uː/]: 'ISH-oo', bukan 'is-su'.",
+        "Kalimat pernyataan yang sopan: intonasi turun di akhir dengan tempo tenang, seperti petugas layanan pelanggan."
+      ] }
+    ]
+  },
+  {
+    id: "B", name: "Listen and Repeat", kind: "repeat",
+    instr: [{ en: "Repeat the sentence that you hear." }],
+    desc: "Kamu akan mendengar satu kalimat, hanya sekali dan tanpa teks. Setelah bunyi beep, ulangi kalimat itu persis kata per kata.",
+    points: ["Pakai headset supaya suara soal tidak ikut terekam mikrofon.", "Kalimat tidak bisa diputar ulang.", "Fokus pada urutan kata dan kata kecil seperti the, a, to."],
+    needs: "Mikrofon + audio", short: "Ulangi kalimat yang didengar",
+    items: [
+      { n: 13, text: "The meeting has been moved to Thursday afternoon.", tips: [
+        "Pecah jadi 3 potongan saat mendengar: <i>The meeting | has been moved | to Thursday afternoon</i>. Potongan lebih mudah diingat daripada kata satu per satu.",
+        "Pertahankan bentuk <b>has been moved</b> (present perfect pasif). Jangan diganti <i>was moved</i>.",
+        "<b>Thursday</b> [/ˈθɝːz.deɪ/]: diawali /θ/ tanpa suara, bukan 'tersdei'."
+      ] },
+      { n: 14, text: "Please send me the report by the end of the day.", tips: [
+        "Potongan: <i>Please send me the report | by the end of the day</i>.",
+        "Jangan lupa kata kecil <i>the</i> sebelum <i>end</i> dan <i>day</i>. Kata seperti ini paling sering hilang saat mengulang.",
+        "<i>end of the</i> disambung: 'en-dev-the'."
+      ] },
+      { n: 15, text: "I'm sorry, but the manager is not available right now.", tips: [
+        "Ulangi bentuk persis yang kamu dengar: <i>I'm</i> dan <i>is not</i>. Kesamaan kata per kata ikut dinilai.",
+        "<b>available</b> [/əˈveɪ.lə.bəl/]: tekanan di suku kedua, a-VAY-la-bel.",
+        "Ikuti jeda singkat setelah <i>sorry</i>, sesuai koma."
+      ] },
+      { n: 16, text: "Your package will be delivered within three business days.", tips: [
+        "<b>business</b> [/ˈbɪz.nəs/] hanya dua suku kata: BIZ-nes. Huruf i kedua tidak dibaca.",
+        "<b>delivered</b> [/dɪˈlɪv.ɚd/]: akhiran -ed dibaca /d/.",
+        "Potongan: <i>Your package | will be delivered | within three business days</i>."
+      ] },
+      { n: 17, text: "Could you spell your last name for me, please?", tips: [
+        "Permintaan sopan: intonasi naik di akhir, <i>please↗</i>.",
+        "Jaga konsonan di <b>spell</b> dan akhiran -st di <b>last</b> tetap jelas.",
+        "Potongan: <i>Could you spell | your last name | for me, please</i>."
+      ] },
+      { n: 18, text: "We are offering a ten percent discount on all orders this week.", tips: [
+        "<b>percent</b> [/pɚˈsent/]: tekanan di belakang, per-SENT.",
+        "<b>discount</b> (kata benda) [/ˈdɪs.kaʊnt/]: DIS-kaunt.",
+        "Pertahankan <b>are offering</b> (present continuous). Potongan: <i>We are offering | a ten percent discount | on all orders this week</i>."
+      ] },
+      { n: 19, text: "The train was crowded, so we decided to take a taxi instead.", tips: [
+        "Kalimat ini punya dua bagian yang dihubungkan <i>so</i>. Ingat urutannya: sebab dulu (<i>The train was crowded</i>), lalu akibat.",
+        "<b>crowded</b> [/ˈkraʊ.dɪd/] dan <b>decided</b> [/dɪˈsaɪ.dɪd/]: akhiran -ed dibaca /ɪd/ karena didahului bunyi d.",
+        "<b>instead</b> [/ɪnˈsted/]: tekanan di belakang, in-STED."
+      ] },
+      { n: 20, text: "If you have any questions, feel free to contact our support team.", tips: [
+        "<b>questions</b> [/ˈkwes.tʃənz/]: 'KWES-chenz', akhiran /z/.",
+        "<b>contact</b> [/ˈkɑːn.tækt/]: KAHN-takt, tekanan di depan.",
+        "Potongan: <i>If you have any questions | feel free to contact | our support team</i>."
+      ] },
+      { n: 21, text: "She has been working at the hotel for almost five years.", tips: [
+        "Pertahankan <b>has been working</b> (present perfect continuous). Jangan disederhanakan jadi <i>works</i> atau <i>worked</i>.",
+        "<b>hotel</b> [/hoʊˈtel/]: tekanan di belakang, ho-TEL.",
+        "<i>for almost five years</i>: <i>for</i> diikuti lama waktu."
+      ] },
+      { n: 22, text: "Make sure you save your work before you shut down the computer.", tips: [
+        "Potongan: <i>Make sure | you save your work | before you shut down the computer</i>.",
+        "<b>computer</b> [/kəmˈpjuːtɚ/]: tekanan di suku kedua, kem-PYU-ter.",
+        "Jaga bunyi 'sy' di <b>sure</b> dan <b>shut</b>."
+      ] }
+    ]
+  },
+  {
+    id: "C", name: "Free Speech", kind: "free",
+    instr: [{ en: "Speak on the topic provided to you." }],
+    desc: "Satu topik muncul di layar. Kamu punya 30 detik untuk berpikir, lalu bicara selama 45 detik setelah bunyi beep.",
+    points: ["Bicara sampai waktu hampir habis. Jawaban yang terlalu pendek menurunkan nilai.", "Pakai struktur sederhana: pembuka, 2–3 detail, lalu penutup.", "Kamu bisa mulai lebih cepat dengan tombol Mulai bicara sekarang."],
+    needs: "Mikrofon", short: "Bicara 45 detik tentang satu topik",
+    items: [
+      { n: 23, topic: "Describe your stay at a resort.",
+        keywords: ["resort", "stay", "room", "pool", "beach", "view", "sea", "ocean", "mountain", "island", "villa", "staff", "service", "friendly", "food", "breakfast", "dinner", "lunch", "restaurant", "relax", "spa", "massage", "holiday", "vacation", "trip", "weekend", "family", "friend", "enjoy", "beautiful", "comfortable", "clean", "activit", "swim", "sunset", "night", "hotel", "garden", "snorkel", "dive", "balcony"],
+        outline: [
+          "<b>Pembuka (5–10 detik).</b> Kapan, di mana, dengan siapa, berapa lama. <i>Last December, I stayed at a beach resort in Lombok with my family for three nights.</i>",
+          "<b>Detail (20–25 detik).</b> Pilih 2–3 hal konkret: kamar, pemandangan, makanan, staf, aktivitas.",
+          "<b>Momen terbaik (5–10 detik).</b> <i>The best part was …, because …</i>",
+          "<b>Penutup (5 detik).</b> <i>Overall, it was a relaxing stay, and I would love to go back.</i>"
+        ],
+        phrases: ["I'd like to talk about my stay at …", "What I liked most was …", "The staff were very friendly and helpful.", "On the second day, we …", "It was a great way to relax and recharge.", "If I had the chance, I would definitely go back."],
+        checklist: ["Bicara hampir 45 detik penuh tanpa berhenti lama.", "Ada pembuka, detail, dan penutup.", "Ada minimal 3 detail konkret.", "Memakai past tense dengan konsisten: stayed, was, had, went.", "Tidak mengulang kata atau kalimat yang sama terus-menerus."],
+        sample: "Last December, I stayed at a small beach resort in Lombok with my family for three nights. Our room had a balcony with a beautiful view of the ocean, and we could hear the waves at night. The staff were very friendly. They welcomed us with fresh coconut juice and helped us book a snorkeling trip. Every morning, we had breakfast by the pool, and the local food was delicious. The best part was snorkeling, because the water was so clear. Overall, it was a relaxing stay, and I would love to go back someday."
+      }
+    ]
+  },
+  {
+    id: "D", name: "Listening Comprehension", kind: "listening",
+    instr: [{ en: "In this section, you will hear a conversation followed by a set of questions. Each conversation will be played one time only. You may take notes as you listen. Each question has multiple answer options and you must choose the correct answer." }],
+    desc: "Ada 2 percakapan. Setiap percakapan diputar sekali, lalu diikuti pertanyaan pilihan ganda dengan 4 opsi.",
+    points: ["Siapkan kolom catatan untuk nama, angka, dan waktu.", "Percakapan tidak bisa diputar ulang.", "Waspadai informasi yang berubah di tengah percakapan, misalnya jadwal yang dipindah."],
+    needs: "Audio", short: "Dengar percakapan, jawab pilihan ganda",
+    conversations: [
+      { id: "D1", title: "Conversation 1", setting: "Seorang pria menelepon hotel.", names: { W: "Receptionist", M: "Caller" },
+        lines: [
+          ["W", "Good morning, Seaview Hotel. This is Rachel speaking. How may I help you?"],
+          ["M", "Hi, I have a reservation for this Friday, but I need to change it to next weekend."],
+          ["W", "Certainly. May I have your name, please?"],
+          ["M", "It's David Lim."],
+          ["W", "Thank you, Mr. Lim. I see you booked a deluxe room for two nights. For next weekend, we only have a standard room available. Would that be okay?"],
+          ["M", "How much is the standard room?"],
+          ["W", "It's eighty dollars per night. That's twenty dollars less than the deluxe room."],
+          ["M", "That's fine. Is breakfast still included?"],
+          ["W", "Yes, breakfast is included with every room. I've moved your booking to next Friday and Saturday. You'll receive a confirmation email shortly."],
+          ["M", "Great. Thank you for your help."]
+        ],
+        items: [
+          { n: 24, prompt: "Why is the man calling the hotel?", options: ["To cancel his reservation", "To change the date of his reservation", "To complain about his room", "To ask for directions to the hotel"], answer: 1, evidence: [1],
+            explain: "Di awal, pria itu berkata <i>“I have a reservation for this Friday, but I need to change it to next weekend.”</i> Ia ingin mengganti tanggal, bukan membatalkan.",
+            quick: "Tujuan penelepon hampir selalu disebut di kalimat pertama atau kedua. Simak bagian awal dengan teliti." },
+          { n: 25, prompt: "What type of room will the man stay in?", options: ["A deluxe room", "A family room", "A suite", "A standard room"], answer: 3, evidence: [4, 7],
+            explain: "Untuk minggu depan hanya tersedia <i>standard room</i>, dan pria itu menjawab <i>“That's fine.”</i> Deluxe room adalah pesanan awalnya, jadi itu jebakan.",
+            quick: "Kalau ada perubahan rencana, jawaban yang benar biasanya kondisi setelah perubahan." },
+          { n: 26, prompt: "How much does the deluxe room cost per night?", options: ["$100", "$80", "$60", "$120"], answer: 0, evidence: [6],
+            explain: "Standard room $80 per malam, dan resepsionis berkata harganya <i>“twenty dollars less than the deluxe room.”</i> Jadi deluxe room = 80 + 20 = $100. Angka $80 adalah harga standard room, jebakan untuk yang tidak menyimak sampai akhir kalimat.",
+            quick: "Catat angka beserta kata pembandingnya (<i>less, more, cheaper</i>) di kolom catatan saat percakapan diputar." }
+        ]
+      },
+      { id: "D2", title: "Conversation 2", setting: "Dua rekan kerja berbicara di kantor.", names: { W: "Anna", M: "Mark" },
+        lines: [
+          ["W", "Hi Mark, have you finished the sales presentation for Monday?"],
+          ["M", "Almost. I'm still waiting for the sales figures from the marketing team. They said they would send them this morning, but I haven't received anything yet."],
+          ["W", "That's strange. Sarah told me she emailed them to you yesterday afternoon. Maybe the email went to your spam folder."],
+          ["M", "You might be right. I'll check now, and if it isn't there, I'll call her."],
+          ["W", "Good idea. Oh, and don't forget, the meeting has been moved from ten o'clock to nine o'clock."],
+          ["M", "Nine? Thanks for letting me know. I'll come in early to set up the projector."]
+        ],
+        items: [
+          { n: 27, prompt: "What is the man waiting for?", options: ["A new projector", "An email from his manager", "Sales figures from the marketing team", "A reply from a client"], answer: 2, evidence: [1],
+            explain: "Mark berkata <i>“I'm still waiting for the sales figures from the marketing team.”</i> Projector disebut di akhir, tapi itu yang akan ia siapkan, bukan yang ia tunggu.",
+            quick: "Cari kata kerja kunci dari pertanyaan (<i>waiting</i>) di percakapan. Kalimat yang memuatnya biasanya berisi jawaban." },
+          { n: 28, prompt: "What time will the meeting start?", options: ["At eight o'clock", "At nine o'clock", "At ten o'clock", "At eleven o'clock"], answer: 1, evidence: [4, 5],
+            explain: "Rapat dipindah <i>“from ten o'clock to nine o'clock.”</i> Jam sepuluh adalah jadwal lama, jadi jawabannya jam sembilan.",
+            quick: "Kalau ada kata <i>moved, changed,</i> atau <i>instead</i>, informasi yang benar biasanya yang disebut terakhir." }
+        ]
+      }
+    ]
+  },
+  {
+    id: "E", name: "Vocabulary", kind: "mcq",
+    instr: [{ en: "In this section, choose the correct answer to each multiple choice question." }],
+    desc: "Lima soal pilihan ganda: melengkapi kalimat, sinonim, dan antonim.",
+    points: ["Baca keempat pilihan sebelum memilih.", "Untuk soal kalimat, cari kata penghubung yang memberi petunjuk makna, seperti but atau despite.", "Waspadai antonim yang dipasang sebagai jebakan di soal sinonim, dan sebaliknya."],
+    needs: "Tanpa audio", short: "Pilihan ganda kosakata",
+    items: [
+      { n: 29, prompt: "Which sentence is correct?", options: ["Monika is quite intelligent but rather industrious.", "Monika is quite intelligent but rather generous.", "Monika is quite intelligent but rather lazy.", "Monika is quite intelligent but rather optimistic."], answer: 2,
+        explain: "Kata <b>but</b> menandakan kontras. <i>Intelligent</i> (cerdas) bermakna positif, jadi setelah <i>but rather</i> dibutuhkan sifat negatif. <i>Industrious</i> (rajin), <i>generous</i> (murah hati), dan <i>optimistic</i> (optimis) semuanya positif. Hanya <b>lazy</b> (malas) yang berlawanan nilai rasanya.",
+        quick: "Lihat kata penghubungnya dulu. <i>But, although, however</i> berarti kontras, jadi cari pilihan yang nilai rasanya berlawanan dengan bagian pertama kalimat." },
+      { n: 30, prompt: "Which sentence is correct?", options: ["Jacob can bail the team out of the potential demeanor.", "Jacob can bail the team out of the potential cacophony.", "Jacob can bail the team out of the potential teaser.", "Jacob can bail the team out of the potential crisis."], answer: 3,
+        explain: "<i>Bail someone out of</i> artinya menolong seseorang keluar dari kesulitan. Yang bisa menjadi kesulitan hanya <b>crisis</b> (krisis). <i>Demeanor</i> berarti sikap atau perilaku, <i>cacophony</i> berarti kebisingan yang sumbang, dan <i>teaser</i> berarti cuplikan atau teka-teki pendek.",
+        quick: "Kalau ada kata yang asing, cari pasangan kata yang lazim (collocation). <i>Bail out of</i> hampir selalu diikuti masalah: <i>crisis, trouble, debt</i>." },
+      { n: 31, prompt: "Which sentence is correct?", options: ["Despite being busy, Kathy still volunteers more time to charity than most of her friends.", "Although being busy, Kathy still volunteers more time to charity than most of her friends.", "Since being busy, Kathy still volunteers more time to charity than most of her friends.", "However being busy, Kathy still volunteers more time to charity than most of her friends."], answer: 0,
+        explain: "<b>Despite</b> diikuti kata benda atau bentuk V-ing: <i>despite being busy</i>. <i>Although</i> harus diikuti klausa lengkap (subjek + kata kerja), misalnya <i>Although she is busy</i>. <i>Since</i> bermakna 'karena' atau 'sejak', bukan kontras. <i>However</i> tidak bisa langsung diikuti <i>being</i> di posisi ini.",
+        quick: "<i>Despite / In spite of</i> + V-ing atau kata benda. <i>Although / Even though</i> + subjek + kata kerja." },
+      { n: 32, prompt: "What is an antonym for the word EMINENT?", options: ["Inferior", "Credit", "Prestige", "Important"], answer: 0,
+        explain: "<b>Eminent</b> berarti terkemuka atau unggul. Lawan katanya <b>inferior</b> (lebih rendah mutu atau kedudukannya). <i>Prestige</i> (gengsi) dan <i>important</i> (penting) justru searah maknanya, sedangkan <i>credit</i> (pujian, kredit) tidak berlawanan. Jangan tertukar dengan <i>imminent</i> (akan segera terjadi).",
+        quick: "Untuk soal antonim, buang dulu pilihan yang maknanya mirip dengan kata soal. Biasanya tinggal satu yang tersisa." },
+      { n: 33, prompt: "What is a synonym for the word LATEST?", options: ["Current", "Postponed", "Old", "Outdated"], answer: 0,
+        explain: "<b>Latest</b> berarti terbaru. Sinonim terdekatnya <b>current</b> (terkini). <i>Old</i> dan <i>outdated</i> justru lawan katanya, sedangkan <i>postponed</i> berarti ditunda.",
+        quick: "Penyusun soal sering memasang antonim sebagai jebakan di soal sinonim. Coret dulu pilihan yang maknanya berlawanan." }
+    ]
+  },
+  {
+    id: "F", name: "Grammar", kind: "mcq",
+    instr: [
+      { label: "Soal 34–36", en: "Choose the response that is grammatically correct." },
+      { label: "Soal 37–38", en: "You will now hear a sentence that might contain a grammatical error. The sentence will be followed by 4 options, each containing a portion of the sentence. Choose the option that contains the error." }
+    ],
+    desc: "Tiga soal memilih kalimat yang benar, lalu dua soal mendengar kalimat dan menemukan bagian yang salah.",
+    points: ["Untuk soal audio, kalimat hanya diputar sekali.", "Perhatikan kecocokan subjek dan kata kerja, bentuk waktu, dan kata depan.", "Pilihan jawaban soal audio baru muncul setelah kalimat selesai diputar."],
+    needs: "Audio (soal 37–38)", short: "Pilihan ganda, 2 soal lewat audio",
+    items: [
+      { n: 34, prompt: "Which of the sentences is grammatically correct?", options: ["We all decided to go to Boston by sea.", "We all decided to go to Boston to sea.", "We all decided to go to Boston of sea.", "We all decided to go to Boston on sea."], answer: 0,
+        explain: "Untuk cara bepergian, bahasa Inggris memakai <b>by</b> + moda transportasi tanpa <i>the</i>: <i>by sea, by air, by car, by train</i>. Pengecualiannya <i>on foot</i> (berjalan kaki).",
+        quick: "Hafalkan pola <i>by + moda</i>. Kalau kalimatnya tentang cara bepergian, cek pilihan dengan <i>by</i> lebih dulu." },
+      { n: 35, prompt: "Which of the sentences is grammatically correct?", options: ["He was eating in a hurry.", "He was to eat in a hurry.", "He was always ate in a hurry.", "He was eats in a hurry."], answer: 0,
+        explain: "Past continuous memakai <b>was + V-ing</b>: <i>was eating</i>. <i>Was ate</i> dan <i>was eats</i> salah karena <i>was</i> tidak bisa diikuti kata kerja bentuk lampau atau bentuk -s. Pola <i>was to eat</i> berarti 'dijadwalkan untuk makan', tidak cocok dengan <i>in a hurry</i>.",
+        quick: "Setelah <i>was/were</i>, kata kerja harus V-ing (aktif) atau V3 (pasif)." },
+      { n: 36, prompt: "Which of the sentences is grammatically correct?", options: ["A number of men is required for this work.", "A number of men has require for this work.", "A number of men are required for this work.", "A number of men have required for this work."], answer: 2,
+        explain: "<b>A number of</b> + kata benda jamak dianggap jamak, jadi kata kerjanya <b>are</b>. Kalimat ini juga pasif (para pekerja yang dibutuhkan), jadi polanya <i>are + V3</i>: <i>are required</i>. Bandingkan dengan <i>The number of men <b>is</b> small</i>, yang dianggap tunggal.",
+        quick: "<i>A number of</i> → jamak (are/have). <i>The number of</i> → tunggal (is/has)." },
+      { n: 37, audio: "Neither the manager nor the employees was aware of the change.", prompt: "Which option contains the error?", options: ["Neither the manager", "nor the employees", "was aware", "of the change"], answer: 2,
+        explain: "Pada pola <b>neither … nor</b>, kata kerja mengikuti subjek yang paling dekat. Subjek terdekat adalah <i>the employees</i> (jamak), jadi seharusnya <b>were aware</b>. Kalimat yang benar: <i>Neither the manager nor the employees were aware of the change.</i>",
+        quick: "<i>Neither/either … nor/or</i>: lihat subjek kedua untuk menentukan <i>was</i> atau <i>were</i>." },
+      { n: 38, audio: "My brother has been working in Jakarta since five years.", prompt: "Which option contains the error?", options: ["My brother", "has been working", "in Jakarta", "since five years"], answer: 3,
+        explain: "<b>Since</b> dipakai untuk titik awal waktu (<i>since 2020, since Monday</i>), sedangkan <b>for</b> untuk lama waktu (<i>for five years</i>). Kalimat yang benar: <i>My brother has been working in Jakarta for five years.</i>",
+        quick: "<i>Since</i> + titik waktu, <i>for</i> + lama waktu." }
+    ]
+  }
+];
+
+function secItems(sec) { return sec.kind === "listening" ? sec.conversations.reduce((a, c) => a.concat(c.items), []) : sec.items; }
+const TOTAL_ITEMS = SECTIONS.reduce((s, sec) => s + secItems(sec).length, 0);
+
+/* ---------- scoring helpers ---------- */
+function clamp(v, a, b) { return Math.min(b, Math.max(a, v)); }
+function mean(list) {
+  const v = list.filter(x => typeof x === "number" && isFinite(x));
+  return v.length ? v.reduce((s, x) => s + x, 0) / v.length : null;
+}
+function normWord(w) { return String(w).toLowerCase().replace(/[’'`]/g, "").replace(/[^a-z0-9]/g, ""); }
+
+const ONES = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"];
+const TENS = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"];
+function numWords(n) {
+  if (!isFinite(n) || n < 0) return [String(n)];
+  if (n < 20) return [ONES[n]];
+  if (n < 100) return n % 10 ? [TENS[Math.floor(n / 10)], ONES[n % 10]] : [TENS[Math.floor(n / 10)]];
+  if (n < 1000) { const h = [ONES[Math.floor(n / 100)], "hundred"]; return n % 100 ? h.concat(numWords(n % 100)) : h; }
+  if (n < 10000 && n % 1000 === 0) return [ONES[n / 1000], "thousand"];
+  return [String(n)];
+}
+
+// Split a transcript into normalised words. Digits become words: "10%" -> "ten percent", "$80" -> "eighty dollars".
+function tokensFrom(s) {
+  const out = [];
+  String(s || "").replace(/[-–—]/g, " ").split(/\s+/).forEach(raw => {
+    if (!raw) return;
+    const m = raw.match(/^\$?(\d{1,4})(%)?[.,!?;:]*$/);
+    if (m) {
+      numWords(parseInt(m[1], 10)).forEach(w => out.push(w));
+      if (m[2]) out.push("percent");
+      if (raw[0] === "$") out.push("dollars");
+      return;
+    }
+    const tm = raw.match(/^(\d{1,2}):(\d{2})[.,!?;:]*$/);
+    if (tm) {
+      numWords(parseInt(tm[1], 10)).forEach(w => out.push(w));
+      const mm = parseInt(tm[2], 10);
+      if (mm) numWords(mm).forEach(w => out.push(w));
+      return;
+    }
+    const w = normWord(raw);
+    if (w) out.push(w);
+  });
+  return out;
+}
+
+const CONTRACTIONS = {
+  dont: ["do", "not"], doesnt: ["does", "not"], didnt: ["did", "not"], isnt: ["is", "not"], arent: ["are", "not"],
+  wasnt: ["was", "not"], werent: ["were", "not"], cant: ["can", "not"], cannot: ["can", "not"], couldnt: ["could", "not"],
+  wont: ["will", "not"], wouldnt: ["would", "not"], shouldnt: ["should", "not"], havent: ["have", "not"], hasnt: ["has", "not"],
+  im: ["i", "am"], youre: ["you", "are"], theyre: ["they", "are"], its: ["it", "is"], thats: ["that", "is"],
+  ive: ["i", "have"], youve: ["you", "have"], weve: ["we", "have"], ill: ["i", "will"], youll: ["you", "will"], itll: ["it", "will"]
+};
+const CONTRACTION_OF = (() => { const m = new Map(); Object.keys(CONTRACTIONS).forEach(k => { const p = CONTRACTIONS[k].join(" "); if (!m.has(p)) m.set(p, k); }); return m; })();
+const HOMOPHONES = [["won", "one"], ["whether", "weather"], ["patience", "patients"], ["their", "there", "theyre"], ["to", "too", "two"], ["for", "four"], ["by", "buy", "bye"], ["right", "write"], ["hear", "here"], ["know", "no"], ["new", "knew"], ["sea", "see"], ["wait", "weight"], ["our", "hour"], ["fair", "fare"], ["sale", "sail"], ["week", "weak"], ["meet", "meat"], ["through", "threw"], ["whole", "hole"], ["ate", "eight"], ["would", "wood"], ["piece", "peace"], ["mail", "male"], ["sun", "son"], ["passed", "past"], ["allowed", "aloud"], ["role", "roll"], ["site", "sight"]];
+const HOMO_MAP = (() => { const m = new Map(); HOMOPHONES.forEach(g => g.forEach(w => { const s = m.get(w) || new Set(); g.forEach(x => s.add(x)); m.set(w, s); })); return m; })();
+
+// Join two heard words when together they form a word of the sentence ("air line" -> "airline").
+function mergeCompounds(H, tset) {
+  const out = [];
+  for (let i = 0; i < H.length; i++) {
+    if (i + 1 < H.length) {
+      const j = H[i] + H[i + 1];
+      if (tset.has(j) && !(tset.has(H[i]) && tset.has(H[i + 1]))) { out.push(j); i++; continue; }
+    }
+    out.push(H[i]);
+  }
+  return out;
+}
+
+// Make the heard words comparable with the sentence: contractions, compounds, homophones.
+function normalizeHeard(H, T) {
+  const tset = new Set(T);
+  const tPairs = new Set();
+  for (let i = 0; i + 1 < T.length; i++) tPairs.add(T[i] + " " + T[i + 1]);
+  let out = [];
+  for (let i = 0; i < H.length; i++) {
+    const h = H[i];
+    if (i + 1 < H.length) {
+      const pair = h + " " + H[i + 1];
+      const c = CONTRACTION_OF.get(pair);
+      if (c && tset.has(c) && !tPairs.has(pair)) { out.push(c); i++; continue; }
+    }
+    const exp = CONTRACTIONS[h];
+    if (exp && !tset.has(h) && tPairs.has(exp.join(" "))) { out.push(exp[0], exp[1]); continue; }
+    out.push(h);
+  }
+  out = mergeCompounds(out, tset);
+  return out.map(h => {
+    if (tset.has(h)) return h;
+    const g = HOMO_MAP.get(h);
+    if (g) for (const x of g) if (tset.has(x)) return x;
+    return h;
+  });
+}
+
+function charDist(a, b) {
+  const p = Array.from({ length: b.length + 1 }, (_, j) => j);
+  for (let i = 1; i <= a.length; i++) {
+    let prev = p[0]; p[0] = i;
+    for (let j = 1; j <= b.length; j++) {
+      const tmp = p[j];
+      p[j] = Math.min(p[j] + 1, p[j - 1] + 1, prev + (a[i - 1] === b[j - 1] ? 0 : 1));
+      prev = tmp;
+    }
+  }
+  return p[b.length];
+}
+// Exact match costs 0, a look-alike word ("request"/"requested") 0.5, anything else 1.
+function subCost(a, b) {
+  if (a === b) return 0;
+  const minLen = Math.min(a.length, b.length);
+  if (minLen >= 3 && (a.startsWith(b) || b.startsWith(a))) return 0.5;
+  if (minLen >= 4 && charDist(a, b) <= 2) return 0.5;
+  return 1;
+}
+// Word-level alignment. Returns ops in sentence order: ok, sub, del (missed), ins (extra).
+function align(T, H) {
+  const n = T.length, m = H.length;
+  const d = Array.from({ length: n + 1 }, () => new Array(m + 1).fill(0));
+  for (let i = 0; i <= n; i++) d[i][0] = i;
+  for (let j = 0; j <= m; j++) d[0][j] = j;
+  for (let i = 1; i <= n; i++) for (let j = 1; j <= m; j++) {
+    d[i][j] = Math.min(d[i - 1][j - 1] + subCost(T[i - 1], H[j - 1]), d[i - 1][j] + 1, d[i][j - 1] + 1);
+  }
+  const ops = [];
+  let i = n, j = m;
+  while (i > 0 || j > 0) {
+    if (i > 0 && j > 0 && d[i][j] === d[i - 1][j - 1] + subCost(T[i - 1], H[j - 1])) {
+      ops.push({ type: T[i - 1] === H[j - 1] ? "ok" : "sub", ti: i - 1, h: H[j - 1] }); i--; j--;
+    } else if (i > 0 && d[i][j] === d[i - 1][j] + 1) {
+      ops.push({ type: "del", ti: i - 1 }); i--;
+    } else {
+      ops.push({ type: "ins", h: H[j - 1] }); j--;
+    }
+  }
+  return ops.reverse();
+}
+
+// Join recognition results; drops the cumulative repeats some phones send ("hello" then "hello world").
+function joinTexts(list) {
+  const out = [];
+  list.forEach(t => {
+    t = String(t || "").replace(/\s+/g, " ").trim();
+    if (!t) return;
+    const prev = out.length ? out[out.length - 1] : null;
+    if (prev) {
+      const a = prev.toLowerCase(), b = t.toLowerCase();
+      if (b.startsWith(a + " ")) { out[out.length - 1] = t; return; }
+      if (a === b) return;
+    }
+    out.push(t);
+  });
+  return out.join(" ");
+}
+
+// Natural read-aloud pace scores full marks; very slow or very fast loses points.
+function tempoScore(wpm) {
+  if (wpm >= 110 && wpm <= 190) return 100;
+  if (wpm < 110) return Math.max(0, 100 - (110 - wpm) * 1.4);
+  return Math.max(50, 100 - (wpm - 190));
+}
+function spontTempo(wpm) {
+  if (wpm >= 95 && wpm <= 170) return 100;
+  if (wpm < 95) return Math.max(0, 100 - (95 - wpm) * 1.5);
+  return Math.max(50, 100 - (wpm - 170));
+}
+
+// r: { transcript, first, last, pauses, srErr, mode }  (times in ms from the end of the beep)
+function scoreSpeech(text, r, srAvailable, wAcc) {
+  const disp = text.split(/\s+/);
+  const T = disp.map(normWord);
+  const spoke = r.first != null && r.last != null;
+  const srUsable = !!srAvailable && !r.srErr;
+  const H0 = srUsable ? normalizeHeard(tokensFrom(r.transcript), T) : [];
+  const recogFailed = srUsable && spoke && H0.length === 0;
+  const srOk = srUsable && !recogFailed;
+  const H = srOk ? H0 : [];
+  const ops = srOk ? align(T, H) : null;
+  const okCount = ops ? ops.filter(o => o.type === "ok").length : 0;
+  const insCount = ops ? ops.filter(o => o.type === "ins").length : 0;
+  const acc = srOk ? clamp((okCount - 0.5 * insCount) / T.length, 0, 1) * 100 : null;
+  let wpm = null, flu;
+  if (spoke) {
+    const dur = Math.max(0.6, (r.last - r.first + 100) / 1000);
+    const words = srOk && H.length ? H.length : T.length;
+    wpm = words / dur * 60;
+    flu = tempoScore(wpm) - 12 * (r.pauses || 0) - (r.first > 2500 ? 10 : 0);
+    if (srOk) {
+      const completeness = Math.min(1, H.length / T.length);
+      if (completeness < 0.7) flu *= completeness / 0.7;
+    }
+    flu = clamp(flu, 0, 100);
+  } else {
+    flu = (!srUsable && r.mode === "srOnly") ? null : 0;
+  }
+  const overall = srOk ? Math.round(wAcc * acc + (1 - wAcc) * flu) : null;
+  return { disp, ops, acc, flu, wpm, overall, srOk, spoke, recogFailed, latency: spoke ? r.first / 1000 : null };
+}
+
+const STOP = new Set("a an the and or but so because of to in on at for with from by about as is am are was were be been being it its this that these those i me my we our us you your he she they them their his her him there here then than very really just also too not no yes do did does have has had will would can could should may might must if when while what which who how why where all some any each every more most much many such only other into over under again once up down out off um uh like".split(" "));
+const PAST_IRREG = new Set("was were had went ate swam saw took got came felt made spent left found gave told said thought bought brought drank slept woke sat stood ran met paid heard could".split(" "));
+
+function scoreFree(item, r, srAvailable) {
+  const spoke = r.first != null && r.last != null;
+  const srUsable = !!srAvailable && !r.srErr;
+  const words0 = srUsable ? tokensFrom(r.transcript) : [];
+  const recogFailed = srUsable && spoke && words0.length === 0;
+  const srOk = srUsable && !recogFailed;
+  const words = srOk ? words0 : [];
+  const dur = spoke ? Math.max(0, (r.last - r.first) / 1000) : 0;
+  const wpm = srOk && spoke && words.length && dur >= 2 ? words.length / dur * 60 : null;
+  const unique = new Set(words.filter(w => !STOP.has(w) && w.length > 2)).size;
+  const hits = item.keywords.filter(k => words.some(w => w.startsWith(k)));
+  const past = words.filter(w => PAST_IRREG.has(w) || (/ed$/.test(w) && w.length > 4)).length;
+  const present = words.filter(w => w === "is" || w === "are" || w === "am").length;
+  const cLength = spoke ? clamp(dur / 40 * 100, 0, 100) : 0;
+  let cFlu;
+  if (!spoke) cFlu = (!srUsable && r.mode === "srOnly") ? null : 0;
+  else if (wpm != null) cFlu = clamp(spontTempo(wpm) - 6 * Math.max(0, (r.pauses || 0) - 2), 0, 100);
+  else cFlu = null;
+  const cVocab = srOk ? clamp(unique / 30 * 100, 0, 100) : null;
+  const cRel = srOk ? clamp(hits.length / 4 * 100, 0, 100) : null;
+  const overall = srOk ? Math.round(0.3 * (cFlu || 0) + 0.25 * cLength + 0.25 * cVocab + 0.2 * cRel) : null;
+  return { spoke, srOk, recogFailed, words: words.length, dur, wpm, unique, hits, past, present, cLength, cFlu, cVocab, cRel, overall };
+}
+</script>
+
+<!-- App: microphone, audio, test flow, results -->
+<script>
+(() => {
+"use strict";
+
+/* ---------- basics ---------- */
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition || null;
+const TS = (() => { const v = Number(window.__SVAR_TIME_SCALE__); return v > 0 && v <= 1 ? v : 1; })();
+const ms = x => Math.max(1, Math.round(x * TS));
+const D = {
+  PREP: ms(3000), BEEP: ms(380), READ_MAX: ms(15000), NO_SPEECH: ms(8000), PAUSE: ms(700),
+  SIL_DONE: ms(1500), SIL_UNFINISHED: ms(3500), SIL_NO_SR: ms(2500),
+  THINK: ms(30000), FREE_MAX: ms(45000), FREE_NO_SPEECH: ms(15000), FREE_SILENCE: ms(6000), FREE_PAUSE: ms(1500),
+  PRE_LISTEN: ms(700), ECHO_SETTLE: ms(700), RESULT_LAG: ms(800), FINAL_WAIT: ms(1500), SAVE: ms(700),
+  CONV_LEAD: ms(3000), TURN_GAP: ms(350), AFTER_CONV: ms(1200), TTS_NOSTART: ms(4500),
+  REC_STOP_WAIT: ms(2000), SR_START_TIMEOUT: ms(20000), SR_STOP_TIMEOUT: ms(1500), EARLY: ms(500), START_GAP: ms(100)
+};
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const wait = t => new Promise(r => setTimeout(r, t));
+const now = () => performance.now();
+const isFile = location.protocol === "file:";
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+const clockText = t => { const s = Math.max(0, Math.floor(t / 1000)); return String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0"); };
+const realMs = t => t / TS;          // durations measured under a test time scale, shown as real time
+const fmtIPA = s => s.replace(/\[(\/[^\]]+\/)\]/g, '<span class="ipa">$1</span>');
+const dec = (v, n) => v.toFixed(n == null ? 1 : n).replace(".", ",");
+const SOUND_CHECK = "This is a sound check. You will hear sentences like this in the listening sections.";
+const SPEAKING = ["A", "B", "C"];
+const AUDIO = ["B", "D", "F"];
+
+const S = {
+  sel: new Set(SECTIONS.map(s => s.id)),
+  ran: new Set(),
+  micReady: false, micChecking: false,
+  audio: null, echoRisk: false,
+  running: false, steps: [], stepIdx: 0,
+  res: {}, ans: {}, convFail: {}, audFail: {},
+  t0: 0, t1: 0, secTime: {}, keyHandler: null, error: null, starting: false
+};
+let micMode = "shared", sharedMisses = 0;
+
+/* ---------- audio output ---------- */
+let audioCtx = null;
+function ctx() {
+  if (!audioCtx) {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (AC) { try { audioCtx = new AC(); } catch (e) { audioCtx = null; } }
+  }
+  if (audioCtx && audioCtx.state === "suspended") {
+    try { const p = audioCtx.resume(); if (p && p.catch) p.catch(() => {}); } catch (e) {}
+  }
+  return audioCtx;
+}
+function beep() {
+  return new Promise(res => {
+    const c = ctx();
+    if (c) {
+      try {
+        const o = c.createOscillator(), g = c.createGain(), t = c.currentTime;
+        o.type = "sine"; o.frequency.value = 1000;
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.exponentialRampToValueAtTime(0.3, t + 0.02);
+        g.gain.setValueAtTime(0.3, t + 0.22);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + 0.28);
+        o.connect(g); g.connect(c.destination);
+        o.start(t); o.stop(t + 0.3);
+      } catch (e) {}
+    }
+    setTimeout(res, D.BEEP);
+  });
+}
+
+/* ---------- text to speech ---------- */
+const tts = {
+  ok: !!(window.speechSynthesis && window.SpeechSynthesisUtterance),
+  voices: [], narrator: null, female: null, male: null, current: null, unlocked: false, loading: null,
+  load() {
+    if (!this.ok) return Promise.resolve(false);
+    if (this.voices.length) return Promise.resolve(true);
+    if (this.loading) return this.loading;
+    const synth = window.speechSynthesis;
+    const pick = () => {
+      let vs = [];
+      try { vs = synth.getVoices() || []; } catch (e) { vs = []; }
+      if (vs.length) { this.voices = vs; this.pickVoices(); }
+      return vs.length > 0;
+    };
+    if (pick()) return Promise.resolve(true);
+    this.loading = new Promise(res => {
+      let done = false;
+      const fin = () => { if (done) return; done = true; this.loading = null; res(pick()); };
+      try {
+        if (synth.addEventListener) synth.addEventListener("voiceschanged", fin);
+        else synth.onvoiceschanged = fin;
+      } catch (e) {}
+      setTimeout(fin, ms(2500));
+    });
+    return this.loading;
+  },
+  pickVoices() {
+    const vs = this.voices;
+    const us = vs.filter(v => /^en[-_]US/i.test(v.lang || ""));
+    const en = vs.filter(v => /^en/i.test(v.lang || ""));
+    const pool = us.length ? us : en;
+    const fem = /\b(female|zira|aria|jenny|samantha|susan|michelle|ava|allison|nicky|victoria|karen|moira|tessa|joanna|salli|kendra|kimberly|ivy|emma|libby|sonia|natasha|clara|catherine|sara|nancy|elizabeth|google us english)\b/i;
+    const mal = /\b(male|david|guy|mark|alex|fred|daniel|aaron|tom|ryan|eric|christopher|brian|matthew|justin|joey|davis|tony|jason|roger|andrew|george|james|steffan|william|liam)\b/i;
+    const rank = v => (/(natural|neural|online|premium|enhanced)/i.test(v.name) ? 4 : 0) + (/google/i.test(v.name) ? 2 : 0) + (v.default ? 1 : 0);
+    let sorted = pool.slice().sort((a, b) => rank(b) - rank(a));
+    // After an online voice has failed (usually no internet), use voices installed on the device.
+    if (this.preferLocal) { const loc = sorted.filter(v => v.localService !== false); if (loc.length) sorted = loc; }
+    this.female = sorted.find(v => fem.test(v.name)) || null;
+    this.male = sorted.find(v => mal.test(v.name) && !fem.test(v.name)) || null;
+    this.narrator = sorted[0] || null;
+  },
+  // Speak, and if an online voice fails, retry once with a voice installed on the device.
+  async say(text, o) {
+    o = o || {};
+    let r = await this.speak(text, o);
+    if (!r.ok && r.reason !== "unsupported" && o.voice && o.voice.localService === false && !this.preferLocal) {
+      this.preferLocal = true;
+      this.pickVoices();
+      const w = o.who ? this.voiceFor(o.who) : { voice: this.narrator, pitch: o.pitch };
+      if (w.voice && w.voice !== o.voice) r = await this.speak(text, Object.assign({}, o, { voice: w.voice, pitch: w.pitch }));
+    }
+    return r;
+  },
+  voiceFor(who) {
+    if (who === "W") return this.female ? { voice: this.female, pitch: 1 } : { voice: this.narrator, pitch: 1.2 };
+    return this.male ? { voice: this.male, pitch: 1 } : { voice: this.narrator, pitch: 0.8 };
+  },
+  // iOS only plays speech that starts inside a tap; a silent utterance during the first tap unlocks it.
+  unlock() {
+    if (!this.ok || this.unlocked || !isIOS) return;
+    this.unlocked = true;
+    try { const u = new SpeechSynthesisUtterance(" "); u.volume = 0; window.speechSynthesis.speak(u); } catch (e) {}
+  },
+  cancel() { if (this.ok) { try { window.speechSynthesis.cancel(); } catch (e) {} } },
+  speak(text, o) {
+    o = o || {};
+    return new Promise(resolve => {
+      if (!this.ok) return resolve({ ok: false, reason: "unsupported" });
+      const synth = window.speechSynthesis;
+      let done = false, started = false, tNoStart = null, tMax = null;
+      const finish = (ok, reason) => {
+        if (done) return;
+        done = true; clearTimeout(tNoStart); clearTimeout(tMax);
+        resolve({ ok, reason, started });
+      };
+      const go = () => {
+        let u;
+        try { u = new SpeechSynthesisUtterance(text); } catch (e) { return finish(false, "utterance"); }
+        u.lang = "en-US";
+        if (o.voice) { try { u.voice = o.voice; } catch (e) {} }
+        u.rate = o.rate || 0.95;
+        u.pitch = o.pitch || 1;
+        u.volume = 1;
+        u.onstart = () => { started = true; };
+        u.onend = () => finish(true, "end");
+        u.onerror = e => finish(false, (e && e.error) || "error");
+        this.current = u;    // keeps the utterance alive; Chrome can drop onend for collected utterances
+        const words = String(text).split(/\s+/).length;
+        tNoStart = setTimeout(() => {
+          if (started) return;
+          let speaking = false;
+          try { speaking = synth.speaking; } catch (e) {}
+          if (speaking) { started = true; return; }
+          try { synth.cancel(); } catch (e) {}
+          finish(false, "no-start");
+        }, D.TTS_NOSTART);
+        tMax = setTimeout(() => { try { synth.cancel(); } catch (e) {} finish(started, "timeout"); }, words * 650 / (u.rate || 1) + 8000);
+        try { synth.speak(u); } catch (e) { finish(false, "speak"); }
+      };
+      try {
+        if (synth.speaking || synth.pending) { synth.cancel(); setTimeout(go, 150); }
+        else go();
+      } catch (e) { finish(false, "error"); }
+    });
+  }
+};
+function ttsFailMessage(reason) {
+  if (reason === "unsupported") return "Browser ini tidak bisa memutar suara otomatis. Pakai Chrome atau Edge versi terbaru.";
+  if (reason === "network") return "Suara soal butuh koneksi internet. Periksa koneksi, lalu coba lagi.";
+  if (reason === "not-allowed") return "Browser menahan suara sampai ada klik di halaman. Tekan Putar lagi.";
+  return "Suara tidak keluar. Pastikan volume tidak mute dan perangkat punya suara bahasa Inggris, lalu coba lagi. Kalau tetap gagal, Section B, D, dan F akan menampilkan teks sebagai pengganti audio.";
+}
+
+/* ---------- microphone and level meter ---------- */
+let stream = null, analyser = null, buf = null;
+let level = 0, threshold = 0.015, phase = "idle", activeCanvas = null, loopOn = false, activity = 0;
+const levels = new Array(56).fill(0);
+
+function readLevel() {
+  if (!analyser || !buf) return 0;
+  try { analyser.getFloatTimeDomainData(buf); } catch (e) { return 0; }
+  let s = 0;
+  for (let i = 0; i < buf.length; i++) s += buf[i] * buf[i];
+  level = Math.sqrt(s / buf.length);
+  return level;
+}
+function draw() {
+  const c = activeCanvas;
+  if (!c || c.offsetParent === null) return;
+  const dpr = window.devicePixelRatio || 1, w = c.clientWidth, h = c.clientHeight;
+  if (!w || !h) return;
+  if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
+  const g = c.getContext("2d");
+  if (!g) return;
+  g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  g.clearRect(0, 0, w, h);
+  const cs = getComputedStyle(document.documentElement);
+  const onColor = cs.getPropertyValue(phase === "rec" ? "--rec" : "--accent").trim();
+  const offColor = cs.getPropertyValue("--line").trim();
+  const N = levels.length, gap = 3, bw = Math.max(1, (w - gap * (N - 1)) / N);
+  for (let k = 0; k < N; k++) {
+    const v = Math.min(1, Math.sqrt(levels[k]) * 3.2);
+    const bh = Math.max(3, v * h);
+    g.fillStyle = levels[k] > threshold ? onColor : offColor;
+    g.fillRect(k * (bw + gap), (h - bh) / 2, bw, bh);
+  }
+}
+// Without a recorder there is no audio level, so the meter shows recognition activity instead.
+function pulse() { activity = 0.08; }
+function frame() {
+  if (analyser) readLevel(); else { level = activity; activity *= 0.86; }
+  levels.push(level); levels.shift();
+  draw();
+  requestAnimationFrame(frame);
+}
+function startLoop() { if (!loopOn) { loopOn = true; requestAnimationFrame(frame); } }
+function calib(floor) { return Math.min(0.06, Math.max(0.012, floor * 3)); }
+
+function releaseMic() {
+  if (stream) { try { stream.getTracks().forEach(t => t.stop()); } catch (e) {} }
+  stream = null; analyser = null; buf = null;
+}
+async function initMic() {
+  if (stream && stream.active) return { ok: true };
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    return { ok: false, pill: "Tidak tersedia", msg: "Halaman ini tidak bisa mengakses mikrofon. Buka file ini langsung di Chrome atau Edge, bukan dari pratinjau aplikasi." };
+  }
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
+  } catch (e) {
+    stream = null;
+    const n = e && e.name;
+    if (n === "NotAllowedError" || n === "SecurityError") return { ok: false, pill: "Ditolak", msg: "Akses mikrofon ditolak atau diblokir. Buka file di Chrome atau Edge lalu pilih Izinkan. Kalau sudah terlanjur menolak, klik ikon di kiri address bar dan ubah izin mikrofon." };
+    if (n === "NotFoundError" || n === "OverconstrainedError") return { ok: false, pill: "Tidak ditemukan", msg: "Mikrofon tidak ditemukan. Sambungkan headset atau mikrofon, lalu coba lagi." };
+    return { ok: false, pill: "Gagal", msg: "Mikrofon tidak bisa dibuka (" + (n || "error") + "). Tutup aplikasi lain yang sedang memakai mikrofon, lalu coba lagi." };
+  }
+  const c = ctx();
+  if (c) {
+    try {
+      const src = c.createMediaStreamSource(stream);
+      analyser = c.createAnalyser();
+      analyser.fftSize = 1024;
+      buf = new Float32Array(analyser.fftSize);
+      src.connect(analyser);
+    } catch (e) { analyser = null; buf = null; }
+  }
+  startLoop();
+  return { ok: true };
+}
+
+/* ---------- one speech-recognition session for the whole speaking part ----------
+   Each new session can bring back the permission prompt (always when the page is opened from a file),
+   so one session is kept running. Words are assigned to a question by the time they appeared. */
+const SR_FATAL = new Set(["not-allowed", "service-not-allowed", "language-not-supported", "bad-grammar"]);
+const speech = {
+  rec: null, running: false, starting: null, sid: 0, keepAlive: false,
+  items: new Map(), updates: [], err: null, errAt: 0, endWaiters: [], listeners: [],
+  failCount: 0, giveUp: null,     // after repeated failures, stop retrying so the browser does not keep asking
+
+  allowRetry() { this.failCount = 0; this.giveUp = null; },
+  // A session that ends with an error counts as a failure; words arriving prove it works again.
+  fail(e) { this.failCount++; if (SR_FATAL.has(e) || this.failCount >= 2) this.giveUp = e; },
+  start() {
+    if (!SR) return Promise.resolve(false);
+    if (this.running) return Promise.resolve(true);
+    if (this.giveUp) return Promise.resolve(false);
+    if (this.starting) return this.starting;
+    return this.open();
+  },
+  open() {
+    const sid = ++this.sid, tOpen = now();
+    let rec;
+    try { rec = new SR(); } catch (e) { this.err = "start-failed"; this.errAt = now(); this.fail("start-failed"); return Promise.resolve(false); }
+    rec.lang = "en-US"; rec.continuous = true; rec.interimResults = true; rec.maxAlternatives = 1;
+    this.rec = rec; this.err = null;
+    this.starting = new Promise(resolve => {
+      let settled = false;
+      const settle = v => { if (settled) return; settled = true; this.starting = null; resolve(v); };
+      const live = () => { if (this.rec === rec) { this.running = true; settle(true); } };
+      rec.onstart = live;
+      rec.onaudiostart = live;
+      rec.onresult = ev => {
+        const t = now();
+        let changed = false;
+        for (let k = ev.resultIndex; k < ev.results.length; k++) {
+          const res = ev.results[k];
+          if (!res || !res[0]) continue;
+          const key = sid + ":" + k;
+          const text = String(res[0].transcript || "").replace(/\s+/g, " ").trim();
+          let it = this.items.get(key);
+          if (!it) {
+            if (!text) continue;
+            it = { key, sid, k, first: t, last: t, text: "", final: false, snaps: [] };
+            this.items.set(key, it);
+          }
+          if (it.text !== text) {
+            it.text = text; it.last = t;
+            const nw = text ? text.split(" ").length : 0;
+            it.snaps.push([t, nw]);
+            this.updates.push([t, key, it.first, nw]);
+            changed = true;
+          }
+          it.final = !!res.isFinal;
+        }
+        if (changed) {
+          this.failCount = 0;
+          this.listeners.forEach(f => { try { f(t); } catch (e) {} });
+        }
+      };
+      rec.onerror = ev => {
+        const e = ev && ev.error;
+        if (e && e !== "no-speech" && e !== "aborted") { this.err = e; this.errAt = now(); }
+      };
+      rec.onend = () => {
+        if (this.rec === rec) { this.rec = null; this.running = false; }
+        if (this.err && this.errAt >= tOpen) this.fail(this.err);
+        settle(false);
+        const w = this.endWaiters; this.endWaiters = [];
+        w.forEach(f => f());
+        // Some devices end the session after a pause; reopen it while an answer is being recorded.
+        if (this.keepAlive && !this.err) setTimeout(() => { if (this.keepAlive && !this.running && !this.starting) this.start(); }, 0);
+      };
+      try { rec.start(); }
+      catch (e) { this.err = "start-failed"; this.errAt = now(); if (this.rec === rec) this.rec = null; this.fail("start-failed"); settle(false); }
+      setTimeout(() => {
+        const ok = this.running && this.rec === rec;
+        if (!settled && !ok) this.fail("not-started");
+        settle(ok);
+      }, D.SR_START_TIMEOUT);
+    });
+    return this.starting;
+  },
+  stop() {
+    return new Promise(res => {
+      const rec = this.rec;
+      if (!rec) { this.running = false; return res(); }
+      const t = setTimeout(() => { if (this.rec === rec) { this.rec = null; this.running = false; } res(); }, D.SR_STOP_TIMEOUT);
+      this.endWaiters.push(() => { clearTimeout(t); res(); });
+      try { rec.stop(); } catch (e) { clearTimeout(t); if (this.rec === rec) { this.rec = null; this.running = false; } res(); }
+    });
+  },
+  reset() { this.items.clear(); this.updates = []; },
+  sorted() { return Array.from(this.items.values()).sort((a, b) => a.sid - b.sid || a.k - b.k); },
+  wordsAt(it, t) { let n = 0; if (!it) return 0; for (const s of it.snaps) { if (s[0] <= t) n = s[1]; else break; } return n; },
+  // Words spoken during [t0, t1], including results that began a little earlier.
+  textBetween(t0, t1) { return joinTexts(this.sorted().filter(it => it.last >= t0 && it.first <= t1).map(it => it.text)); },
+  // Words that began at or after t0. A result that began earlier gives only the words added after t0.
+  textFrom(t0, t1) {
+    const parts = [];
+    this.sorted().forEach(it => {
+      if (it.first > t1 || it.last < t0) return;
+      if (it.first >= t0) { parts.push(it.text); return; }
+      const w = it.text.split(" ").filter(Boolean), n0 = this.wordsAt(it, t0);
+      if (w.length > n0) parts.push(w.slice(n0).join(" "));
+    });
+    return joinTexts(parts);
+  },
+  updatesBetween(t0, t1, fromStart) {
+    const out = [];
+    for (const u of this.updates) {
+      if (u[0] < t0 || u[0] > t1) continue;
+      if (fromStart && u[2] < t0 && u[3] <= this.wordsAt(this.items.get(u[1]), t0)) continue;
+      out.push(u[0]);
+    }
+    return out;
+  },
+  startedBetween(t0, t1) { return this.sorted().filter(it => it.first >= t0 && it.first <= t1); },
+  async waitFinal(t0, t1, maxMs) {
+    const end = now() + maxMs;
+    while (now() < end) {
+      if (!this.running) break;
+      const its = this.sorted().filter(it => it.last >= t0 && it.first <= t1);
+      if (its.every(it => it.final)) break;
+      await wait(100);
+    }
+  }
+};
+speech.listeners.push(pulse);
+
+function srFailMessage(err) {
+  if (err === "network") return "Pengenalan suara butuh koneksi internet. Periksa koneksi, lalu tekan Tes ulang.";
+  if (err === "not-allowed" || err === "service-not-allowed") return "Browser menolak fitur pengenalan suara. Pakai Chrome atau Edge, pilih Izinkan saat diminta, dan jangan buka dari browser di dalam aplikasi seperti WhatsApp atau Instagram.";
+  if (err === "audio-capture") return "Pengenalan suara tidak bisa memakai mikrofon. Tutup aplikasi lain yang sedang memakai mikrofon, lalu tekan Tes ulang.";
+  if (err === "not-started") return "Pengenalan suara belum mulai. Tekan Tes ulang, lalu pilih Izinkan kalau browser meminta akses mikrofon.";
+  if (err) return "Pengenalan suara error (" + err + "). Coba buka file di Chrome atau Edge, lalu tekan Tes ulang.";
+  return "Mikrofon menangkap suara, tapi pengenalan suara tidak mengembalikan kata. Pastikan kamu memakai Chrome atau Edge (bukan Brave atau browser lain) dan internet aktif, lalu tekan Tes ulang.";
+}
+function echoWords(t0, t1, targetTokens) {
+  const set = new Set(targetTokens);
+  const heard = tokensFrom(joinTexts(speech.startedBetween(t0, t1).map(it => it.text)));
+  return heard.filter(w => set.has(w)).length;
+}
+
+/* ---------- setup screen ---------- */
+function setPill(id, text, state) { const p = $(id); p.textContent = text; p.dataset.state = state || ""; }
+function selectedCount() { return SECTIONS.filter(s => S.sel.has(s.id)).reduce((n, s) => n + secItems(s).length, 0); }
+function needsMic() { return SPEAKING.some(id => S.sel.has(id)); }
+function needsAudio() { return AUDIO.some(id => S.sel.has(id)); }
+
+function renderSeclist() {
+  $("seclist").innerHTML = SECTIONS.map(sec => {
+    const items = secItems(sec);
+    const range = items.length > 1 ? items[0].n + "–" + items[items.length - 1].n : String(items[0].n);
+    return `<label class="secrow${S.sel.has(sec.id) ? "" : " off"}" for="sec-${sec.id}">
+      <input type="checkbox" id="sec-${sec.id}" data-sec="${sec.id}"${S.sel.has(sec.id) ? " checked" : ""}>
+      <span class="sec-letter">${sec.id}</span>
+      <span class="secrow-main"><b>${esc(sec.name)}</b><span>${esc(sec.short)}</span></span>
+      <span class="secrow-meta"><span class="count">${items.length} soal · ${range}</span><span class="needs">${esc(sec.needs)}</span></span>
+    </label>`;
+  }).join("");
+}
+$("seclist").addEventListener("change", e => {
+  const box = e.target.closest("input[data-sec]");
+  if (!box) return;
+  if (box.checked) S.sel.add(box.dataset.sec); else S.sel.delete(box.dataset.sec);
+  box.closest(".secrow").classList.toggle("off", !box.checked);
+  updateStart();
+});
+function updateStart() {
+  const btn = $("btn-start"), hint = $("start-hint");
+  $("sel-summary").textContent = S.sel.size + " section · " + selectedCount() + " soal";
+  if (S.running || S.starting) { btn.disabled = true; return; }
+  if (!S.sel.size) { btn.disabled = true; hint.textContent = "Pilih minimal satu section."; return; }
+  if (S.micChecking) { btn.disabled = true; hint.textContent = "Tunggu cek mikrofon selesai."; return; }
+  if (needsMic() && !S.micReady) { btn.disabled = true; hint.textContent = "Cek mikrofon dulu untuk Section A–C, atau hapus centang Section A–C."; return; }
+  btn.disabled = false;
+  if (needsAudio() && S.audio !== "ok") hint.textContent = "Disarankan cek audio dulu untuk Section B, D, dan F.";
+  else if (S.echoRisk && S.sel.has("B")) hint.textContent = "Pakai headset sebelum mulai supaya Section B dinilai akurat.";
+  else hint.textContent = "Siap dimulai.";
+}
+
+(function envCheck() {
+  const msgs = [];
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) msgs.push("Browser ini tidak bisa mengakses mikrofon. Buka file ini langsung di Google Chrome atau Microsoft Edge versi terbaru.");
+  if (!SR) msgs.push("Browser ini tidak punya fitur pengenalan suara, jadi Section A–C terekam tanpa skor otomatis. Untuk penilaian, pakai Chrome atau Edge.");
+  else if (navigator.brave) msgs.push("Kamu memakai Brave, yang memblokir layanan pengenalan suara. Buka file ini di Chrome atau Edge supaya Section A–C bisa dinilai.");
+  if (!tts.ok) msgs.push("Browser ini tidak bisa memutar suara soal. Section B, D, dan F akan menampilkan teks sebagai pengganti audio.");
+  if (/FBAN|FBAV|Instagram|Line\/|WhatsApp|TikTok/i.test(navigator.userAgent)) msgs.push("Halaman ini terbuka di browser dalam aplikasi. Buka di Chrome atau Edge supaya mikrofon dan suara berjalan.");
+  if (isFile && SR) msgs.push("Kamu membuka file ini langsung dari folder, jadi browser bisa meminta izin mikrofon lebih dari sekali saat cek mikrofon. Kalau halaman ini dipasang di website (https), izin cukup diberikan sekali.");
+  if (msgs.length) { $("env-notice").innerHTML = msgs.map(m => "<p>" + esc(m) + "</p>").join(""); $("env-notice").hidden = false; }
+})();
+
+// Show what the running session hears during the next few seconds.
+function listenFor(maxMs) {
+  return new Promise(res => {
+    const t0 = now() - 200, heard = $("mic-heard");
+    const iv = setInterval(() => {
+      const t = now();
+      const text = speech.textBetween(t0, t);
+      if (text) { heard.hidden = false; heard.textContent = "Terdengar: “" + text + "”"; }
+      const its = speech.sorted().filter(it => it.last >= t0);
+      if ((its.length && its.every(i => i.final)) || t - t0 > maxMs || !speech.running) { clearInterval(iv); res(text); }
+    }, 150);
+  });
+}
+
+$("btn-mic").addEventListener("click", async () => {
+  const btn = $("btn-mic"), status = $("mic-status"), heard = $("mic-heard");
+  const done = () => { btn.disabled = false; S.micChecking = false; updateStart(); };
+  btn.disabled = true; S.micChecking = true; updateStart();
+  ctx(); tts.unlock();
+  setPill("mic-pill", "Meminta izin…", "acc");
+  if (micMode === "srOnly") micMode = "shared";
+  const m = await initMic();
+  if (!m.ok) { S.micReady = false; setPill("mic-pill", m.pill, "bad"); status.textContent = m.msg; done(); return; }
+  S.micReady = true;
+  activeCanvas = $("meter-intro"); phase = "check";
+  btn.textContent = "Tes ulang";
+  if (!SR) {
+    setPill("mic-pill", "Mikrofon aktif", "good");
+    status.textContent = "Mikrofon aktif. Browser ini tidak punya pengenalan suara, jadi Section A–C tetap terekam tapi tanpa skor otomatis. Untuk penilaian, pakai Chrome atau Edge.";
+    done(); return;
+  }
+  heard.hidden = true;
+  status.textContent = "Kalau browser meminta izin mikrofon, pilih Izinkan.";
+  speech.allowRetry();
+  if (!(await speech.start())) {
+    setPill("mic-pill", "Pengenalan suara gagal", "warn");
+    status.textContent = srFailMessage(speech.err || "not-started");
+    done(); return;
+  }
+  setPill("mic-pill", "Mendengarkan…", "acc");
+  status.textContent = "Ucapkan sekarang: “Hello, good morning.”";
+  let text = await listenFor(ms(6000));
+  if (text) {
+    setPill("mic-pill", "Siap", "good");
+    status.textContent = "Mikrofon dan pengenalan suara berjalan. Kamu bisa mulai tes.";
+  } else if (!speech.err || speech.err === "audio-capture") {
+    // Recognition heard nothing while the recorder held the microphone. Try recognition alone.
+    releaseMic();
+    await speech.stop();
+    heard.hidden = true;
+    setPill("mic-pill", "Mencoba cara lain…", "acc");
+    status.textContent = "Kalau browser meminta izin lagi, pilih Izinkan.";
+    const ok = await speech.start();
+    if (ok) { status.textContent = "Ucapkan sekali lagi: “Hello, good morning.”"; text = await listenFor(ms(6000)); }
+    if (ok && text) {
+      micMode = "srOnly";
+      setPill("mic-pill", "Siap", "good");
+      status.textContent = "Pengenalan suara berjalan. Perangkat ini tidak bisa merekam dan mengenali suara bersamaan, jadi tes tetap dinilai tetapi rekaman suaramu tidak bisa diputar ulang.";
+    } else {
+      const err = speech.err || (ok ? null : "not-started");
+      await speech.stop();
+      await initMic();
+      setPill("mic-pill", "Pengenalan suara gagal", "warn");
+      status.textContent = srFailMessage(err);
+    }
+  } else {
+    setPill("mic-pill", "Pengenalan suara gagal", "warn");
+    status.textContent = srFailMessage(speech.err);
+  }
+  done();
+});
+
+$("btn-aud").addEventListener("click", async () => {
+  const btn = $("btn-aud"), status = $("aud-status");
+  btn.disabled = true; $("btn-aud-yes").hidden = true; $("btn-aud-no").hidden = true;
+  ctx(); tts.unlock();
+  setPill("aud-pill", "Memutar…", "acc");
+  status.textContent = "Dengarkan suara tes.";
+  await tts.load();
+  const t0 = now();
+  const r = await tts.say(SOUND_CHECK, { voice: tts.narrator });
+  const t1 = now();
+  btn.disabled = false; btn.textContent = "Putar lagi";
+  if (!r.ok) {
+    S.audio = "fail";
+    setPill("aud-pill", "Audio gagal", "bad");
+    status.textContent = ttsFailMessage(r.reason);
+    updateStart(); return;
+  }
+  let echoNote = "";
+  if (SR && speech.running) {
+    await wait(ms(1200));
+    S.echoRisk = echoWords(t0, t1 + ms(400), tokensFrom(SOUND_CHECK)) >= 3;
+    if (S.echoRisk) echoNote = " Mikrofon ikut menangkap suara dari speaker. Pakai headset atau earphone supaya Section B dinilai dari suaramu sendiri.";
+  }
+  setPill("aud-pill", "Menunggu jawaban", "acc");
+  status.textContent = "Apakah suaranya terdengar jelas?" + echoNote;
+  $("btn-aud-yes").hidden = false; $("btn-aud-no").hidden = false;
+  updateStart();
+});
+$("btn-aud-yes").addEventListener("click", () => {
+  S.audio = "ok";
+  $("btn-aud-yes").hidden = true; $("btn-aud-no").hidden = true;
+  if (S.echoRisk) { setPill("aud-pill", "Pakai headset", "warn"); $("aud-status").textContent = "Audio terdengar, tapi mikrofon ikut menangkap suara speaker. Pakai headset atau earphone sebelum mulai Section B."; }
+  else { setPill("aud-pill", "Siap", "good"); $("aud-status").textContent = "Audio berjalan. Untuk tes asli, tetap pakai headset."; }
+  updateStart();
+});
+$("btn-aud-no").addEventListener("click", () => {
+  S.audio = "fail";
+  $("btn-aud-yes").hidden = true; $("btn-aud-no").hidden = true;
+  setPill("aud-pill", "Tidak terdengar", "bad");
+  $("aud-status").textContent = "Naikkan volume, pastikan headset tersambung, lalu tekan Putar lagi. Kalau tetap tidak bersuara, coba Chrome atau Edge versi terbaru.";
+  updateStart();
+});
+
+/* ---------- screens and top bar ---------- */
+const SCREENS = { setup: "s-setup", sec: "s-sec", speak: "s-speak", conv: "s-conv", mcq: "s-mcq", results: "s-results" };
+function show(name) {
+  for (const k in SCREENS) $(SCREENS[k]).hidden = k !== name;
+  if (name !== "conv" && name !== "mcq") showNotes(false);
+  $("tb-test").hidden = !S.running;
+  $("secbar").hidden = !S.running;
+  window.scrollTo(0, 0);
+}
+function showNotes(on) { $("notes-wrap").hidden = !on; }
+function renderSecbar() {
+  $("secbar").innerHTML = SECTIONS.filter(s => S.ran.has(s.id)).map(s => `<div class="sb" data-sec="${s.id}"><span>${s.id}</span><i><b></b></i></div>`).join("");
+}
+function setTopbar(st) {
+  if (!st.sec) return;
+  $("tb-sec").textContent = "Section " + st.sec.id + " · " + st.sec.name;
+  const items = secItems(st.sec);
+  $("tb-count").textContent = st.item ? "Soal " + st.item.n + " / " + TOTAL_ITEMS
+    : st.conv ? "Soal " + st.conv.items[0].n + "–" + st.conv.items[st.conv.items.length - 1].n + " / " + TOTAL_ITEMS
+    : "Soal " + items[0].n + (items.length > 1 ? "–" + items[items.length - 1].n : "") + " / " + TOTAL_ITEMS;
+  $("secbar").querySelectorAll(".sb").forEach(el => el.classList.toggle("cur", el.dataset.sec === st.sec.id));
+}
+function markProgress() {
+  const done = {};
+  S.steps.slice(0, S.stepIdx + 1).forEach(st => { if (st.item && st.sec) done[st.sec.id] = (done[st.sec.id] || 0) + 1; });
+  $("secbar").querySelectorAll(".sb").forEach(el => {
+    const sec = SECTIONS.find(s => s.id === el.dataset.sec);
+    const p = sec ? (done[sec.id] || 0) / secItems(sec).length : 0;
+    el.querySelector("b").style.transform = "scaleX(" + p + ")";
+  });
+}
+
+/* ---------- section intro ---------- */
+function runIntro(st) {
+  const sec = st.sec, items = secItems(sec);
+  $("si-letter").textContent = sec.id;
+  $("si-meta").textContent = "Section " + sec.id + " · " + items.length + " soal · Soal " + items[0].n + (items.length > 1 ? "–" + items[items.length - 1].n : "");
+  $("si-name").textContent = sec.name;
+  $("si-instr").innerHTML = sec.instr.map(p => `<div class="part">${p.label ? `<span class="part-label">${esc(p.label)}</span>` : ""}<p class="en">${esc(p.en)}</p></div>`).join("");
+  $("si-desc").textContent = sec.desc;
+  $("si-points").innerHTML = sec.points.map(p => `<li><span>${esc(p)}</span></li>`).join("");
+  const btn = $("si-start");
+  btn.textContent = "Mulai Section " + sec.id;
+  show("sec");
+  setTimeout(() => { try { btn.focus(); } catch (e) {} }, 0);
+  return new Promise(resolve => {
+    btn.onclick = () => { btn.onclick = null; S.keyHandler = null; ctx(); tts.unlock(); resolve(); };
+    S.keyHandler = e => { if (e.key === "Enter") { e.preventDefault(); btn.click(); } };
+  });
+}
+
+/* ---------- speaking screens (A, B, C) ---------- */
+const PHASES = {
+  mic: { label: "Menyiapkan mikrofon", hint: "Kalau browser meminta izin mikrofon, pilih Izinkan. Soal lanjut setelah mikrofon siap." },
+  prep: { label: "Bersiap", hint: "Baca kalimat dalam hati. Mulai bicara setelah bunyi beep." },
+  listen: { label: "Dengarkan", hint: "Kalimat diputar sekali. Ulangi setelah bunyi beep." },
+  think: { label: "Waktu berpikir", hint: "Susun ide: kapan, di mana, dengan siapa, apa yang paling berkesan. Mulai bicara setelah bunyi beep." },
+  beep: { label: "Beep", hint: "Mulai bicara sekarang." },
+  rec: { label: "Merekam", hint: "" },
+  saving: { label: "Menyimpan", hint: "Soal berikutnya segera muncul." }
+};
+const REC_HINT = {
+  read: "Bacakan dengan tempo natural. Rekaman berhenti otomatis sesaat setelah kamu selesai membaca.",
+  repeat: "Ulangi kalimatnya persis seperti yang kamu dengar. Rekaman berhenti otomatis sesaat setelah kamu selesai.",
+  free: "Bicara sampai waktu habis. Tekan Selesai bicara kalau kamu sudah selesai lebih awal."
+};
+let speakKind = "read";
+function setPhase(p) {
+  phase = p;
+  $("status").dataset.phase = p;
+  $("ph-label").textContent = PHASES[p].label;
+  $("ph-hint").textContent = p === "rec" ? REC_HINT[speakKind] : PHASES[p].hint;
+  $("btn-done").hidden = p !== "rec";
+  if (p !== "think") $("btn-skip").hidden = true;
+  if (p === "mic" || p === "listen") { $("ph-clock").textContent = ""; $("ph-fill").style.transform = "scaleX(1)"; }
+  if (p === "beep") { $("ph-clock").textContent = speakKind === "free" ? clockText(realMs(D.FREE_MAX)) : "00:00"; $("ph-fill").style.transform = "scaleX(1)"; }
+  if (p === "rec") setTimeout(() => { try { $("btn-done").focus(); } catch (e) {} }, 0);
+  if (p === "saving") { $("ph-clock").textContent = "✓"; $("ph-fill").style.transform = "scaleX(0)"; }
+}
+function showSpeak(st) {
+  const { sec, item } = st;
+  speakKind = sec.kind;
+  const scr = $("s-speak");
+  scr.dataset.n = item.n; scr.dataset.kind = sec.kind;
+  $("sp-meta").textContent = "Question " + item.n + " of " + TOTAL_ITEMS;
+  $("sp-instr").textContent = sec.instr[0].en;
+  $("sp-note").hidden = true; $("sp-note").textContent = "";
+  $("sp-topic-label").hidden = sec.kind !== "free";
+  const text = $("sp-text"), listen = $("sp-listen");
+  listen.classList.remove("playing");
+  if (sec.kind === "repeat") { text.hidden = true; text.textContent = ""; listen.hidden = false; }
+  else { text.hidden = false; text.textContent = sec.kind === "free" ? item.topic : ""; listen.hidden = true; }
+  $("btn-done").textContent = sec.kind === "free" ? "Selesai bicara" : sec.kind === "repeat" ? "Selesai mengulang" : "Selesai membaca";
+  $("btn-done").onclick = null; $("btn-skip").onclick = null;
+  levels.fill(0);
+  activeCanvas = $("meter-test");
+  show("speak");
+}
+function showNote(t) { const n = $("sp-note"); n.textContent = t; n.hidden = false; }
+
+// Countdown with level sampling; returns the background noise level for the voice detector.
+function countdown(total, opts) {
+  opts = opts || {};
+  return new Promise(res => {
+    const t0 = now(), samples = [];
+    let done = false;
+    const skip = opts.skip ? $("btn-skip") : null;
+    const fin = () => {
+      if (done) return;
+      done = true; clearInterval(id);
+      if (skip) { skip.hidden = true; skip.onclick = null; }
+      samples.sort((a, b) => a - b);
+      res(samples.length ? samples[Math.floor(samples.length * 0.3)] : 0.004);
+    };
+    if (skip) { skip.hidden = false; skip.onclick = fin; }
+    const show = left => {
+      $("ph-clock").textContent = opts.mmss ? clockText(realMs(left) + 999) : String(Math.max(1, Math.ceil(realMs(left) / 1000)));
+      $("ph-fill").style.transform = "scaleX(" + Math.max(0, left / total) + ")";
+    };
+    show(total);
+    const id = setInterval(() => {
+      const t = now() - t0, left = Math.max(0, total - t);
+      samples.push(readLevel());
+      show(left);
+      if (t >= total) fin();
+    }, 50);
+  });
+}
+function sampleFloor(dur) {
+  return new Promise(res => {
+    const t0 = now(), samples = [];
+    const id = setInterval(() => {
+      samples.push(readLevel());
+      if (now() - t0 >= dur) {
+        clearInterval(id);
+        samples.sort((a, b) => a - b);
+        res(samples.length ? samples[Math.floor(samples.length * 0.3)] : 0.004);
+      }
+    }, 50);
+  });
+}
+
+async function ensureSpeech() {
+  if (!SR || speech.running) return null;
+  if (speech.giveUp) return speech.giveUp;
+  const prev = phase;
+  setPhase("mic");
+  const ok = await speech.start();
+  if (PHASES[prev] && prev !== "mic") setPhase(prev);
+  return ok ? null : (speech.err || "not-started");
+}
+function questionError(tFrom, startErr) {
+  if (!SR) return null;
+  if (startErr) return startErr;
+  return speech.err && speech.errAt >= tFrom ? speech.err : null;
+}
+// How long a silence ends the answer: short once the last word of the sentence was heard, longer before that.
+function silenceLimit(o, t) {
+  if (!o.target) return o.silFree;
+  if (!SR || !speech.running) return D.SIL_NO_SR;
+  const heard = tokensFrom(o.text(o.windowStart, t));
+  const T = o.target, lastT = T[T.length - 1];
+  const done = heard.length > 0 && (heard.slice(-3).indexOf(lastT) >= 0 || heard.length >= T.length);
+  return done ? D.SIL_DONE : D.SIL_UNFINISHED;
+}
+function showRecClock(o, rel) {
+  const r = Math.max(0, rel);
+  if (o.kind === "free") {
+    const left = Math.max(0, o.maxMs - r);
+    $("ph-clock").textContent = clockText(realMs(left) + 999);
+    $("ph-fill").style.transform = "scaleX(" + (left / o.maxMs) + ")";
+  } else {
+    $("ph-clock").textContent = clockText(realMs(r));
+    $("ph-fill").style.transform = "scaleX(" + Math.max(0, 1 - r / o.maxMs) + ")";
+  }
+}
+function record(o) { return micMode === "srOnly" || !stream ? recordSROnly(o) : recordShared(o); }
+
+// Recorder and recognition together. The recorder starts with the beep, so words said right after it are kept.
+// Speaking is detected from the audio level and from words arriving, so a soft voice still counts.
+function recordShared(o) {
+  return new Promise(resolve => {
+    let first = null, last = null, lastAbove = null, run = 0, pauses = 0, stopping = false, audioUrl = null, mrDone = false, mr = null;
+    const chunks = [], base = o.tBeep + D.BEEP;
+    speech.keepAlive = true;
+    try {
+      if (stream && window.MediaRecorder) {
+        mr = new MediaRecorder(stream);
+        mr.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
+        mr.onstop = () => {
+          try { if (chunks.length) audioUrl = URL.createObjectURL(new Blob(chunks, { type: mr.mimeType || "audio/webm" })); } catch (e) {}
+          mrDone = true;
+        };
+        mr.start();
+      } else mrDone = true;
+    } catch (e) { mr = null; mrDone = true; }
+
+    const tick = setInterval(() => {
+      const t = now(), rel = t - base, v = readLevel();
+      if (rel >= 0) {
+        if (v > threshold) {
+          run++;
+          if (run >= 2) {
+            if (first === null) first = Math.max(0, rel - 50);
+            else if (lastAbove !== null && rel - lastAbove > o.pauseMs) pauses++;
+            lastAbove = rel; last = rel;
+          }
+        } else run = 0;
+        const ups = speech.updatesBetween(o.windowStart, t, o.fromStart);
+        if (ups.length) {
+          if (first === null) first = Math.max(0, ups[0] - base - ms(600));
+          const u = ups[ups.length - 1] - base - ms(300);
+          if (last === null || u > last) last = Math.max(first, u);
+        }
+      }
+      showRecClock(o, rel);
+      if (first !== null && rel - last > silenceLimit(o, t)) finish("silence");
+      else if (first === null && rel > o.noSpeechMs) finish("nospeech");
+      else if (rel >= o.maxMs) finish("max");
+    }, 50);
+
+    async function finish(why) {
+      if (stopping) return;
+      stopping = true;
+      clearInterval(tick);
+      $("btn-done").onclick = null;
+      const tStop = now();
+      try { if (mr && mr.state !== "inactive") mr.stop(); else mrDone = true; } catch (e) { mrDone = true; }
+      speech.keepAlive = false;
+      await wait(D.RESULT_LAG);
+      await speech.waitFinal(o.windowStart, tStop + D.RESULT_LAG, D.FINAL_WAIT);
+      const until = now() + D.REC_STOP_WAIT;
+      while (!mrDone && now() < until) await wait(50);
+      resolve({
+        transcript: o.text(o.windowStart, tStop + D.RESULT_LAG),
+        first: first === null ? null : realMs(first), last: last === null ? null : realMs(last), pauses,
+        audioUrl, srErr: questionError(o.windowStart, o.startErr), reason: why, mode: "shared"
+      });
+    }
+    $("btn-done").onclick = () => finish("manual");
+  });
+}
+
+// Recognition only: timing comes from when words arrive; nothing is recorded for playback.
+function recordSROnly(o) {
+  return new Promise(resolve => {
+    let stopping = false;
+    const base = o.tBeep + D.BEEP;
+    speech.keepAlive = true;
+    const tick = setInterval(() => {
+      const t = now(), rel = t - base;
+      showRecClock(o, rel);
+      const ups = speech.updatesBetween(o.windowStart, t, o.fromStart);
+      const lastUp = ups.length ? ups[ups.length - 1] : null;
+      if (lastUp !== null && t - lastUp > silenceLimit(o, t) + ms(300)) finish("silence");
+      else if (lastUp === null && rel > o.noSpeechMs) finish("nospeech");
+      else if (rel >= o.maxMs) finish("max");
+    }, 50);
+    async function finish(why) {
+      if (stopping) return;
+      stopping = true;
+      clearInterval(tick);
+      $("btn-done").onclick = null;
+      const tStop = now();
+      speech.keepAlive = false;
+      await wait(D.RESULT_LAG);
+      await speech.waitFinal(o.windowStart, tStop + D.RESULT_LAG, D.FINAL_WAIT);
+      const ups = speech.updatesBetween(o.windowStart, tStop + D.RESULT_LAG, o.fromStart);
+      let first = null, last = null, pauses = 0;
+      if (ups.length) {
+        first = Math.max(0, ups[0] - base - ms(600));
+        last = Math.min(Math.max(0, tStop - base), Math.max(first, ups[ups.length - 1] - base - ms(300)));
+        for (let k = 1; k < ups.length; k++) if (ups[k] - ups[k - 1] > Math.max(ms(1200), o.pauseMs)) pauses++;
+      }
+      resolve({
+        transcript: o.text(o.windowStart, tStop + D.RESULT_LAG),
+        first: first === null ? null : realMs(first), last: last === null ? null : realMs(last), pauses,
+        audioUrl: null, srErr: questionError(o.windowStart, o.startErr), reason: why, mode: "srOnly"
+      });
+    }
+    $("btn-done").onclick = () => finish("manual");
+  });
+}
+
+async function afterSpeaking(r) {
+  setPhase("saving");
+  // Voice reached the recorder but recognition returned nothing. First reopen the recognition session;
+  // if it happens again, the device cannot do both at once, so continue with recognition only.
+  if (r.mode === "shared" && SR && !r.srErr && r.first !== null && !r.transcript && !r.echo && !r.audioFailed) {
+    sharedMisses++;
+    await speech.stop();
+    if (sharedMisses >= 2) { releaseMic(); micMode = "srOnly"; }
+  } else if (r.transcript) sharedMisses = 0;
+  await wait(D.SAVE);
+  return r;
+}
+
+async function runRead(st) {
+  const item = st.item;
+  showSpeak(st);
+  const e1 = await ensureSpeech();
+  const target = item.text.split(/\s+/).map(normWord);
+  $("sp-text").textContent = item.text;
+  setPhase("prep");
+  const tPrep = now();
+  threshold = calib(await countdown(D.PREP));
+  const e2 = await ensureSpeech();
+  setPhase("beep");
+  const tBeep = now();
+  const o = { kind: "read", tBeep, target, windowStart: tBeep - D.EARLY, fromStart: false, text: (a, b) => speech.textBetween(a, b),
+    maxMs: D.READ_MAX, noSpeechMs: D.NO_SPEECH, pauseMs: D.PAUSE, startErr: e1 || e2 };
+  const p = record(o);
+  await beep();
+  setPhase("rec");
+  const r = await p;
+  r.early = !!SR && speech.startedBetween(tPrep, tBeep - D.EARLY).length > 0;
+  return afterSpeaking(r);
+}
+
+async function runRepeat(st) {
+  const item = st.item;
+  showSpeak(st);
+  const e1 = await ensureSpeech();
+  const target = item.text.split(/\s+/).map(normWord);
+  setPhase("listen");
+  await wait(D.PRE_LISTEN);
+  const listen = $("sp-listen");
+  listen.classList.add("playing");
+  const tA = now();
+  const res = await tts.say(item.text, { voice: tts.narrator });
+  const tB = now();
+  listen.classList.remove("playing");
+  const audioFailed = !res.ok;
+  if (audioFailed) {
+    listen.hidden = true;
+    $("sp-text").hidden = false; $("sp-text").textContent = item.text;
+    showNote("Audio tidak bisa diputar di browser ini, jadi kalimatnya ditampilkan. Bacakan setelah bunyi beep.");
+    speakKind = "read";
+    setPhase("prep");
+    threshold = calib(await countdown(D.PREP));
+  } else {
+    threshold = calib(await sampleFloor(D.ECHO_SETTLE));
+  }
+  const e2 = await ensureSpeech();
+  setPhase("beep");
+  const tBeep = now();
+  const o = { kind: "repeat", tBeep, target, windowStart: tBeep - D.START_GAP, fromStart: true, text: (a, b) => speech.textFrom(a, b),
+    maxMs: D.READ_MAX, noSpeechMs: D.NO_SPEECH, pauseMs: D.PAUSE, startErr: e1 || e2 };
+  const p = record(o);
+  await beep();
+  setPhase("rec");
+  const r = await p;
+  r.audioFailed = audioFailed;
+  r.ttsReason = audioFailed ? res.reason : null;
+  r.echo = !audioFailed && !!SR && echoWords(tA, tB + ms(400), target) >= 2;
+  return afterSpeaking(r);
+}
+
+async function runFree(st) {
+  showSpeak(st);
+  const e1 = await ensureSpeech();
+  setPhase("think");
+  threshold = calib(await countdown(D.THINK, { mmss: true, skip: true }));
+  const e2 = await ensureSpeech();
+  setPhase("beep");
+  const tBeep = now();
+  const o = { kind: "free", tBeep, target: null, windowStart: tBeep - D.EARLY, fromStart: false, text: (a, b) => speech.textBetween(a, b),
+    maxMs: D.FREE_MAX, noSpeechMs: D.FREE_NO_SPEECH, pauseMs: D.FREE_PAUSE, silFree: D.FREE_SILENCE, startErr: e1 || e2 };
+  const p = record(o);
+  await beep();
+  setPhase("rec");
+  const r = await p;
+  return afterSpeaking(r);
+}
+
+async function releaseSpeaking() {
+  speech.keepAlive = false;
+  await speech.stop();
+  releaseMic();
+  activeCanvas = null;
+}
+
+/* ---------- conversation (D) ---------- */
+function setConvState(text, playing) {
+  $("cv-state").textContent = text;
+  $("cv-state").dataset.state = playing === "fail" ? "bad" : playing ? "acc" : "";
+  $("cv-player").classList.toggle("playing", playing === true);
+}
+function transcriptHTML(conv, evidence) {
+  const ev = new Set(evidence || []);
+  return `<div class="tx">` + conv.lines.map((l, i) => `<p${ev.has(i) ? ' class="ev"' : ""}><b>${esc(conv.names[l[0]])}:</b> ${esc(l[1])}</p>`).join("") + `</div>`;
+}
+async function runConv(st) {
+  const { conv, ci, sec } = st;
+  $("cv-meta").textContent = "Conversation " + (ci + 1) + " of " + sec.conversations.length + " · Question " + conv.items[0].n + "–" + conv.items[conv.items.length - 1].n;
+  $("cv-title").textContent = conv.title;
+  $("cv-setting").textContent = conv.setting;
+  $("cv-turns").innerHTML = conv.lines.map(() => "<i></i>").join("");
+  $("cv-fallback").hidden = true; $("cv-fallback").innerHTML = "";
+  $("cv-next").hidden = true; $("cv-next").onclick = null;
+  $("s-conv").dataset.conv = conv.id;
+  show("conv");
+  showNotes(true);
+  await tts.load();
+  const t0 = now();
+  while (now() - t0 < D.CONV_LEAD) {
+    setConvState("Diputar dalam " + Math.max(1, Math.ceil(realMs(D.CONV_LEAD - (now() - t0)) / 1000)) + " detik", false);
+    await wait(Math.min(250, D.CONV_LEAD));
+  }
+  setConvState("Sedang diputar", true);
+  const dots = $("cv-turns").children;
+  let failed = false, reason = null;
+  for (let i = 0; i < conv.lines.length; i++) {
+    const who = conv.lines[i][0], text = conv.lines[i][1];
+    dots[i].className = "on";
+    const v = tts.voiceFor(who);
+    const r = await tts.say(text, { voice: v.voice, pitch: v.pitch, who });
+    dots[i].className = "done";
+    if (!r.ok) { failed = true; reason = r.reason; break; }
+    await wait(D.TURN_GAP);
+  }
+  if (failed) {
+    S.convFail[conv.id] = reason || "error";
+    setConvState("Audio gagal", "fail");
+    $("cv-fallback").innerHTML = `<p class="note">Audio tidak bisa diputar di browser ini, jadi transkrip percakapan ditampilkan. Baca sekali, lalu lanjut ke pertanyaan.</p>` + transcriptHTML(conv);
+    $("cv-fallback").hidden = false;
+    const b = $("cv-next");
+    b.hidden = false;
+    await new Promise(res => {
+      b.onclick = () => { b.onclick = null; S.keyHandler = null; res(); };
+      S.keyHandler = e => { if (e.key === "Enter") { e.preventDefault(); b.click(); } };
+    });
+  } else {
+    setConvState("Selesai diputar", false);
+    await wait(D.AFTER_CONV);
+  }
+}
+
+/* ---------- multiple choice (D, E, F) ---------- */
+async function runMCQ(st) {
+  const { item, conv, ci } = st;
+  const opts = $("mq-opts"), next = $("mq-next"), card = $("mq-card");
+  $("s-mcq").dataset.n = item.n;
+  $("mq-meta").textContent = "Question " + item.n + " of " + TOTAL_ITEMS;
+  $("mq-ctx").textContent = conv ? "Conversation " + (ci + 1) : "";
+  $("mq-prompt").textContent = item.prompt;
+  opts.innerHTML = "";
+  next.disabled = true; next.onclick = null;
+  next.textContent = S.stepIdx === S.steps.length - 1 ? "Selesai" : "Berikutnya";
+  let choice = null;
+  const render = () => {
+    opts.innerHTML = item.options.map((o, i) => `<button type="button" class="opt" role="radio" aria-checked="${choice === i}" data-i="${i}"><span class="okey">${"ABCD"[i]}</span><span class="otext">${esc(o)}</span></button>`).join("");
+    next.disabled = choice === null;
+  };
+  const audioBox = $("mq-audio");
+  audioBox.hidden = !item.audio;
+  card.hidden = !!item.audio;
+  next.parentElement.hidden = !!item.audio;
+  show("mcq");
+  showNotes(!!conv);
+  if (item.audio) {
+    const fb = $("mq-aud-fallback");
+    fb.hidden = true; fb.textContent = "";
+    audioBox.classList.remove("playing");
+    setPill("mq-aud-state", "Bersiap", "");
+    await tts.load();
+    await wait(D.PRE_LISTEN * 2);
+    setPill("mq-aud-state", "Sedang diputar", "acc");
+    audioBox.classList.add("playing");
+    const r = await tts.say(item.audio, { voice: tts.narrator });
+    audioBox.classList.remove("playing");
+    if (r.ok) setPill("mq-aud-state", "Selesai diputar", "");
+    else {
+      S.audFail[item.n] = r.reason || "error";
+      setPill("mq-aud-state", "Audio gagal", "bad");
+      fb.textContent = "Audio tidak bisa diputar di browser ini, jadi kalimatnya ditampilkan: “" + item.audio + "”";
+      fb.hidden = false;
+    }
+    card.hidden = false;
+    next.parentElement.hidden = false;
+  }
+  render();
+  const t0 = now();
+  return new Promise(resolve => {
+    const choose = i => { if (i >= 0 && i < item.options.length) { choice = i; render(); } };
+    const done = () => {
+      if (choice === null) return;
+      S.keyHandler = null; next.onclick = null; opts.onclick = null;
+      resolve({ choice, ms: realMs(now() - t0) });
+    };
+    opts.onclick = e => { const b = e.target.closest(".opt"); if (b) choose(+b.dataset.i); };
+    next.onclick = done;
+    S.keyHandler = e => {
+      const k = e.key.toLowerCase();
+      const map = { "1": 0, "2": 1, "3": 2, "4": 3, a: 0, b: 1, c: 2, d: 3 };
+      if (Object.prototype.hasOwnProperty.call(map, k)) { choose(map[k]); e.preventDefault(); }
+      else if (k === "enter") { done(); e.preventDefault(); }
+    };
+  });
+}
+
+/* ---------- test runner ---------- */
+function buildSteps() {
+  const steps = [];
+  const sel = SECTIONS.filter(s => S.sel.has(s.id));
+  const lastSpeaking = sel.filter(s => SPEAKING.indexOf(s.id) >= 0).pop();
+  sel.forEach(sec => {
+    steps.push({ type: "intro", sec });
+    if (sec.kind === "read" || sec.kind === "repeat" || sec.kind === "free") sec.items.forEach(item => steps.push({ type: sec.kind, sec, item }));
+    else if (sec.kind === "listening") sec.conversations.forEach((conv, ci) => {
+      steps.push({ type: "conv", sec, conv, ci });
+      conv.items.forEach(item => steps.push({ type: "mcq", sec, item, conv, ci }));
+    });
+    else sec.items.forEach(item => steps.push({ type: "mcq", sec, item }));
+    if (sec === lastSpeaking) steps.push({ type: "release" });
+  });
+  return steps;
+}
+
+async function runTest() {
+  if (S.running) return;
+  if (needsMic() && micMode !== "srOnly") {
+    const m = await initMic();
+    if (!m.ok) {
+      S.micReady = false;
+      setPill("mic-pill", m.pill, "bad");
+      $("mic-status").textContent = m.msg;
+      show("setup"); updateStart(); return;
+    }
+  }
+  ctx(); tts.unlock(); tts.load();
+  Object.keys(S.res).forEach(k => { const r = S.res[k]; if (r && r.audioUrl) { try { URL.revokeObjectURL(r.audioUrl); } catch (e) {} } });
+  S.res = {}; S.ans = {}; S.convFail = {}; S.audFail = {}; S.secTime = {}; S.error = null;
+  S.ran = new Set(S.sel);
+  S.steps = buildSteps(); S.stepIdx = 0;
+  $("notes").value = "";
+  speech.reset(); speech.allowRetry(); sharedMisses = 0;
+  S.running = true;
+  renderSecbar();
+  updateStart();
+  S.t0 = now();
+  try {
+    for (S.stepIdx = 0; S.stepIdx < S.steps.length; S.stepIdx++) {
+      const st = S.steps[S.stepIdx];
+      setTopbar(st);
+      const ts = now();
+      if (st.type === "intro") await runIntro(st);
+      else if (st.type === "read") S.res[st.item.n] = await runRead(st);
+      else if (st.type === "repeat") S.res[st.item.n] = await runRepeat(st);
+      else if (st.type === "free") S.res[st.item.n] = await runFree(st);
+      else if (st.type === "conv") await runConv(st);
+      else if (st.type === "mcq") S.ans[st.item.n] = await runMCQ(st);
+      else if (st.type === "release") await releaseSpeaking();
+      if (st.sec) S.secTime[st.sec.id] = (S.secTime[st.sec.id] || 0) + (now() - ts);
+      markProgress();
+    }
+  } catch (err) {
+    S.error = err;
+    console.error("Simulasi berhenti karena error:", err);
+  }
+  S.t1 = now();
+  S.keyHandler = null;
+  speech.keepAlive = false;
+  if (speech.running) await speech.stop();
+  releaseMic();
+  activeCanvas = null; phase = "idle";
+  tts.cancel();
+  S.running = false;
+  renderResults();
+  show("results");
+  updateStart();
+}
+function startTest() {
+  if (S.running || S.starting) return;      // a double click must not start two runs
+  S.starting = true;
+  $("btn-start").disabled = true;
+  runTest().catch(err => {
+    console.error(err);
+    S.running = false;
+    show("setup");
+  }).then(() => { S.starting = false; updateStart(); });
+}
+$("btn-start").addEventListener("click", () => { if (!$("btn-start").disabled) startTest(); });
+
+document.addEventListener("keydown", e => {
+  if (!S.keyHandler || e.metaKey || e.ctrlKey || e.altKey) return;
+  const t = e.target;
+  if (t && t.closest) {
+    if (t.closest("textarea, input, select, a, summary")) return;
+    if (t.closest("button") && !/^[1-4a-dA-D]$/.test(e.key)) return;
+  }
+  S.keyHandler(e);
+});
+window.addEventListener("beforeunload", e => { if (S.running) { e.preventDefault(); e.returnValue = ""; } });
+
+/* ---------- results ---------- */
+function band(v) {
+  if (v == null) return { t: "—", k: "" };
+  if (v >= 85) return { t: "Sangat baik", k: "good" };
+  if (v >= 70) return { t: "Baik", k: "acc" };
+  if (v >= 50) return { t: "Cukup", k: "warn" };
+  return { t: "Perlu latihan", k: "bad" };
+}
+function chipClass(v) { return "chip " + band(v).k; }
+function numOrDash(v) { return v == null ? "—" : String(Math.round(v)); }
+
+function computeResults() {
+  const out = { sec: {}, skills: [] };
+  SECTIONS.forEach(sec => {
+    if (!S.ran.has(sec.id)) return;
+    if (sec.kind === "read" || sec.kind === "repeat") {
+      const w = sec.kind === "read" ? 0.6 : 0.7;
+      const items = sec.items.map(item => { const r = S.res[item.n]; return { item, r, s: r ? scoreSpeech(item.text, r, !!SR, w) : null }; });
+      const sc = items.map(x => x.s).filter(Boolean);
+      out.sec[sec.id] = { items, score: mean(sc.map(s => s.overall)), acc: mean(sc.map(s => s.acc)), flu: mean(sc.map(s => s.flu)), wpm: mean(sc.map(s => s.wpm)),
+        scored: sc.filter(s => s.overall != null).length, done: sc.length, total: sec.items.length };
+    } else if (sec.kind === "free") {
+      const item = sec.items[0], r = S.res[item.n], s = r ? scoreFree(item, r, !!SR) : null;
+      out.sec[sec.id] = { item, r, s, score: s ? s.overall : null, flu: s ? s.cFlu : null };
+    } else {
+      const list = sec.kind === "listening"
+        ? sec.conversations.reduce((a, c) => a.concat(c.items.map(item => ({ item, conv: c }))), [])
+        : sec.items.map(item => ({ item }));
+      list.forEach(x => { x.a = S.ans[x.item.n] || null; });
+      const answered = list.filter(x => x.a).length;
+      const correct = list.filter(x => x.a && x.a.choice === x.item.answer).length;
+      out.sec[sec.id] = { items: list, correct, answered, total: list.length, score: answered ? correct / list.length * 100 : null };
+    }
+  });
+  const g = id => out.sec[id];
+  const add = (name, idName, ids, val, src) => out.skills.push({ name, idName, taken: ids.some(id => S.ran.has(id)), val, src });
+  add("Pronunciation", "Pengucapan", ["A"], g("A") ? g("A").acc : null, "Dari akurasi kata Section A");
+  add("Fluency", "Kelancaran", ["A", "B", "C"], mean([g("A") && g("A").flu, g("B") && g("B").flu, g("C") && g("C").flu]), "Dari tempo dan jeda Section A, B, dan C");
+  add("Active Listening", "Menyimak aktif", ["B"], g("B") ? g("B").acc : null, "Dari ketepatan mengulang di Section B");
+  add("Spoken English Understanding", "Memahami percakapan", ["D"], g("D") ? g("D").score : null, "Dari jawaban Section D");
+  add("Vocabulary", "Kosakata", ["E"], g("E") ? g("E").score : null, "Dari jawaban Section E");
+  add("Grammar", "Tata bahasa", ["F"], g("F") ? g("F").score : null, "Dari jawaban Section F");
+  out.overall = mean(out.skills.map(k => k.val));
+  return out;
+}
+
+function verdict(v) {
+  if (v == null) return ["Skor belum bisa dihitung", "Pengenalan suara tidak menangkap jawaban dan tidak ada soal pilihan ganda yang dikerjakan. Lihat catatan teknis di bawah."];
+  if (v >= 85) return ["Sangat baik", "Bacaan jelas, tempo stabil, dan sebagian besar jawaban tepat."];
+  if (v >= 70) return ["Baik", "Dasarnya sudah kuat. Rapikan kata dan soal yang ditandai di pembahasan."];
+  if (v >= 50) return ["Cukup", "Fokus ke kata yang sering terlewat dan pola grammar yang salah di pembahasan."];
+  return ["Perlu banyak latihan", "Mulai dari Section A dengan tempo lebih pelan dan pelafalan yang jelas, lalu ulangi tes."];
+}
+
+function techNotes(R) {
+  const notes = [];
+  const speakRan = SPEAKING.filter(id => S.ran.has(id));
+  if (speakRan.length && !SR) notes.push("Browser ini tidak punya pengenalan suara, jadi Section " + speakRan.join(", ") + " terekam tanpa skor otomatis.");
+  const srOnly = Object.keys(S.res).filter(n => S.res[n] && S.res[n].mode === "srOnly").map(Number).sort((a, b) => a - b);
+  if (srOnly.length) notes.push("Perangkat ini tidak bisa merekam dan mengenali suara bersamaan, jadi soal " + srOnly.join(", ") + " dinilai tanpa rekaman yang bisa diputar ulang.");
+  const echo = Object.keys(S.res).filter(n => S.res[n] && S.res[n].echo).map(Number);
+  if (echo.length) notes.push("Mikrofon menangkap suara speaker di soal " + echo.join(", ") + ". Pakai headset supaya jawabanmu terpisah dari audio soal.");
+  const audioFail = Object.keys(S.res).filter(n => S.res[n] && S.res[n].audioFailed).map(Number)
+    .concat(Object.keys(S.audFail).map(Number));
+  const convFail = Object.keys(S.convFail);
+  if (audioFail.length || convFail.length) notes.push("Audio tidak bisa diputar di " + [audioFail.length ? "soal " + audioFail.sort((a, b) => a - b).join(", ") : "", convFail.length ? convFail.map(id => id === "D1" ? "Conversation 1" : "Conversation 2").join(" dan ") : ""].filter(Boolean).join(" serta ") + ", jadi teksnya ditampilkan sebagai pengganti.");
+  const srErrs = {};
+  Object.keys(S.res).forEach(n => { const r = S.res[n]; if (r && r.srErr) srErrs[r.srErr] = (srErrs[r.srErr] || 0) + 1; });
+  Object.keys(srErrs).forEach(err => notes.push(srFailMessage(err).replace(/,? lalu tekan Tes ulang\.?$/, ".") + " (" + srErrs[err] + " soal)"));
+  if (S.error) notes.push("Simulasi berhenti sebelum selesai karena kendala teknis. Hasil di bawah hanya mencakup soal yang sempat dikerjakan.");
+  return notes;
+}
+
+const SAY = {};
+let sayId = 0;
+function sayBtn(text, label) {
+  const k = "s" + (++sayId);
+  SAY[k] = text;
+  return tts.ok ? `<button class="btn ghost small" type="button" data-say="${k}">${esc(label)}</button>` : "";
+}
+let playToken = 0;
+async function playConvAgain(conv, btn) {
+  const my = ++playToken;
+  tts.cancel();
+  await tts.load();
+  btn.disabled = true;
+  for (const l of conv.lines) {
+    if (my !== playToken) break;
+    const v = tts.voiceFor(l[0]);
+    const r = await tts.say(l[1], { voice: v.voice, pitch: v.pitch, who: l[0] });
+    if (!r.ok || my !== playToken) break;
+    await wait(250);
+  }
+  btn.disabled = false;
+}
+
+function speechItemHTML(sec, x) {
+  const { item, r, s } = x;
+  if (!r || !s) return `<article class="item"><div class="item-head"><span class="qn">Soal ${item.n}</span><span class="chip">Tidak dikerjakan</span></div><p class="diff">${esc(item.text)}</p></article>`;
+  let diff;
+  if (s.ops) {
+    diff = s.ops.map(o => {
+      if (o.type === "ok") return `<span class="w">${esc(s.disp[o.ti])}</span>`;
+      if (o.type === "del") return `<span class="w miss" title="Tidak terdengar">${esc(s.disp[o.ti])}</span>`;
+      if (o.type === "sub") return `<span class="w sub" title="Terdengar: ${esc(o.h)}">${esc(s.disp[o.ti])}<small>${esc(o.h)}</small></span>`;
+      return `<span class="w ins" title="Kata tambahan">+${esc(o.h)}</span>`;
+    }).join(" ");
+  } else diff = esc(item.text);
+
+  const notes = [];
+  if (!SR) notes.push("Penilaian otomatis tidak tersedia di browser ini.");
+  else if (r.srErr === "network") notes.push("Pengenalan suara butuh koneksi internet, jadi akurasi tidak dihitung.");
+  else if (r.srErr === "audio-capture") notes.push("Pengenalan suara tidak bisa memakai mikrofon, jadi akurasi tidak dihitung.");
+  else if (r.srErr === "not-allowed" || r.srErr === "service-not-allowed") notes.push("Browser menolak fitur pengenalan suara, jadi akurasi tidak dihitung. Buka di Chrome atau Edge dan pilih Izinkan saat diminta.");
+  else if (r.srErr === "not-started") notes.push("Pengenalan suara belum diizinkan saat soal ini dimulai, jadi akurasi tidak dihitung.");
+  else if (r.srErr) notes.push("Pengenalan suara error (" + r.srErr + "), jadi akurasi tidak dihitung.");
+  if (s.recogFailed) notes.push(r.mode === "shared"
+    ? "Suaramu terekam, tapi pengenalan suara tidak mengembalikan satu kata pun, jadi akurasi tidak dihitung. Putar rekamanmu untuk memastikan suaranya jelas."
+    : "Pengenalan suara tidak mengembalikan kata, jadi akurasi tidak dihitung.");
+  else if (!s.spoke && SR && !r.srErr) notes.push(r.mode === "srOnly"
+    ? "Tidak ada kata yang tertangkap. Pastikan mikrofon tidak di-mute, bicara lebih dekat, dan internet aktif."
+    : "Tidak ada suara terdeteksi. Pastikan mikrofon tidak di-mute dan bicara lebih dekat.");
+  if (r.echo) notes.push("Mikrofon ikut menangkap suara audio soal dari speaker. Bagian itu sudah dipisahkan dari jawabanmu, tapi hasilnya lebih akurat kalau kamu pakai headset.");
+  if (r.audioFailed) notes.push("Audio soal tidak bisa diputar, jadi kalimatnya ditampilkan sebagai teks. Skor soal ini mengukur membaca, bukan menyimak.");
+  if (sec.kind === "read" && r.early) notes.push("Kamu mulai membaca sebelum bunyi beep. Di tes asli, bagian yang diucapkan sebelum beep tidak terekam.");
+  if (sec.kind === "repeat" && s.spoke && s.srOk && !s.ops.some(o => o.type === "ok")) notes.push("Tidak ada kata yang cocok dengan kalimat. Pastikan kamu mengulang setelah bunyi beep, karena kata yang diucapkan sebelum beep tidak dihitung.");
+  const endsMissing = s.ops && s.ops.length && s.ops[s.ops.length - 1].type === "del";
+  if (endsMissing && r.reason === "silence") notes.push("Rekaman berhenti karena ada jeda panjang sebelum kalimat selesai, jadi kata setelah jeda tidak ikut terekam.");
+  if (endsMissing && r.reason === "manual") notes.push("Tombol selesai ditekan sebelum kalimat selesai, jadi kata terakhir tidak ikut terekam.");
+  if (r.reason === "max") notes.push("Waktu rekam habis (15 detik) sebelum kamu selesai.");
+
+  const metrics = [
+    ["Akurasi kata", s.acc == null ? "—" : Math.round(s.acc) + "%"],
+    ["Tempo", s.wpm == null ? "—" : Math.round(s.wpm) + " kata/menit"],
+    ["Jeda panjang", s.spoke ? (r.pauses || 0) + "×" : "—"],
+    ["Mulai bicara", s.latency == null ? "—" : dec(s.latency) + " dtk"]
+  ];
+  return `<article class="item" data-n="${item.n}">
+    <div class="item-head"><span class="qn">Soal ${item.n}</span><span class="${chipClass(s.overall)}">${numOrDash(s.overall)}</span></div>
+    <p class="diff">${diff}</p>
+    ${s.srOk ? `<p class="heard"><b>Terdengar:</b> ${r.transcript ? "“" + esc(r.transcript) + "”" : "(tidak ada kata)"}</p>` : ""}
+    <dl class="metrics">${metrics.map(m => `<div><dt>${m[0]}</dt><dd>${m[1]}</dd></div>`).join("")}</dl>
+    ${notes.map(n => `<p class="note">${esc(n)}</p>`).join("")}
+    <div class="row">
+      ${r.audioUrl ? `<audio controls preload="metadata" src="${r.audioUrl}" aria-label="Rekaman kamu untuk soal ${item.n}"></audio>` : ""}
+      ${sayBtn(item.text, "Dengar contoh pelafalan")}
+    </div>
+    <details class="tips"><summary>Pembahasan</summary><ul>${item.tips.map(t => `<li>${fmtIPA(t)}</li>`).join("")}</ul></details>
+  </article>`;
+}
+
+function freeHTML(sec, x) {
+  const { item, r, s } = x;
+  if (!r || !s) return `<article class="item"><p class="hint">Soal ini tidak dikerjakan.</p></article>`;
+  const notes = [];
+  if (!SR) notes.push("Penilaian otomatis tidak tersedia di browser ini. Dengarkan rekamanmu dan nilai sendiri dengan daftar cek di bawah.");
+  else if (r.srErr) notes.push(srFailMessage(r.srErr).replace(/,? lalu tekan Tes ulang\.?$/, "."));
+  if (s.recogFailed) notes.push("Suaramu terekam, tapi pengenalan suara tidak mengembalikan kata, jadi skor tidak dihitung. Putar rekamanmu untuk menilai sendiri.");
+  else if (!s.spoke && SR && !r.srErr) notes.push("Tidak ada suara terdeteksi. Pastikan mikrofon tidak di-mute dan bicara lebih dekat.");
+  if (s.spoke && s.dur < 25) notes.push("Kamu bicara sekitar " + Math.round(s.dur) + " detik. Usahakan mendekati 45 detik, karena jawaban yang terlalu pendek menurunkan nilai.");
+  if (s.srOk && s.words >= 20 && s.past < 3 && s.present > s.past) notes.push("Topik ini menceritakan pengalaman, jadi pakai past tense: stayed, was, had, went.");
+  if (s.srOk && s.hits.length < 2) notes.push("Hanya sedikit kata yang berkaitan dengan topik resort. Sebutkan detail seperti kamar, kolam, pantai, makanan, atau staf.");
+  const metrics = [
+    ["Durasi bicara", s.spoke ? Math.round(s.dur) + " dtk" : "—"],
+    ["Jumlah kata", s.srOk ? String(s.words) : "—"],
+    ["Tempo", s.wpm == null ? "—" : Math.round(s.wpm) + " kata/menit"],
+    ["Kata isi berbeda", s.srOk ? String(s.unique) : "—"],
+    ["Kata sesuai topik", s.srOk ? String(s.hits.length) : "—"],
+    ["Jeda panjang", s.spoke ? (r.pauses || 0) + "×" : "—"]
+  ];
+  const comps = [["Kelancaran", s.cFlu], ["Durasi", s.cLength], ["Variasi kata", s.cVocab], ["Relevansi topik", s.cRel]];
+  return `<article class="item" data-n="${item.n}">
+    <div class="item-head"><span class="qn">Soal ${item.n} · ${esc(item.topic)}</span><span class="${chipClass(s.overall)}">${numOrDash(s.overall)}</span></div>
+    ${s.srOk ? `<p class="heard"><b>Terdengar:</b> ${r.transcript ? "“" + esc(r.transcript) + "”" : "(tidak ada kata)"}</p>` : ""}
+    <dl class="metrics">${metrics.map(m => `<div><dt>${m[0]}</dt><dd>${m[1]}</dd></div>`).join("")}</dl>
+    <div class="comp">${comps.map(c => `<span class="${chipClass(c[1])}">${c[0]} ${numOrDash(c[1])}</span>`).join("")}</div>
+    ${notes.map(n => `<p class="note">${esc(n)}</p>`).join("")}
+    <div class="row">${r.audioUrl ? `<audio controls preload="metadata" src="${r.audioUrl}" aria-label="Rekaman Free Speech kamu"></audio>` : ""}</div>
+    <p class="hint">Skor Free Speech hanya menghitung kelancaran, durasi, variasi kata, dan kata yang sesuai topik. Isi dan grammar tidak dinilai otomatis, jadi cek sendiri dengan daftar di bawah.</p>
+    <details class="tips" open><summary>Daftar cek</summary><ul>${item.checklist.map(c => `<li>${esc(c)}</li>`).join("")}</ul></details>
+    <details class="tips"><summary>Struktur jawaban 45 detik</summary><ol>${item.outline.map(c => `<li>${c}</li>`).join("")}</ol></details>
+    <details class="tips"><summary>Frasa yang bisa dipakai</summary><ul>${item.phrases.map(c => `<li><i>${esc(c)}</i></li>`).join("")}</ul></details>
+    <details class="tips"><summary>Contoh jawaban</summary><div class="row" style="margin-top:10px"><p class="sample">${esc(item.sample)}</p>${sayBtn(item.sample, "Dengar contoh jawaban")}</div></details>
+  </article>`;
+}
+
+function optListHTML(item, a) {
+  return `<ol class="olist">` + item.options.map((o, i) => {
+    const isAns = i === item.answer, mine = !!a && a.choice === i;
+    const cls = isAns ? "ans" : mine ? "wrong" : "";
+    const tag = isAns ? (mine ? "Jawabanmu · benar" : "Jawaban benar") : mine ? "Jawabanmu" : "";
+    return `<li${cls ? ` class="${cls}"` : ""}><span class="okey">${"ABCD"[i]}</span><span class="otext">${esc(o)}</span><span class="otag">${tag}</span></li>`;
+  }).join("") + `</ol>`;
+}
+function mcqItemHTML(x) {
+  const { item, a, conv } = x;
+  const ok = !!a && a.choice === item.answer;
+  const chip = a ? (ok ? `<span class="chip good">Benar</span>` : `<span class="chip bad">Salah</span>`) : `<span class="chip">Tidak dijawab</span>`;
+  const ev = conv && item.evidence ? `<blockquote class="evidence">${item.evidence.map(i => `<p><b>${esc(conv.names[conv.lines[i][0]])}:</b> ${esc(conv.lines[i][1])}</p>`).join("")}</blockquote>` : "";
+  const audioNote = item.audio ? `<p class="heard"><b>Kalimat yang diputar:</b> “${esc(item.audio)}”${S.audFail[item.n] ? " (audio gagal, ditampilkan sebagai teks)" : ""}</p>` : "";
+  return `<article class="item" data-n="${item.n}">
+    <div class="item-head"><span class="qn">Soal ${item.n}</span>${chip}</div>
+    ${audioNote}
+    <p class="qprompt-sm">${esc(item.prompt)}</p>
+    ${optListHTML(item, a)}
+    <div class="explain">${ev}<p><b>Pembahasan.</b> ${item.explain}</p>${item.quick ? `<p><b>Cara cepat.</b> ${item.quick}</p>` : ""}</div>
+    ${item.audio ? `<div class="row">${sayBtn(item.audio, "Dengar kalimat lagi")}</div>` : ""}
+  </article>`;
+}
+function convReviewHTML(conv, x) {
+  const items = x.items.filter(it => it.conv === conv);
+  const ev = items.reduce((a, it) => a.concat(it.item.evidence || []), []);
+  return `<div class="conv-rv" data-conv="${conv.id}">
+    <div class="block-head"><h3>${esc(conv.title)}</h3><span class="hint">${esc(conv.setting)}${S.convFail[conv.id] ? " · audio gagal, transkrip ditampilkan" : ""}</span></div>
+    <details class="tips"><summary>Transkrip percakapan</summary><div style="margin-top:10px">${transcriptHTML(conv, ev)}</div></details>
+    ${tts.ok ? `<div class="row"><button class="btn ghost small" type="button" data-conv-play="${conv.id}">Putar ulang percakapan</button></div>` : ""}
+    ${items.map(mcqItemHTML).join("")}
+  </div>`;
+}
+function sectionSummary(sec, x) {
+  if (sec.kind === "read" || sec.kind === "repeat") return x.scored + " dari " + x.total + " soal dinilai" + (x.acc != null ? " · akurasi kata " + Math.round(x.acc) + "%" : "");
+  if (sec.kind === "free") return x.s && x.s.spoke ? "bicara " + Math.round(x.s.dur) + " detik" + (x.s.srOk ? " · " + x.s.words + " kata" : "") : "tidak ada suara terekam";
+  return x.correct + " dari " + x.total + " benar";
+}
+function reviewSection(sec, R, open) {
+  const x = R.sec[sec.id];
+  let body;
+  if (sec.kind === "read" || sec.kind === "repeat") {
+    body = `<div class="legend"><span><i class="sw ok"></i>Terbaca benar</span><span><i class="sw miss"></i>Tidak terdengar</span><span><i class="sw sub"></i>Terdengar sebagai kata lain</span><span><i>+kata</i>&nbsp;Kata tambahan</span></div>` +
+      x.items.map(it => speechItemHTML(sec, it)).join("");
+  } else if (sec.kind === "free") body = freeHTML(sec, x);
+  else if (sec.kind === "listening") body = sec.conversations.map(conv => convReviewHTML(conv, x)).join("");
+  else body = x.items.map(mcqItemHTML).join("");
+  return `<details class="rv-sec" data-sec="${sec.id}"${open ? " open" : ""}>
+    <summary><span class="sec-letter">${sec.id}</span><span class="rv-title">${esc(sec.name)}<small>${esc(sectionSummary(sec, x))}</small></span><span class="${chipClass(x.score)}">${numOrDash(x.score)}</span></summary>
+    <div class="rv-body">${body}</div>
+  </details>`;
+}
+
+function renderResults() {
+  const R = computeResults();
+  const ran = SECTIONS.filter(s => S.ran.has(s.id));
+  const v = verdict(R.overall);
+  const notes = techNotes(R);
+  const h = [];
+  h.push(`<div class="res-hero">
+    <div class="res-score"><span class="big" id="r-overall">${numOrDash(R.overall)}</span><small>/100</small></div>
+    <div class="res-side">
+      <p class="eyebrow">Hasil simulasi · estimasi</p>
+      <h1>${esc(v[0])}</h1>
+      <p class="hint">${esc(v[1])} Waktu pengerjaan ${clockText(realMs(S.t1 - S.t0))}, sedangkan tes asli rata-rata 15 menit.</p>
+    </div>
+  </div>`);
+  if (notes.length) h.push(`<div class="notice" id="r-tech"><b>Catatan teknis</b><ul>${notes.map(n => `<li>${esc(n)}</li>`).join("")}</ul></div>`);
+  h.push(`<section class="block"><div class="block-head"><h2>Skor per kemampuan</h2><span class="hint">Kategori mengikuti laporan SVAR</span></div>
+    <div class="skills" id="r-skills">${R.skills.map(k => {
+      const b = band(k.val);
+      const label = !k.taken ? "Tidak dikerjakan" : k.val == null ? "Belum bisa dinilai" : b.t;
+      return `<div class="skill"><div class="skill-name"><b>${esc(k.name)}</b><span>${esc(k.idName)}</span></div>
+        <div class="skill-val"><span class="num">${numOrDash(k.val)}</span><span class="chip ${k.val == null ? "" : b.k}">${label}</span></div>
+        <div class="bar"><i class="${b.k}" style="width:${k.val == null ? 0 : Math.round(k.val)}%"></i></div>
+        <span class="skill-src">${esc(k.src)}</span></div>`;
+    }).join("")}</div>
+    <p class="hint">Skor 0–100 di halaman ini estimasi latihan dari pengenalan suara browser dan jawaban pilihan ganda, bukan skor resmi SHL.</p></section>`);
+  h.push(`<section class="block"><h2>Ringkasan per section</h2><div class="sumtable" id="r-sum">${ran.map(sec => {
+    const x = R.sec[sec.id];
+    return `<div class="sumrow" data-sec="${sec.id}"><span class="sec-letter">${sec.id}</span><span class="sum-name">${esc(sec.name)}<small>${esc(sectionSummary(sec, x))}</small></span><span class="sum-time">${clockText(realMs(S.secTime[sec.id] || 0))}</span><span class="${chipClass(x.score)}">${numOrDash(x.score)}</span></div>`;
+  }).join("")}</div></section>`);
+  h.push(`<section class="block"><h2>Pembahasan</h2>${ran.map((sec, i) => reviewSection(sec, R, i === 0)).join("")}</section>`);
+  h.push(`<div class="row"><button class="btn primary" id="btn-again" type="button">Ulangi tes</button><button class="btn ghost" id="btn-home" type="button">Ubah pilihan section</button></div>`);
+  $("s-results").innerHTML = h.join("");
+  $("btn-again").onclick = () => { if (!S.running) startTest(); };
+  $("btn-home").onclick = () => { tts.cancel(); show("setup"); updateStart(); };
+  // Chrome records WebM without a duration, so the player shows 0:00 until the end is found once.
+  $("s-results").querySelectorAll("audio").forEach(a => {
+    a.addEventListener("loadedmetadata", () => {
+      if (a.duration !== Infinity && !isNaN(a.duration)) return;
+      const back = () => { a.removeEventListener("timeupdate", back); try { a.currentTime = 0; } catch (e) {} };
+      a.addEventListener("timeupdate", back);
+      try { a.currentTime = 1e7; } catch (e) {}
+    }, { once: true });
+  });
+  $("s-results").querySelectorAll("[data-say]").forEach(b => b.addEventListener("click", () => {
+    playToken++;
+    const text = SAY[b.dataset.say];
+    if (text) tts.load().then(() => tts.say(text, { voice: tts.narrator }));
+  }));
+  $("s-results").querySelectorAll("[data-conv-play]").forEach(b => b.addEventListener("click", () => {
+    const sec = SECTIONS.find(s => s.kind === "listening");
+    const conv = sec && sec.conversations.find(c => c.id === b.dataset.convPlay);
+    if (conv) playConvAgain(conv, b);
+  }));
+}
+
+/* ---------- init ---------- */
+renderSeclist();
+updateStart();
+tts.load();
+})();
+</script>
+</body>
+</html>
