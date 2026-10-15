@@ -5,7 +5,7 @@ Situs latihan mandiri gaya SHL, tanpa build step. Buka `index.html` (menu), atau
 | Halaman | Isi |
 |---|---|
 | `index.html` | Menu 4 section |
-| `gat.html` | General Ability Test (20 soal, 30 menit) |
+| `gat.html` | General Ability Test (20 soal, 30 menit). Pilihan "Soal Asli" atau "Soal Baru" (dibuat generator dari seed; lihat `SPEC_GENERATOR.md`, uji dengan `node tools/gen-check.mjs`) |
 | `interview.html` | Smart Interview On Demand (10 pertanyaan, rekam jawaban) |
 | `jfa.html` | Job-Focused Assessment (42 soal, 15 menit) |
 | `svar.html` | SVAR Spoken English (38 soal, ±15 menit) |
