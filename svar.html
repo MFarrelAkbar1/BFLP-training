@@ -357,6 +357,15 @@ audio{width:100%;max-width:340px;height:38px}
         <select id="free-topic"></select>
         <span class="hint" id="free-topic-hint"></span>
       </div>
+      <div class="topic-pick">
+        <label for="bank-D">Soal Listening (Section D)</label>
+        <select id="bank-D"></select>
+      </div>
+      <div class="topic-pick">
+        <label for="bank-F">Soal Grammar (Section F)</label>
+        <select id="bank-F"></select>
+        <span class="hint">Mode acak mengambil soal dari bank secara bergiliran: semua soal keluar dulu sebelum ada yang terulang. Jumlah dan nomor soal tetap sama dengan tes asli.</span>
+      </div>
     </div>
 
     <div class="panel">
@@ -909,6 +918,129 @@ const FREE_TOPICS = [
     sample: "During my internship at a finance company, my supervisor asked me to build a monthly sales dashboard in Excel, and I only had one week. At that time, I didn't know how to use pivot tables or formulas like VLOOKUP. First, I watched several short tutorials every evening and wrote down the steps in a notebook. Then I practiced with old sales data instead of the real file, so I wouldn't make costly mistakes. Whenever I got stuck, I asked a senior analyst for ten minutes during lunch. In the end, I finished the dashboard one day before the deadline, and my team still uses it. This taught me that breaking a big task into small steps makes learning much faster." }
 ];
 const FREE_SEC = SECTIONS.find(s => s.kind === "free");
+const LISTEN_SEC = SECTIONS.find(s => s.kind === "listening");
+const GRAMMAR_SEC = SECTIONS.find(s => s.id === "F");
+
+/* Bank soal Listening (Section D). Tiap tes memakai satu percakapan 3 soal (nomor 24–26) lalu satu percakapan 2 soal (27–28),
+   sama seperti tes asli. Nomor soal dan judul "Conversation n" diberikan saat soal diambil. */
+const LISTEN_BANK = LISTEN_SEC.conversations.concat([
+  { id: "D3", setting: "Seorang pria berbicara dengan petugas bank.", names: { W: "Bank officer", M: "Customer" },
+    lines: [
+      ["W", "Good afternoon, welcome to City Bank. How can I help you today?"],
+      ["M", "Hi. I'd like to open a savings account for my daughter. She's starting university next month."],
+      ["W", "Of course. For a student account, we need her ID card and a letter from her university. Is she with you today?"],
+      ["M", "No, she's at home. I thought I could open it for her."],
+      ["W", "I'm afraid the account holder has to come in person to sign the forms. But you can make an appointment, so you won't have to wait in line."],
+      ["M", "That would help. Are you open on Saturday?"],
+      ["W", "Only in the morning, from nine to twelve. Shall I book you for ten o'clock?"],
+      ["M", "Actually, eleven would be better. We have something earlier that morning."],
+      ["W", "No problem. I've booked eleven o'clock on Saturday for you and your daughter."]
+    ],
+    items: [
+      { prompt: "Why did the man come to the bank?", options: ["To close his own account", "To apply for a student loan", "To open an account for his daughter", "To change his home address"], answer: 2, evidence: [1],
+        explain: "Pria itu berkata <i>“I'd like to open a savings account for my daughter.”</i> Kata <i>university</i> dan <i>student</i> muncul, tapi tidak ada yang menyebut pinjaman (<i>loan</i>).",
+        quick: "Tujuan pembicara biasanya muncul di kalimat pertamanya. Pilihan yang memakai kata dari percakapan belum tentu benar, jadi cocokkan maknanya." },
+      { prompt: "What does the bank officer say is necessary?", options: ["The man must pay a deposit first", "The daughter must come to the bank in person", "The university must call the bank", "The man must bring his own ID card"], answer: 1, evidence: [4],
+        explain: "Petugas berkata <i>“the account holder has to come in person to sign the forms.”</i> Pemilik rekening adalah putrinya. KTP yang diminta adalah KTP putrinya (<i>her ID card</i>), bukan KTP pria itu, jadi pilihan terakhir adalah jebakan.",
+        quick: "Perhatikan kata ganti: <i>her</i> ID card berbeda dengan <i>his</i> ID card. Jebakan sering mengganti siapa pelakunya." },
+      { prompt: "What time is the appointment?", options: ["At nine o'clock", "At ten o'clock", "At eleven o'clock", "At twelve o'clock"], answer: 2, evidence: [6, 7, 8],
+        explain: "Petugas menawarkan jam sepuluh, tapi pria itu menjawab <i>“eleven would be better”</i>, dan petugas mengonfirmasi <i>“I've booked eleven o'clock.”</i> Jam sembilan dan dua belas adalah jam buka dan tutup bank hari Sabtu.",
+        quick: "Untuk jadwal, tunggu konfirmasi terakhir. Angka pertama yang ditawarkan sering diganti." }
+    ] },
+  { id: "D4", setting: "Dua rekan kerja menyiapkan pelatihan karyawan baru.", names: { W: "Lisa", M: "Tom" },
+    lines: [
+      ["M", "Lisa, how many people have registered for the new staff training next Tuesday?"],
+      ["W", "Twenty-four so far. The training room on the third floor only holds twenty, so I've booked the big meeting room on the fifth floor instead."],
+      ["M", "Good thinking. What about lunch? Last time, the sandwiches arrived late."],
+      ["W", "I know. This time I ordered from the cafe across the street. They'll deliver at twelve thirty, half an hour before the lunch break, just to be safe."],
+      ["M", "Great. Do you need help with anything else?"],
+      ["W", "Yes. Could you print the handouts? I'll email you the file this afternoon."],
+      ["M", "Sure. I'll print thirty copies, so we have a few extra."]
+    ],
+    items: [
+      { prompt: "Where will the training take place?", options: ["In the training room on the third floor", "In the big meeting room on the fifth floor", "At the cafe across the street", "In Tom's office"], answer: 1, evidence: [1],
+        explain: "Ruang pelatihan di lantai tiga hanya muat 20 orang, padahal pesertanya 24, jadi Lisa memesan <i>“the big meeting room on the fifth floor instead.”</i> Lantai tiga adalah rencana awal, jebakan untuk yang berhenti menyimak terlalu cepat.",
+        quick: "Kata <i>instead</i> menandai pengganti. Jawaban yang benar biasanya yang disebut setelahnya." },
+      { prompt: "What time does the lunch break start?", options: ["At twelve o'clock", "At twelve thirty", "At one o'clock", "At one thirty"], answer: 2, evidence: [3],
+        explain: "Makanan diantar jam 12.30, <i>“half an hour before the lunch break.”</i> Jadi istirahat makan siang mulai 30 menit setelahnya, yaitu jam 1.00. Jam 12.30 adalah jam pengantaran, bukan jam istirahat.",
+        quick: "Kalau ada <i>before/after</i> + lama waktu, hitung dulu. Angka yang diucapkan langsung sering bukan jawabannya." },
+      { prompt: "What will the man do?", options: ["Order lunch from the cafe", "Book a bigger room", "Email the file to Lisa", "Print the handouts"], answer: 3, evidence: [5, 6],
+        explain: "Lisa meminta <i>“Could you print the handouts?”</i>, dan Tom menjawab <i>“Sure. I'll print thirty copies.”</i> Memesan makan siang, memesan ruangan, dan mengirim file adalah tugas Lisa.",
+        quick: "Untuk pertanyaan <i>What will the man/woman do?</i>, pisahkan dulu tugas tiap pembicara. Jebakan biasanya tugas pembicara lain." }
+    ] },
+  { id: "D5", setting: "Seorang wanita menelepon layanan pengiriman.", names: { W: "Customer", M: "Agent" },
+    lines: [
+      ["M", "Thank you for calling QuickSend. This is Ben. How can I help you?"],
+      ["W", "Hi. I ordered a printer last week. The tracking page says it was delivered yesterday, but I never received it."],
+      ["M", "I'm sorry to hear that. Let me check. It looks like the driver left it with your neighbor at number fourteen."],
+      ["W", "Number fourteen? I live at number forty. That must be a mistake."],
+      ["M", "You're right, I apologize. I'll ask the driver to pick it up and bring it to you tomorrow morning. If it doesn't arrive by noon, we'll give you a full refund."],
+      ["W", "Okay, thank you. That's fine."]
+    ],
+    items: [
+      { prompt: "What is the woman's problem?", options: ["Her printer arrived damaged", "Her package was delivered to the wrong address", "She received the wrong item", "She was charged twice"], answer: 1, evidence: [2, 3],
+        explain: "Paket ditinggalkan di nomor <i>fourteen</i>, padahal wanita itu tinggal di nomor <i>forty</i>. Jadi paketnya dikirim ke alamat yang salah. Printernya tidak disebut rusak.",
+        quick: "Bedakan <i>fourteen</i> (tekanan di belakang: four-TEEN) dan <i>forty</i> (tekanan di depan: FOR-ty). Pasangan angka ini sering dipakai sebagai jebakan." },
+      { prompt: "What will happen if the package does not arrive by noon tomorrow?", options: ["The driver will call her", "She will have to go to the office", "She will get her money back", "She will receive a new printer for free"], answer: 2, evidence: [4],
+        explain: "Petugas berkata <i>“If it doesn't arrive by noon, we'll give you a full refund.”</i> <i>Full refund</i> berarti uangnya dikembalikan penuh, sama dengan <i>get her money back</i>.",
+        quick: "Jawaban yang benar sering memakai sinonim (parafrase), bukan kata yang sama persis dengan percakapan." }
+    ] },
+  { id: "D6", setting: "Seorang karyawan berbicara dengan manajernya.", names: { W: "Manager", M: "Employee" },
+    lines: [
+      ["M", "Excuse me, Ms. Chen. Do you have a minute? I'd like to ask about taking some days off."],
+      ["W", "Sure, Kevin. When were you thinking?"],
+      ["M", "My sister is getting married in Medan, so I'd like to take Thursday and Friday off next week."],
+      ["W", "Hmm, Thursday is the quarterly review with the regional director, and I need you to present the sales numbers. Could you just take Friday off?"],
+      ["M", "I think so. The ceremony is on Saturday, so if I take an early flight on Friday, I'll still arrive in time."],
+      ["W", "Perfect. Just send me the request by email, and I'll approve it today."]
+    ],
+    items: [
+      { prompt: "Why does the man want to take time off?", options: ["To attend his sister's wedding", "To go on a business trip to Medan", "To visit a sick relative", "To prepare for a presentation"], answer: 0, evidence: [2],
+        explain: "Kevin berkata <i>“My sister is getting married in Medan.”</i> Medan memang disebut, tapi untuk pernikahan, bukan perjalanan dinas. Presentasi adalah alasan manajer menahannya di hari Kamis.",
+        quick: "Cari kata <i>so</i> atau <i>because</i> di dekat permintaan. Alasan biasanya ada tepat sebelum atau sesudahnya." },
+      { prompt: "How many days off will the man most likely take?", options: ["One day", "Two days", "Three days", "Four days"], answer: 0, evidence: [3, 4],
+        explain: "Awalnya Kevin minta dua hari (Kamis dan Jumat). Manajer meminta ia tetap masuk hari Kamis, dan Kevin setuju: <i>“I think so … if I take an early flight on Friday.”</i> Jadi ia hanya cuti satu hari, Jumat. Hari Sabtu adalah hari libur.",
+        quick: "<i>Most likely</i> berarti kamu perlu menyimpulkan hasil akhir negosiasi, bukan permintaan awal." }
+    ] }
+]);
+
+/* Bank soal Grammar (Section F): 3 soal tertulis (nomor 34–36) dan 2 soal audio (37–38) per tes. */
+const GRAMMAR_BANK = {
+  written: GRAMMAR_SEC.items.filter(it => !it.audio).concat([
+    { id: "Gw1", prompt: "Which of the sentences is grammatically correct?", options: ["If I knew about the meeting, I would have attended it.", "If I had known about the meeting, I will attend it.", "If I had known about the meeting, I would have attended it.", "If I have known about the meeting, I would attend it."], answer: 2,
+      explain: "Pengandaian tentang masa lalu (conditional tipe 3) memakai <b>If + had + V3, would have + V3</b>: <i>If I had known …, I would have attended it.</i> Pilihan lain mencampur pola tipe 2 (<i>knew … would</i>) dengan tipe 3, atau memakai <i>will</i> yang tidak cocok untuk pengandaian.",
+      quick: "Kedua bagian kalimat harus satu pola: <i>had known ↔ would have attended</i>, <i>knew ↔ would attend</i>." },
+    { id: "Gw2", prompt: "Which of the sentences is grammatically correct?", options: ["She is used to work late at the office.", "She is used to working late at the office.", "She used to working late at the office.", "She is use to working late at the office."], answer: 1,
+      explain: "<b>Be used to</b> (terbiasa) diikuti V-ing karena <i>to</i> di sini kata depan: <i>She is used to working late.</i> <i>Used to + V1</i> tanpa <i>be</i> berarti kebiasaan di masa lalu (<i>She used to work late</i>), jadi <i>used to working</i> salah. <i>Is use to</i> salah ejaan bentuknya.",
+      quick: "<i>be/get used to + V-ing</i> = terbiasa. <i>used to + V1</i> = dulu sering." },
+    { id: "Gw3", prompt: "Which of the sentences is grammatically correct?", options: ["Each of the employees have a parking space.", "Each of the employee has a parking space.", "Each of the employees having a parking space.", "Each of the employees has a parking space."], answer: 3,
+      explain: "Subjeknya adalah <b>each</b> (masing-masing), yang selalu tunggal, jadi kata kerjanya <b>has</b>. Setelah <i>each of the</i>, kata bendanya tetap jamak: <i>employees</i>. <i>Having</i> tidak bisa menjadi kata kerja utama.",
+      quick: "<i>Each, every, everyone, either, neither</i> + kata kerja tunggal. Jangan tertipu kata jamak yang ada di antaranya." },
+    { id: "Gw4", prompt: "Which of the sentences is grammatically correct?", options: ["This report is much more detailed than the previous one.", "This report is much detailed than the previous one.", "This report is more detaileder than the previous one.", "This report is most detailed than the previous one."], answer: 0,
+      explain: "Kata sifat panjang seperti <i>detailed</i> membentuk perbandingan dengan <b>more … than</b>, dan <b>much</b> bisa ditambahkan untuk menegaskan. <i>Detaileder</i> bukan kata, dan <i>most</i> dipakai untuk superlatif (<i>the most detailed</i>), bukan dengan <i>than</i>.",
+      quick: "Ada <i>than</i> → bentuk komparatif (<i>-er</i> atau <i>more</i>). Ada <i>the … of/in</i> → superlatif." },
+    { id: "Gw5", prompt: "Which of the sentences is grammatically correct?", options: ["The documents were sign by the manager yesterday.", "The documents was signed by the manager yesterday.", "The documents were signed by the manager yesterday.", "The documents have signed by the manager yesterday."], answer: 2,
+      explain: "Kalimat pasif memakai <b>be + V3</b>. Subjeknya jamak (<i>documents</i>) dan waktunya lampau (<i>yesterday</i>), jadi <b>were signed</b>. <i>Were sign</i> kurang -ed, <i>was</i> tidak cocok dengan subjek jamak, dan <i>have signed</i> berarti dokumen itu yang menandatangani.",
+      quick: "Pasif = <i>be</i> yang sesuai subjek dan waktu + V3. Cek dua hal itu satu per satu." },
+    { id: "Gw6", prompt: "Which of the sentences is grammatically correct?", options: ["I'm looking forward to meet you next week.", "I'm looking forward for meeting you next week.", "I'm looking forward to met you next week.", "I'm looking forward to meeting you next week."], answer: 3,
+      explain: "Pada <b>look forward to</b>, <i>to</i> adalah kata depan, jadi diikuti V-ing: <i>looking forward to meeting you</i>. Ungkapan ini selalu memakai <i>to</i>, bukan <i>for</i>.",
+      quick: "Hafalkan <i>to</i> + V-ing pada: <i>look forward to, be used to, object to, when it comes to</i>." }
+  ]),
+  audio: GRAMMAR_SEC.items.filter(it => it.audio).concat([
+    { id: "Ga1", audio: "The number of customers have increased since last year.", prompt: "Which option contains the error?", options: ["The number", "of customers", "have increased", "since last year"], answer: 2,
+      explain: "<b>The number of</b> + kata benda jamak tetap bersubjek tunggal (<i>the number</i>), jadi kata kerjanya <b>has increased</b>. Bandingkan dengan <i>a number of customers have increased</i>, yang justru jamak.",
+      quick: "<i>The number of</i> → tunggal. <i>A number of</i> → jamak." },
+    { id: "Ga2", audio: "She suggested me to apply for the position.", prompt: "Which option contains the error?", options: ["She suggested", "me to apply", "for the", "position"], answer: 1,
+      explain: "<b>Suggest</b> tidak memakai pola <i>suggest someone to do</i>. Yang benar: <i>She suggested that I apply for the position</i> atau <i>She suggested applying for the position.</i>",
+      quick: "<i>Suggest/recommend + that + subjek + V1</i>, atau <i>suggest + V-ing</i>. Pola <i>advise/ask/tell me to</i> tidak berlaku untuk <i>suggest</i>." },
+    { id: "Ga3", audio: "I have visited Singapore two times last year.", prompt: "Which option contains the error?", options: ["I have visited", "Singapore", "two times", "last year"], answer: 0,
+      explain: "Keterangan waktu lampau yang sudah selesai seperti <b>last year</b> memakai simple past, bukan present perfect. Yang benar: <i>I visited Singapore twice last year.</i> <i>Two times</i> masih bisa diterima dalam percakapan, jadi itu bukan kesalahannya.",
+      quick: "Ada <i>yesterday, last …, … ago, in 2020</i> → simple past. Present perfect tidak boleh dipakai dengan waktu lampau yang spesifik." },
+    { id: "Ga4", audio: "He didn't went to work because he was sick.", prompt: "Which option contains the error?", options: ["He didn't", "went to work", "because", "he was sick"], answer: 1,
+      explain: "Setelah <b>didn't</b>, kata kerja kembali ke bentuk dasar (V1): <i>He didn't go to work.</i> Bentuk lampaunya sudah ditunjukkan oleh <i>did</i>.",
+      quick: "<i>Did / didn't / does / doesn't</i> + V1. Jangan memberi tanda waktu lampau dua kali." }
+  ])
+};
 
 function secItems(sec) { return sec.kind === "listening" ? sec.conversations.reduce((a, c) => a.concat(c.items), []) : sec.items; }
 const TOTAL_ITEMS = SECTIONS.reduce((s, sec) => s + secItems(sec).length, 0);
@@ -1584,40 +1716,85 @@ function updateStart() {
   else hint.textContent = "Siap dimulai.";
 }
 
-/* Free Speech topic: a fixed topic, or "random" = a shuffled bag so every topic comes up once before any repeats. */
+/* Question banks (C, D, F): a fixed choice, or "random" = a shuffled bag per pool, so every item comes up once
+   before any repeats. Numbering and item counts stay the same as the original test. */
 const lsGet = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
 const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
-let freeBag = (() => { try { return JSON.parse(lsGet("svar-free-bag") || "[]").filter(id => FREE_TOPICS.some(t => t.id === id)); } catch (e) { return []; } })();
-let lastFree = lsGet("svar-free-last");
-function renderTopicPick() {
-  const sel = $("free-topic");
-  sel.innerHTML = `<option value="random">Acak dari ${FREE_TOPICS.length} topik (bergiliran, tidak mengulang)</option>` +
+const memBags = {};
+function bagDraw(key, ids, k) {
+  const load = name => { if (memBags[name]) return memBags[name]; try { const v = JSON.parse(lsGet(name) || "[]"); return Array.isArray(v) ? v : []; } catch (e) { return []; } };
+  const prev = load(key + "-last");
+  let bag = load(key).filter((id, i, a) => ids.indexOf(id) >= 0 && a.indexOf(id) === i);
+  const out = [];
+  while (out.length < k) {
+    if (!bag.length) {
+      bag = ids.filter(id => out.indexOf(id) < 0);
+      if (!bag.length) break;
+      for (let i = bag.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [bag[i], bag[j]] = [bag[j], bag[i]]; }
+      if (bag.length > k) bag = bag.filter(id => prev.indexOf(id) < 0).concat(bag.filter(id => prev.indexOf(id) >= 0));   // no back-to-back repeats
+    }
+    out.push(bag.shift());
+  }
+  memBags[key] = bag; memBags[key + "-last"] = out;
+  lsSet(key, JSON.stringify(bag)); lsSet(key + "-last", JSON.stringify(out));
+  return out;
+}
+const bankId = it => it.id || "o" + it.n;
+const LISTEN_ORIG = LISTEN_SEC.conversations.slice(), GRAMMAR_ORIG = GRAMMAR_SEC.items.slice();
+const BANK_SELECT = { C: "free-topic", D: "bank-D", F: "bank-F" };
+const AGAIN_LABEL = { C: "Latihan Free Speech lagi (topik lain)", D: "Latihan Listening lagi (soal lain)", F: "Latihan Grammar lagi (soal lain)" };
+function restoreSelect(sel, key, valid) {
+  const saved = lsGet(key);
+  sel.value = valid.indexOf(saved) >= 0 ? saved : "random";
+  sel.addEventListener("change", () => lsSet(key, sel.value));
+}
+function renderBankPick() {
+  const ft = $("free-topic");
+  ft.innerHTML = `<option value="random">Acak dari ${FREE_TOPICS.length} topik (bergiliran, tidak mengulang)</option>` +
     FREE_TOPICS.map((t, i) => `<option value="${t.id}">${i === 0 ? "Topik asli: " : ""}${esc(t.topic)}</option>`).join("");
-  const saved = lsGet("svar-free-topic");
-  sel.value = saved === "random" || FREE_TOPICS.some(t => t.id === saved) ? saved : "random";
+  restoreSelect(ft, "svar-free-topic", ["random"].concat(FREE_TOPICS.map(t => t.id)));
+  ft.addEventListener("change", topicHint);
   topicHint();
+  const range = items => items[0].n + "–" + items[items.length - 1].n;
+  const nListen = LISTEN_BANK.reduce((s, c) => s + c.items.length, 0);
+  $("bank-D").innerHTML = `<option value="random">Acak dari bank: ${LISTEN_BANK.length} percakapan, ${nListen} soal</option><option value="orig">Soal asli (${range(secItems({ kind: "listening", conversations: LISTEN_ORIG }))})</option>`;
+  restoreSelect($("bank-D"), "svar-bank-D", ["random", "orig"]);
+  $("bank-F").innerHTML = `<option value="random">Acak dari bank: ${GRAMMAR_BANK.written.length + GRAMMAR_BANK.audio.length} soal</option><option value="orig">Soal asli (${range(GRAMMAR_ORIG)})</option>`;
+  restoreSelect($("bank-F"), "svar-bank-F", ["random", "orig"]);
 }
 function topicHint() {
   $("free-topic-hint").textContent = $("free-topic").value === "random"
     ? "Setiap tes memakai topik berikutnya dari urutan acak. Semua " + FREE_TOPICS.length + " topik keluar dulu sebelum ada yang terulang. Topiknya baru terlihat di soal 23, seperti tes asli."
     : "Topik ini dipakai di setiap tes sampai kamu menggantinya.";
 }
-$("free-topic").addEventListener("change", () => { lsSet("svar-free-topic", $("free-topic").value); topicHint(); });
-function nextRandomTopic() {
-  if (!freeBag.length) {
-    freeBag = FREE_TOPICS.map(t => t.id);
-    for (let i = freeBag.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [freeBag[i], freeBag[j]] = [freeBag[j], freeBag[i]]; }
-    if (freeBag[0] === lastFree) freeBag.push(freeBag.shift());
-  }
-  lastFree = freeBag.shift();
-  lsSet("svar-free-bag", JSON.stringify(freeBag)); lsSet("svar-free-last", lastFree);
-  return lastFree;
-}
 function pickFreeTopic() {
   const v = $("free-topic").value;
-  const id = v === "random" ? nextRandomTopic() : v;
+  const id = v === "random" ? bagDraw("svar-free-bag", FREE_TOPICS.map(t => t.id), 1)[0] : v;
   const t = FREE_TOPICS.find(x => x.id === id) || FREE_TOPICS[0];
   FREE_SEC.items[0] = Object.assign({}, t, { n: FREE_TOPICS[0].n });
+}
+function pickListening() {
+  let convs = LISTEN_ORIG;
+  if ($("bank-D").value === "random") {
+    // One 3-question conversation, then one 2-question conversation, like the original (24–26, 27–28).
+    convs = [3, 2].map(len => {
+      const pool = LISTEN_BANK.filter(c => c.items.length === len);
+      const id = bagDraw("svar-bank-D" + len, pool.map(c => c.id), 1)[0];
+      return pool.find(c => c.id === id);
+    });
+  }
+  let n = LISTEN_ORIG[0].items[0].n;
+  LISTEN_SEC.conversations = convs.map((c, ci) => Object.assign({}, c, { title: "Conversation " + (ci + 1), items: c.items.map(it => Object.assign({}, it, { n: n++ })) }));
+}
+function pickGrammar() {
+  let items = GRAMMAR_ORIG;
+  if ($("bank-F").value === "random") {
+    const draw = (pool, key, k) => bagDraw(key, pool.map(bankId), k).map(id => pool.find(it => bankId(it) === id));
+    items = draw(GRAMMAR_BANK.written, "svar-bank-Fw", GRAMMAR_ORIG.filter(it => !it.audio).length)
+      .concat(draw(GRAMMAR_BANK.audio, "svar-bank-Fa", GRAMMAR_ORIG.filter(it => it.audio).length));
+  }
+  let n = GRAMMAR_ORIG[0].n;
+  GRAMMAR_SEC.items = items.map(it => Object.assign({}, it, { id: bankId(it), n: n++ }));
 }
 
 (function envCheck() {
@@ -2281,6 +2458,8 @@ async function runTest() {
   S.res = {}; S.ans = {}; S.convFail = {}; S.audFail = {}; S.secTime = {}; S.error = null;
   S.ran = new Set(S.sel);
   if (S.sel.has(FREE_SEC.id)) pickFreeTopic();
+  if (S.sel.has(LISTEN_SEC.id)) pickListening();
+  if (S.sel.has(GRAMMAR_SEC.id)) pickGrammar();
   S.steps = buildSteps(); S.stepIdx = 0;
   $("notes").value = "";
   speech.reset(); speech.allowRetry(); sharedMisses = 0;
@@ -2525,7 +2704,6 @@ function freeHTML(sec, x) {
     <details class="tips"><summary>Struktur jawaban 45 detik</summary><ol>${item.outline.map(c => `<li>${c}</li>`).join("")}</ol></details>
     <details class="tips"><summary>Frasa yang bisa dipakai</summary><ul>${item.phrases.map(c => `<li><i>${esc(c)}</i></li>`).join("")}</ul></details>
     <details class="tips"><summary>Contoh jawaban</summary><div class="row" style="margin-top:10px"><p class="sample">${esc(item.sample)}</p>${sayBtn(item.sample, "Dengar contoh jawaban")}</div></details>
-    <div class="row"><button class="btn ghost small" id="btn-free-next" type="button">Latihan Free Speech lagi (topik lain)</button></div>
   </article>`;
 }
 
@@ -2576,6 +2754,7 @@ function reviewSection(sec, R, open) {
   } else if (sec.kind === "free") body = freeHTML(sec, x);
   else if (sec.kind === "listening") body = sec.conversations.map(conv => convReviewHTML(conv, x)).join("");
   else body = x.items.map(mcqItemHTML).join("");
+  if (AGAIN_LABEL[sec.id]) body += `<div class="row"><button class="btn ghost small" type="button" data-again="${sec.id}">${AGAIN_LABEL[sec.id]}</button></div>`;
   return `<details class="rv-sec" data-sec="${sec.id}"${open ? " open" : ""}>
     <summary><span class="sec-letter">${sec.id}</span><span class="rv-title">${esc(sec.name)}<small>${esc(sectionSummary(sec, x))}</small></span><span class="${chipClass(x.score)}">${numOrDash(x.score)}</span></summary>
     <div class="rv-body">${body}</div>
@@ -2616,15 +2795,15 @@ function renderResults() {
   $("s-results").innerHTML = h.join("");
   $("btn-again").onclick = () => { if (!S.running) startTest(); };
   $("btn-home").onclick = () => { tts.cancel(); show("setup"); updateStart(); };
-  const freeNext = $("btn-free-next");
-  if (freeNext) freeNext.onclick = () => {
+  $("s-results").querySelectorAll("[data-again]").forEach(b => b.addEventListener("click", () => {
     if (S.running) return;
+    const id = b.dataset.again, sel = $(BANK_SELECT[id]);
     tts.cancel();
-    S.sel = new Set([FREE_SEC.id]);
-    $("free-topic").value = "random"; lsSet("svar-free-topic", "random"); topicHint();
+    S.sel = new Set([id]);
+    sel.value = "random"; sel.dispatchEvent(new Event("change"));
     renderSeclist();
     startTest();
-  };
+  }));
   // Chrome records WebM without a duration, so the player shows 0:00 until the end is found once.
   $("s-results").querySelectorAll("audio").forEach(a => {
     a.addEventListener("loadedmetadata", () => {
@@ -2648,7 +2827,7 @@ function renderResults() {
 
 /* ---------- init ---------- */
 renderSeclist();
-renderTopicPick();
+renderBankPick();
 updateStart();
 tts.load();
 })();
