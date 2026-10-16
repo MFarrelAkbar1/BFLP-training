@@ -8,7 +8,7 @@ Situs latihan mandiri gaya SHL, tanpa build step. Buka `index.html` (menu), atau
 | `gat.html` | General Ability Test (20 soal, 30 menit). Pilihan "Soal Asli" atau "Soal Baru" (dibuat generator dari seed; lihat `SPEC_GENERATOR.md`, uji dengan `node tools/gen-check.mjs`) |
 | `interview.html` | Smart Interview On Demand (10 pertanyaan, rekam jawaban) |
 | `jfa.html` | Job-Focused Assessment (42 soal, 15 menit) |
-| `svar.html` | SVAR Spoken English (38 soal, ±15 menit) |
+| `svar.html` | SVAR Spoken English (38 soal, ±15 menit). Free Speech (soal 23) memakai bank 16 topik: topik asli, satu topik pilihan, atau acak bergiliran |
 
 ## Hanya untuk latihan pribadi
 

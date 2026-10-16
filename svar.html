@@ -124,6 +124,10 @@ q{quotes:"“" "”" "‘" "’"}
 .secrow-meta .count{font:500 .82rem var(--f-mono);font-variant-numeric:tabular-nums}
 .secrow-meta .needs{font-size:.76rem;color:var(--muted)}
 .secrow.off .secrow-main,.secrow.off .sec-letter,.secrow.off .secrow-meta{opacity:.5}
+.topic-pick{display:flex;flex-direction:column;gap:6px}
+.topic-pick label{font-weight:600;font-size:.92rem}
+.topic-pick select{font:inherit;font-size:.95rem;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:9px 12px;max-width:100%;min-width:0}
+.topic-pick select:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px;display:flex;flex-direction:column;gap:12px}
 .panel-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
 .pill{font:500 .76rem var(--f-mono);padding:3px 10px;border-radius:999px;background:var(--sunk);color:var(--muted);border:1px solid var(--line);white-space:nowrap}
@@ -348,6 +352,11 @@ audio{width:100%;max-width:340px;height:38px}
       <div class="block-head"><h2>Pilih section</h2><span class="hint" id="sel-summary"></span></div>
       <div class="seclist" id="seclist"></div>
       <p class="hint">Untuk latihan per bagian, hapus centang section yang tidak ingin dikerjakan. Untuk simulasi penuh, biarkan semua tercentang.</p>
+      <div class="topic-pick">
+        <label for="free-topic">Topik Free Speech (Section C)</label>
+        <select id="free-topic"></select>
+        <span class="hint" id="free-topic-hint"></span>
+      </div>
     </div>
 
     <div class="panel">
@@ -728,6 +737,178 @@ const SECTIONS = [
     ]
   }
 ];
+
+/* Bank topik Free Speech. Satu topik dipakai sebagai soal 23 di tiap tes; topik pertama adalah topik asli.
+   tense "past" = cerita pengalaman (cek past tense). relHint dipakai saat kata yang sesuai topik terlalu sedikit. */
+const FREE_TOPICS = [
+  Object.assign({ id: "resort", tense: "past", relHint: "kamar, kolam, pantai, makanan, atau staf" }, SECTIONS.find(s => s.kind === "free").items[0]),
+  { id: "trip", topic: "Talk about a memorable trip you took.", tense: "past", relHint: "tujuan, perjalanan, tempat yang dikunjungi, makanan, atau orang yang kamu temui",
+    keywords: ["trip", "travel", "journey", "visit", "city", "town", "village", "country", "abroad", "flight", "plane", "train", "bus", "car", "drive", "road", "hotel", "stay", "beach", "mountain", "temple", "museum", "market", "food", "local", "culture", "people", "friend", "family", "photo", "view", "explor", "walk", "memor", "experienc", "adventure", "holiday", "vacation", "weather", "day"],
+    outline: [
+      "<b>Pembuka (5–10 detik).</b> Ke mana, kapan, dengan siapa. <i>Two years ago, I went to Yogyakarta with my university friends.</i>",
+      "<b>Detail (20–25 detik).</b> Ceritakan urut waktu: perjalanan berangkat, 2 tempat yang dikunjungi, makanan atau orang yang ditemui.",
+      "<b>Kenapa berkesan (5–10 detik).</b> <i>It was memorable because …</i>",
+      "<b>Penutup (5 detik).</b> <i>I learned … from that trip, and I hope to go back one day.</i>"
+    ],
+    phrases: ["The trip I remember most is …", "We set off early in the morning and …", "On the first day, we visited …", "One thing that surprised me was …", "It was memorable because …", "Looking back, I'm really glad I went."],
+    checklist: ["Bicara hampir 45 detik penuh tanpa berhenti lama.", "Ada pembuka, detail, dan penutup.", "Ceritanya urut waktu (first, then, after that, finally).", "Memakai past tense dengan konsisten: went, visited, saw, ate.", "Menjelaskan kenapa perjalanan itu berkesan."],
+    sample: "The trip I remember most is a trip to Yogyakarta with three of my university friends two years ago. We took the night train from Jakarta, and it was my first time traveling without my family. On the first day, we woke up very early to watch the sunrise at Borobudur Temple. The view was amazing, with the mountains in the background. After that, we walked around Malioboro Street and tried gudeg, a sweet local dish. On the last night, we got lost on the way back to our hotel, but a friendly local helped us. It was memorable because we laughed a lot and became much closer. I really hope to go back one day." },
+  { id: "person", topic: "Describe a person who has influenced you.", tense: "", relHint: "siapa orangnya, sifatnya, apa yang ia lakukan, dan pengaruhnya padamu",
+    keywords: ["person", "mother", "father", "parent", "sister", "brother", "teacher", "lecturer", "friend", "boss", "manager", "mentor", "grandm", "grandf", "uncle", "aunt", "influenc", "inspir", "admire", "respect", "role", "model", "taught", "teach", "learn", "advice", "support", "hard", "work", "patient", "kind", "honest", "discipline", "strong", "help", "life", "value", "lesson", "encourag", "motivat", "example"],
+    outline: [
+      "<b>Pembuka (5–10 detik).</b> Siapa dia dan hubungannya denganmu. <i>The person who has influenced me the most is my mother.</i>",
+      "<b>Sifat dan contoh (20–25 detik).</b> Sebut 2 sifat, masing-masing dengan satu contoh nyata yang pernah ia lakukan.",
+      "<b>Pengaruhnya (5–10 detik).</b> <i>Because of her, I now …</i>",
+      "<b>Penutup (5 detik).</b> <i>I'm really grateful to have her in my life.</i>"
+    ],
+    phrases: ["The person who has influenced me the most is …", "What I admire most about him/her is …", "For example, when I was in high school, …", "He/She taught me that …", "Because of him/her, I now …", "I hope I can be like him/her one day."],
+    checklist: ["Bicara hampir 45 detik penuh tanpa berhenti lama.", "Ada pembuka, detail, dan penutup.", "Ada minimal 2 sifat dengan contoh nyata, bukan hanya daftar sifat.", "Memakai present tense untuk sifat (she is, she always) dan past tense untuk contoh (she told, she helped).", "Menjelaskan pengaruh orang itu pada dirimu sekarang."],
+    sample: "The person who has influenced me the most is my mother. She is a primary school teacher, and she is the most patient person I know. What I admire most about her is her discipline. For example, she wakes up at four every morning to prepare breakfast, and she still has time to check her students' homework. When I failed an important exam in high school, she didn't get angry. Instead, she sat with me and helped me make a study plan. She taught me that hard work is more important than talent. Because of her, I now plan my days carefully and I don't give up easily. I'm really grateful to have her in my life." },
+  { id: "routine", topic: "Describe your daily routine on a working or school day.", tense: "", relHint: "jam bangun, perjalanan, kegiatan pagi–siang–malam, dan waktu istirahat",
+    keywords: ["morning", "wake", "woke", "shower", "breakfast", "lunch", "dinner", "coffee", "commut", "train", "bus", "motor", "drive", "traffic", "office", "work", "class", "campus", "school", "meeting", "email", "task", "study", "break", "afternoon", "evening", "night", "home", "cook", "exercis", "gym", "sleep", "bed", "usually", "always", "o'clock", "clock", "hour", "routine", "day", "busy", "prepar"],
+    outline: [
+      "<b>Pembuka (5 detik).</b> <i>On a typical working day, my routine is quite busy but organized.</i>",
+      "<b>Pagi (10–15 detik).</b> Jam bangun, sarapan, cara berangkat.",
+      "<b>Siang–sore (10–15 detik).</b> Kegiatan utama di kantor atau kampus, istirahat makan siang.",
+      "<b>Malam dan penutup (10 detik).</b> Kegiatan malam, jam tidur, lalu satu kalimat pendapat. <i>It's tiring, but I enjoy it.</i>"
+    ],
+    phrases: ["On a typical day, I usually …", "First thing in the morning, I …", "It takes me about … to get to …", "During my lunch break, I …", "After I get home, I …", "By around eleven, I'm usually in bed."],
+    checklist: ["Bicara hampir 45 detik penuh tanpa berhenti lama.", "Urutan pagi, siang, malam jelas.", "Memakai present simple untuk kebiasaan: I wake up, she goes (akhiran -s untuk he/she).", "Memakai kata frekuensi dan waktu: usually, always, at seven, after that.", "Ada minimal satu pendapat tentang rutinitasmu."],
+    sample: "On a typical working day, my routine is busy but quite organized. I usually wake up at five thirty, take a shower, and have a quick breakfast, usually bread and coffee. Then I take the commuter train to my office, which takes about forty-five minutes. I start work at eight. In the morning, I check my emails and attend a short team meeting. During my lunch break, I eat with my colleagues at a small restaurant near the office. In the afternoon, I focus on reports and data. I usually get home at around six thirty. After dinner, I go to the gym or watch a series, and I'm in bed by eleven. It's tiring, but I really enjoy it." },
+  { id: "skill", topic: "Talk about a skill you would like to learn and why.", tense: "", relHint: "nama keterampilan, alasan, cara belajar, dan manfaatnya",
+    keywords: ["skill", "learn", "study", "course", "class", "practic", "teacher", "online", "video", "lesson", "language", "english", "japanese", "mandarin", "code", "coding", "program", "design", "cook", "swim", "drive", "guitar", "piano", "music", "speak", "public", "data", "excel", "photo", "career", "job", "future", "useful", "improv", "develop", "confiden", "because", "reason", "goal", "plan", "hope", "would", "want"],
+    outline: [
+      "<b>Pembuka (5–10 detik).</b> Sebut keterampilannya. <i>One skill I would really like to learn is public speaking.</i>",
+      "<b>Alasan (15–20 detik).</b> Dua alasan: untuk pekerjaan dan untuk diri sendiri. Beri contoh situasi.",
+      "<b>Rencana belajar (10 detik).</b> <i>I'm planning to …, and I'll practice by …</i>",
+      "<b>Penutup (5 detik).</b> <i>I believe this skill will help me a lot in the future.</i>"
+    ],
+    phrases: ["One skill I've always wanted to learn is …", "The main reason is that …", "Another reason is …", "At the moment, I …, so …", "I'm planning to take a course / watch tutorials …", "I believe it will help me …"],
+    checklist: ["Bicara hampir 45 detik penuh tanpa berhenti lama.", "Ada pembuka, alasan, rencana, dan penutup.", "Ada minimal 2 alasan yang jelas.", "Memakai bentuk masa depan dengan benar: I would like to, I'm planning to, I will.", "Memakai kata penghubung: because, also, so, that's why."],
+    sample: "One skill I would really like to learn is public speaking. The main reason is my career. In many jobs, especially in banking, you need to present ideas clearly to managers and clients. Right now, I get nervous when I speak in front of a big group, and I sometimes forget what I want to say. Another reason is confidence. I think if I can speak well in public, I will also feel more confident in daily life. I'm planning to join a public speaking club on campus, and I will practice by recording myself every week. I believe this skill will help me a lot in the future, both at work and in my personal life." },
+  { id: "problem", topic: "Describe a time you solved a problem at work or school.", tense: "past", relHint: "masalahnya, apa yang kamu lakukan, dan hasilnya",
+    keywords: ["problem", "issue", "challeng", "difficult", "situation", "solve", "solution", "fix", "decid", "plan", "team", "group", "project", "deadline", "task", "member", "client", "customer", "manager", "lecturer", "teacher", "discuss", "meeting", "talk", "idea", "result", "success", "finish", "complet", "learn", "lesson", "organiz", "communicat", "schedule", "time", "late", "mistake", "error", "help"],
+    outline: [
+      "<b>Situasi (5–10 detik).</b> Kapan dan di mana. <i>Last year, I was leading a group project at university.</i>",
+      "<b>Masalah (10 detik).</b> Apa yang salah dan kenapa itu serius.",
+      "<b>Tindakan (15 detik).</b> Dua langkah yang kamu lakukan sendiri. Pakai <i>I</i>, bukan <i>we</i> saja.",
+      "<b>Hasil dan pelajaran (5–10 detik).</b> <i>As a result, … I learned that …</i>"
+    ],
+    phrases: ["A good example is when I …", "The problem was that …", "First, I decided to …", "Then I talked to … and suggested …", "As a result, we managed to …", "From that experience, I learned that …"],
+    checklist: ["Bicara hampir 45 detik penuh tanpa berhenti lama.", "Mengikuti urutan situasi, masalah, tindakan, hasil.", "Tindakanmu sendiri jelas (I decided, I asked), bukan hanya kelompok.", "Memakai past tense dengan konsisten: was, had, decided, talked, finished.", "Ada hasil yang jelas dan satu pelajaran."],
+    sample: "A good example is when I was leading a group project in my final year at university. One week before the deadline, two members of my team suddenly stopped replying to our messages, and half of the report was still empty. First, I called them directly instead of texting, and I found out they were busy with part-time jobs. Then I divided the remaining work into smaller tasks and gave them the parts they could do at night. I also made a simple schedule with daily check-ins. As a result, we finished the report one day early and got an A. From that experience, I learned that good communication solves most problems in a team." },
+  { id: "team", topic: "Do you prefer working alone or in a team? Explain why.", tense: "", relHint: "pilihanmu, alasan, contoh pengalaman, dan kelebihan atau kekurangannya",
+    keywords: ["team", "alone", "group", "together", "individual", "independen", "prefer", "colleague", "member", "people", "idea", "share", "discuss", "help", "support", "learn", "focus", "quiet", "decision", "responsib", "deadline", "project", "work", "task", "fast", "creativ", "communicat", "conflict", "opinion", "advantage", "disadvantage", "benefit", "however", "because", "example", "experienc", "both", "depend", "skill"],
+    outline: [
+      "<b>Jawaban langsung (5 detik).</b> <i>I prefer working in a team, although I can also work alone.</i>",
+      "<b>Alasan 1 + contoh (15 detik).</b> <i>First, …  For example, …</i>",
+      "<b>Alasan 2 (10 detik).</b> Satu alasan lagi yang berbeda.",
+      "<b>Sisi lain dan penutup (10 detik).</b> Akui kekurangannya, lalu simpulkan. <i>That said, … Overall, …</i>"
+    ],
+    phrases: ["Personally, I prefer …", "The first reason is that …", "For example, in my last project, …", "On the other hand, working alone …", "It depends on the task, but in general …", "Overall, I think …"],
+    checklist: ["Bicara hampir 45 detik penuh tanpa berhenti lama.", "Pilihanmu disebut jelas di kalimat pertama.", "Ada minimal 2 alasan, salah satunya dengan contoh nyata.", "Menyebut sisi lain (on the other hand) supaya jawaban seimbang.", "Ditutup dengan kesimpulan yang sama dengan pilihan di awal."],
+    sample: "Personally, I prefer working in a team, although I can also work alone when it's necessary. The first reason is that a team brings different ideas. For example, in my last project at campus, a friend suggested a much faster way to collect our survey data, and I would never have thought of it alone. The second reason is support. When the work is stressful, team members can share the load and motivate each other. On the other hand, working alone is sometimes better for tasks that need deep focus, like writing a report, because there are fewer interruptions. So it depends on the task, but overall, I enjoy teamwork more and I learn more from other people." },
+  { id: "food", topic: "Describe your favorite food or restaurant.", tense: "", relHint: "nama makanan atau tempat, rasa, bahan, suasana, dan kapan kamu ke sana",
+    keywords: ["food", "dish", "meal", "eat", "restaurant", "cafe", "stall", "place", "menu", "order", "taste", "tasty", "delicious", "spicy", "sweet", "salty", "flavor", "flavour", "rice", "noodle", "chicken", "beef", "fish", "soup", "sauce", "vegetable", "fried", "cook", "chef", "price", "cheap", "expensive", "portion", "favorite", "favourite", "friend", "family", "weekend", "atmosphere", "service", "smell"],
+    outline: [
+      "<b>Pembuka (5 detik).</b> <i>My favorite food is …, and the best place to eat it is …</i>",
+      "<b>Deskripsi (15–20 detik).</b> Bahan, rasa, cara memasak, porsi. Pakai kata sifat yang bervariasi.",
+      "<b>Tempat dan kebiasaan (10 detik).</b> Suasana, harga, dengan siapa kamu biasanya makan.",
+      "<b>Penutup (5–10 detik).</b> <i>If you ever visit …, you should definitely try it.</i>"
+    ],
+    phrases: ["My all-time favorite food is …", "It's made from …", "It tastes … and a little bit …", "The place I usually go to is …", "What I love about it is …", "If you ever visit …, you should definitely try it."],
+    checklist: ["Bicara hampir 45 detik penuh tanpa berhenti lama.", "Ada pembuka, detail, dan penutup.", "Memakai kata sifat yang bervariasi, tidak hanya delicious: spicy, savory, crispy, rich.", "Memakai present simple untuk deskripsi dan kebiasaan: it is, I usually go.", "Menyebut minimal 3 detail konkret (bahan, rasa, tempat, harga)."],
+    sample: "My all-time favorite food is soto ayam, a traditional Indonesian chicken soup. It's made with chicken, rice noodles, boiled egg, and a yellow broth full of spices like turmeric and lemongrass. It tastes warm and savory, and I always add a little chili sauce and lime to make it fresh. The place I usually go to is a small stall near my house. It's not fancy at all, but the soup is rich, the portion is big, and it costs only about twenty thousand rupiah. I usually eat there with my father on Sunday mornings after we go jogging. What I love most is that it reminds me of home. If you ever visit Indonesia, you should definitely try it." },
+  { id: "festival", topic: "Talk about a celebration or festival in your country.", tense: "", relHint: "nama perayaan, kapan, apa yang dilakukan orang, makanan, dan maknanya",
+    keywords: ["celebrat", "festival", "holiday", "eid", "lebaran", "ramadan", "christmas", "new", "year", "independence", "august", "nyepi", "tradition", "culture", "family", "relative", "home", "village", "visit", "pray", "mosque", "church", "temple", "food", "cake", "ketupat", "cook", "clothes", "gift", "money", "forgive", "together", "people", "street", "parade", "competition", "game", "flag", "firework", "decorat", "special", "country", "indonesia"],
+    outline: [
+      "<b>Pembuka (5–10 detik).</b> Nama perayaan dan kapan. <i>One of the biggest celebrations in Indonesia is Eid al-Fitr, or Lebaran.</i>",
+      "<b>Apa yang dilakukan (15–20 detik).</b> 2–3 kegiatan: pulang kampung, ibadah, makanan khas, saling berkunjung.",
+      "<b>Makna atau pengalaman pribadi (10 detik).</b> <i>For me, the best part is …</i>",
+      "<b>Penutup (5 detik).</b> <i>It's a time when …</i>"
+    ],
+    phrases: ["One of the most important celebrations in my country is …", "It usually takes place in …", "Before the day, people …", "On the day itself, …", "For me, the best part is …", "It's a time when families come together."],
+    checklist: ["Bicara hampir 45 detik penuh tanpa berhenti lama.", "Ada pembuka, detail, dan penutup.", "Menjelaskan istilah lokal dalam bahasa Inggris (ketupat, a rice cake wrapped in palm leaves).", "Memakai present simple untuk tradisi umum: people go, families cook.", "Ada minimal satu pengalaman atau pendapat pribadi."],
+    sample: "One of the most important celebrations in my country is Eid al-Fitr, which we call Lebaran. It takes place at the end of Ramadan, the fasting month. Before the day, millions of people travel back to their hometowns, so the roads and train stations are very crowded. On the morning of Eid, families pray together at the mosque, and then we ask for forgiveness from our parents and relatives. We also eat special food like ketupat, which is rice cooked in palm leaves, with chicken curry. Children usually receive a little money in envelopes. For me, the best part is seeing all my cousins again. It's a time when families come together and start fresh." },
+  { id: "service", topic: "Describe a time you received excellent customer service.", tense: "past", relHint: "tempatnya, masalahmu, apa yang dilakukan petugas, dan perasaanmu",
+    keywords: ["customer", "service", "staff", "employee", "officer", "teller", "agent", "waiter", "receptionist", "bank", "shop", "store", "restaurant", "hotel", "airport", "airline", "call", "phone", "help", "problem", "card", "account", "refund", "replace", "order", "wrong", "lost", "late", "friendly", "polite", "patient", "quick", "fast", "explain", "solv", "smile", "apolog", "satisf", "impress", "recommend", "experienc"],
+    outline: [
+      "<b>Situasi (5–10 detik).</b> Di mana dan kapan. <i>Last month, I lost my debit card while I was traveling.</i>",
+      "<b>Masalah (10 detik).</b> Apa yang terjadi dan kenapa kamu panik atau kesal.",
+      "<b>Pelayanan (15–20 detik).</b> 2–3 hal spesifik yang dilakukan petugas: sikapnya, kecepatannya, inisiatifnya.",
+      "<b>Penutup (5–10 detik).</b> Perasaanmu dan apa yang kamu pelajari tentang pelayanan yang baik."
+    ],
+    phrases: ["I'd like to talk about a time when …", "The problem was that …", "The staff member was really …", "Not only did she …, but she also …", "I was impressed because …", "Since then, I've always …"],
+    checklist: ["Bicara hampir 45 detik penuh tanpa berhenti lama.", "Ada situasi, masalah, pelayanan, dan penutup.", "Menyebut tindakan spesifik petugas, bukan hanya 'the service was good'.", "Memakai past tense dengan konsisten: lost, called, explained, was.", "Menjelaskan kenapa pelayanan itu istimewa."],
+    sample: "I'd like to talk about a time when I received excellent service at a bank. Last year, my debit card was swallowed by an ATM late on a Friday, and I needed money for the weekend. The next morning, I went to the nearest branch, and I was quite stressed. The customer service officer greeted me with a smile and listened patiently while I explained the problem. She checked my identity, blocked the old card, and gave me a new one in about fifteen minutes. Not only that, she also showed me how to use the mobile app so I could transfer money in an emergency. I was impressed because she made a stressful situation feel easy. Since then, I've always used that bank." },
+  { id: "weekend", topic: "What do you usually do on weekends?", tense: "", relHint: "kegiatan Sabtu dan Minggu, dengan siapa, dan kenapa kamu menyukainya",
+    keywords: ["weekend", "saturday", "sunday", "usually", "often", "sometimes", "always", "morning", "afternoon", "evening", "night", "relax", "rest", "sleep", "late", "jog", "run", "exercis", "gym", "sport", "badminton", "football", "swim", "cycl", "family", "friend", "parent", "visit", "mall", "cafe", "movie", "film", "watch", "read", "book", "cook", "clean", "house", "shop", "market", "hobby", "church", "mosque", "trip"],
+    outline: [
+      "<b>Pembuka (5 detik).</b> <i>My weekends are usually a mix of rest and activity.</i>",
+      "<b>Sabtu (15 detik).</b> 2 kegiatan dengan detail: jam, tempat, dengan siapa.",
+      "<b>Minggu (15 detik).</b> 2 kegiatan yang berbeda dari hari Sabtu.",
+      "<b>Penutup (5–10 detik).</b> <i>I like my weekends this way because …</i>"
+    ],
+    phrases: ["On Saturday mornings, I usually …", "After that, I sometimes …", "In the evening, my friends and I often …", "Sunday is more relaxed. I …", "Once a month, I also …", "It helps me recharge for the week ahead."],
+    checklist: ["Bicara hampir 45 detik penuh tanpa berhenti lama.", "Ada pembuka, detail, dan penutup.", "Memakai present simple untuk kebiasaan dan kata frekuensi: usually, often, sometimes, once a month.", "Memakai akhiran -s untuk he/she: my brother plays, my mother cooks.", "Menjelaskan kenapa kamu menyukai kegiatan itu."],
+    sample: "My weekends are usually a mix of rest and activity. On Saturday mornings, I usually go jogging in the park near my house at around six, before it gets too hot. After that, I clean my room and do my laundry, which I don't have time for during the week. In the afternoon, I sometimes meet my friends at a coffee shop, and we talk for hours or play board games. Sunday is more relaxed. I have a big breakfast with my family, and then I read a book or watch a movie. Once a month, I also visit my grandmother in Bogor. I like my weekends this way because they help me recharge for the busy week ahead." },
+  { id: "film", topic: "Describe a book, film, or series you enjoyed recently.", tense: "past", relHint: "judul, ceritanya, tokoh, bagian favorit, dan kenapa kamu menyukainya",
+    keywords: ["book", "novel", "film", "movie", "series", "episode", "season", "show", "watch", "read", "story", "plot", "character", "actor", "actress", "director", "author", "writer", "scene", "ending", "end", "main", "about", "girl", "boy", "man", "woman", "family", "friend", "love", "funny", "sad", "exciting", "interesting", "emotional", "lesson", "message", "recommend", "enjoy", "netflix", "cinema", "recently", "favorite", "favourite"],
+    outline: [
+      "<b>Pembuka (5–10 detik).</b> Judul, jenisnya, kapan kamu menonton atau membaca.",
+      "<b>Ringkasan cerita (15 detik).</b> Tokoh utama dan konflik dalam 2–3 kalimat. Jangan ceritakan semua.",
+      "<b>Kenapa suka (15 detik).</b> 2 alasan: aktingnya, ceritanya, pesannya, atau bagian favorit.",
+      "<b>Penutup (5 detik).</b> <i>I'd recommend it to anyone who …</i>"
+    ],
+    phrases: ["Recently, I watched / read …", "It's about a … who …", "The main character is …", "What I liked most was …", "The part that touched me was when …", "I'd recommend it to anyone who …"],
+    checklist: ["Bicara hampir 45 detik penuh tanpa berhenti lama.", "Ada pembuka, detail, dan penutup.", "Ringkasan cerita singkat, sebagian besar waktu dipakai untuk alasan kamu menyukainya.", "Memakai past tense untuk pengalamanmu (I watched, I felt) dan present tense untuk isi cerita (it is about, she lives).", "Memberi rekomendasi di akhir."],
+    sample: "Recently, I watched a Korean series called Reply 1988 on Netflix. It's about five families who live in the same neighborhood in Seoul in the late nineteen eighties. The main characters are a group of teenage friends, and the story follows their school life, their first love, and their problems at home. What I liked most was how realistic it felt. The families argue, but they always help each other when something bad happens. The part that touched me was when one father, who was usually very strict, finally told his daughter that he was proud of her. I cried a little. I'd recommend it to anyone who misses their childhood or wants a warm, funny story." },
+  { id: "online", topic: "Talk about the advantages and disadvantages of online shopping.", tense: "", relHint: "kelebihan, kekurangan, contoh pengalaman, dan pendapatmu",
+    keywords: ["online", "shop", "buy", "purchas", "order", "app", "website", "internet", "phone", "product", "item", "price", "cheap", "discount", "promo", "sale", "deliver", "shipping", "courier", "package", "fast", "slow", "late", "convenien", "easy", "time", "home", "compare", "review", "quality", "size", "fake", "wrong", "return", "refund", "pay", "money", "spend", "advantage", "disadvantage", "benefit", "risk", "however", "store"],
+    outline: [
+      "<b>Pembuka (5 detik).</b> <i>Online shopping has become very popular, and it has both advantages and disadvantages.</i>",
+      "<b>Kelebihan (15 detik).</b> 2 poin, misalnya hemat waktu dan mudah membandingkan harga, plus contoh.",
+      "<b>Kekurangan (15 detik).</b> 2 poin, misalnya kualitas tidak bisa dicek dan mudah boros.",
+      "<b>Pendapat dan penutup (5–10 detik).</b> <i>In my opinion, … as long as …</i>"
+    ],
+    phrases: ["Online shopping has become part of everyday life.", "The biggest advantage is that …", "Another benefit is …", "On the other hand, one problem is …", "For example, I once ordered … and …", "In my opinion, it's useful as long as …"],
+    checklist: ["Bicara hampir 45 detik penuh tanpa berhenti lama.", "Kelebihan dan kekurangan sama-sama dibahas, masing-masing minimal 2 poin.", "Memakai penanda: firstly, another advantage, on the other hand, however.", "Ada satu contoh pengalaman nyata.", "Ditutup dengan pendapat pribadi yang jelas."],
+    sample: "Online shopping has become part of everyday life, and it has both advantages and disadvantages. The biggest advantage is convenience. You can buy almost anything from your phone, at any time, without going to a crowded mall. Another benefit is price. It's easy to compare prices and find discounts, especially during big sales. On the other hand, one problem is that you can't check the quality before you buy. For example, I once ordered a jacket that looked great in the photos, but the material was thin and the size was wrong. Another disadvantage is that it's very easy to spend too much money. In my opinion, online shopping is useful as long as you read reviews and stick to a budget." },
+  { id: "hometown", topic: "Describe your hometown.", tense: "", relHint: "lokasi, ukuran, tempat menarik, makanan khas, dan suasananya",
+    keywords: ["hometown", "town", "city", "village", "born", "grew", "live", "place", "located", "province", "island", "java", "sumatra", "small", "big", "quiet", "busy", "crowded", "people", "friendly", "population", "famous", "known", "food", "dish", "market", "beach", "mountain", "river", "lake", "park", "street", "traffic", "weather", "hot", "cool", "rain", "culture", "tradition", "visit", "tourist", "change", "miss"],
+    outline: [
+      "<b>Pembuka (5–10 detik).</b> Nama dan lokasi. <i>My hometown is Malang, a city in East Java.</i>",
+      "<b>Gambaran umum (10–15 detik).</b> Ukuran, cuaca, suasana, orangnya.",
+      "<b>Hal yang terkenal (15 detik).</b> 1–2 tempat atau makanan khas yang kamu rekomendasikan.",
+      "<b>Penutup (5–10 detik).</b> Perasaanmu atau perubahan yang terjadi. <i>What I miss most is …</i>"
+    ],
+    phrases: ["I was born and raised in …", "It's located in …, about … from …", "It's a fairly … city with …", "It's famous for …", "If you visit, I'd suggest …", "What I miss most about it is …"],
+    checklist: ["Bicara hampir 45 detik penuh tanpa berhenti lama.", "Ada pembuka, detail, dan penutup.", "Memakai present simple untuk deskripsi: it is, it has, people are.", "Memakai kata sifat dan perbandingan: cooler than Jakarta, much quieter.", "Menyebut minimal 3 detail konkret (lokasi, tempat, makanan, cuaca)."],
+    sample: "I was born and raised in Malang, a city in East Java, about two hours from Surabaya. It's a medium-sized city surrounded by mountains, so the weather is much cooler than in Jakarta, especially at night. The people are friendly and the pace of life is quite relaxed. Malang is famous for its apples and for bakso, a meatball soup that you can find on almost every street. It's also close to Mount Bromo, so many tourists come to watch the sunrise there. If you visit, I'd suggest trying the night market in the city center. In recent years, the traffic has become heavier, but I still love it. What I miss most is the fresh air in the morning." },
+  { id: "future", topic: "Where do you see yourself in five years?", tense: "", relHint: "tujuan karier, rencana belajar, langkah yang akan kamu ambil, dan alasannya",
+    keywords: ["five", "year", "future", "career", "job", "work", "position", "role", "manager", "leader", "team", "bank", "company", "industry", "finance", "goal", "plan", "hope", "want", "would", "will", "going", "dream", "achiev", "learn", "skill", "experienc", "develop", "grow", "improv", "study", "master", "degree", "certific", "promot", "responsib", "family", "save", "money", "house", "contribut", "step"],
+    outline: [
+      "<b>Jawaban utama (5–10 detik).</b> <i>In five years, I hope to be working as … in …</i>",
+      "<b>Langkah menuju ke sana (15–20 detik).</b> 2 langkah konkret: pengalaman, sertifikasi, keterampilan.",
+      "<b>Tujuan pribadi (10 detik).</b> Satu rencana di luar pekerjaan, misalnya keuangan atau keluarga.",
+      "<b>Penutup (5 detik).</b> <i>I know it won't be easy, but I'm ready to work hard for it.</i>"
+    ],
+    phrases: ["In five years, I see myself …", "To get there, I'm planning to …", "I would also like to …", "By then, I hope I will have …", "Outside of work, I want to …", "I know it won't be easy, but …"],
+    checklist: ["Bicara hampir 45 detik penuh tanpa berhenti lama.", "Tujuan utama disebut jelas di awal.", "Memakai bentuk masa depan bervariasi: I hope to, I'm planning to, I will, I would like to.", "Ada langkah konkret, bukan hanya harapan umum.", "Nada positif dan realistis, cocok untuk wawancara kerja."],
+    sample: "In five years, I see myself working as a relationship manager at a national bank, handling business clients. To get there, I'm planning to start in a development program like BFLP, because it gives me experience in many different units. I would also like to take a professional banking certification in my second or third year. By then, I hope I will have strong skills in credit analysis and in communicating with clients. Outside of work, I want to save enough money for a down payment on a small house and help my younger brother with his university fees. I know it won't be easy, but I'm ready to work hard and keep learning to achieve it." },
+  { id: "learnfast", topic: "Describe a time you had to learn something new quickly.", tense: "past", relHint: "apa yang dipelajari, kenapa harus cepat, caranya, dan hasilnya",
+    keywords: ["learn", "new", "quick", "fast", "short", "time", "week", "day", "deadline", "task", "job", "intern", "work", "class", "project", "software", "program", "app", "tool", "excel", "system", "language", "skill", "tutorial", "video", "online", "practic", "ask", "senior", "colleague", "friend", "mistake", "note", "study", "night", "difficult", "nervous", "manage", "finally", "result", "confiden", "experienc", "lesson"],
+    outline: [
+      "<b>Situasi (5–10 detik).</b> Apa yang harus dipelajari dan kenapa waktunya singkat.",
+      "<b>Cara belajar (20 detik).</b> 2–3 langkah urut: sumber belajar, latihan, minta bantuan.",
+      "<b>Hasil (5–10 detik).</b> <i>In the end, I was able to …</i>",
+      "<b>Pelajaran (5 detik).</b> <i>This taught me that …</i>"
+    ],
+    phrases: ["During my internship, I had to …", "I only had … to learn it.", "First, I watched … / read …", "Then I practiced by …", "Whenever I got stuck, I asked …", "In the end, I was able to …"],
+    checklist: ["Bicara hampir 45 detik penuh tanpa berhenti lama.", "Ada situasi, cara belajar, hasil, dan pelajaran.", "Langkah belajarnya urut dan spesifik (first, then, after that).", "Memakai past tense dengan konsisten: had, watched, practiced, asked.", "Ada hasil yang jelas, kalau bisa dengan angka atau waktu."],
+    sample: "During my internship at a finance company, my supervisor asked me to build a monthly sales dashboard in Excel, and I only had one week. At that time, I didn't know how to use pivot tables or formulas like VLOOKUP. First, I watched several short tutorials every evening and wrote down the steps in a notebook. Then I practiced with old sales data instead of the real file, so I wouldn't make costly mistakes. Whenever I got stuck, I asked a senior analyst for ten minutes during lunch. In the end, I finished the dashboard one day before the deadline, and my team still uses it. This taught me that breaking a big task into small steps makes learning much faster." }
+];
+const FREE_SEC = SECTIONS.find(s => s.kind === "free");
 
 function secItems(sec) { return sec.kind === "listening" ? sec.conversations.reduce((a, c) => a.concat(c.items), []) : sec.items; }
 const TOTAL_ITEMS = SECTIONS.reduce((s, sec) => s + secItems(sec).length, 0);
@@ -1403,6 +1584,42 @@ function updateStart() {
   else hint.textContent = "Siap dimulai.";
 }
 
+/* Free Speech topic: a fixed topic, or "random" = a shuffled bag so every topic comes up once before any repeats. */
+const lsGet = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
+let freeBag = (() => { try { return JSON.parse(lsGet("svar-free-bag") || "[]").filter(id => FREE_TOPICS.some(t => t.id === id)); } catch (e) { return []; } })();
+let lastFree = lsGet("svar-free-last");
+function renderTopicPick() {
+  const sel = $("free-topic");
+  sel.innerHTML = `<option value="random">Acak dari ${FREE_TOPICS.length} topik (bergiliran, tidak mengulang)</option>` +
+    FREE_TOPICS.map((t, i) => `<option value="${t.id}">${i === 0 ? "Topik asli: " : ""}${esc(t.topic)}</option>`).join("");
+  const saved = lsGet("svar-free-topic");
+  sel.value = saved === "random" || FREE_TOPICS.some(t => t.id === saved) ? saved : "random";
+  topicHint();
+}
+function topicHint() {
+  $("free-topic-hint").textContent = $("free-topic").value === "random"
+    ? "Setiap tes memakai topik berikutnya dari urutan acak. Semua " + FREE_TOPICS.length + " topik keluar dulu sebelum ada yang terulang. Topiknya baru terlihat di soal 23, seperti tes asli."
+    : "Topik ini dipakai di setiap tes sampai kamu menggantinya.";
+}
+$("free-topic").addEventListener("change", () => { lsSet("svar-free-topic", $("free-topic").value); topicHint(); });
+function nextRandomTopic() {
+  if (!freeBag.length) {
+    freeBag = FREE_TOPICS.map(t => t.id);
+    for (let i = freeBag.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [freeBag[i], freeBag[j]] = [freeBag[j], freeBag[i]]; }
+    if (freeBag[0] === lastFree) freeBag.push(freeBag.shift());
+  }
+  lastFree = freeBag.shift();
+  lsSet("svar-free-bag", JSON.stringify(freeBag)); lsSet("svar-free-last", lastFree);
+  return lastFree;
+}
+function pickFreeTopic() {
+  const v = $("free-topic").value;
+  const id = v === "random" ? nextRandomTopic() : v;
+  const t = FREE_TOPICS.find(x => x.id === id) || FREE_TOPICS[0];
+  FREE_SEC.items[0] = Object.assign({}, t, { n: FREE_TOPICS[0].n });
+}
+
 (function envCheck() {
   const msgs = [];
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) msgs.push("Browser ini tidak bisa mengakses mikrofon. Buka file ini langsung di Google Chrome atau Microsoft Edge versi terbaru.");
@@ -2063,6 +2280,7 @@ async function runTest() {
   Object.keys(S.res).forEach(k => { const r = S.res[k]; if (r && r.audioUrl) { try { URL.revokeObjectURL(r.audioUrl); } catch (e) {} } });
   S.res = {}; S.ans = {}; S.convFail = {}; S.audFail = {}; S.secTime = {}; S.error = null;
   S.ran = new Set(S.sel);
+  if (S.sel.has(FREE_SEC.id)) pickFreeTopic();
   S.steps = buildSteps(); S.stepIdx = 0;
   $("notes").value = "";
   speech.reset(); speech.allowRetry(); sharedMisses = 0;
@@ -2284,8 +2502,8 @@ function freeHTML(sec, x) {
   if (s.recogFailed) notes.push("Suaramu terekam, tapi pengenalan suara tidak mengembalikan kata, jadi skor tidak dihitung. Putar rekamanmu untuk menilai sendiri.");
   else if (!s.spoke && SR && !r.srErr) notes.push("Tidak ada suara terdeteksi. Pastikan mikrofon tidak di-mute dan bicara lebih dekat.");
   if (s.spoke && s.dur < 25) notes.push("Kamu bicara sekitar " + Math.round(s.dur) + " detik. Usahakan mendekati 45 detik, karena jawaban yang terlalu pendek menurunkan nilai.");
-  if (s.srOk && s.words >= 20 && s.past < 3 && s.present > s.past) notes.push("Topik ini menceritakan pengalaman, jadi pakai past tense: stayed, was, had, went.");
-  if (s.srOk && s.hits.length < 2) notes.push("Hanya sedikit kata yang berkaitan dengan topik resort. Sebutkan detail seperti kamar, kolam, pantai, makanan, atau staf.");
+  if (item.tense === "past" && s.srOk && s.words >= 20 && s.past < 3 && s.present > s.past) notes.push("Topik ini menceritakan pengalaman, jadi pakai past tense: was, had, went, visited.");
+  if (s.srOk && s.hits.length < 2) notes.push("Hanya sedikit kata yang berkaitan dengan topik ini. Sebutkan detail seperti " + item.relHint + ".");
   const metrics = [
     ["Durasi bicara", s.spoke ? Math.round(s.dur) + " dtk" : "—"],
     ["Jumlah kata", s.srOk ? String(s.words) : "—"],
@@ -2307,6 +2525,7 @@ function freeHTML(sec, x) {
     <details class="tips"><summary>Struktur jawaban 45 detik</summary><ol>${item.outline.map(c => `<li>${c}</li>`).join("")}</ol></details>
     <details class="tips"><summary>Frasa yang bisa dipakai</summary><ul>${item.phrases.map(c => `<li><i>${esc(c)}</i></li>`).join("")}</ul></details>
     <details class="tips"><summary>Contoh jawaban</summary><div class="row" style="margin-top:10px"><p class="sample">${esc(item.sample)}</p>${sayBtn(item.sample, "Dengar contoh jawaban")}</div></details>
+    <div class="row"><button class="btn ghost small" id="btn-free-next" type="button">Latihan Free Speech lagi (topik lain)</button></div>
   </article>`;
 }
 
@@ -2397,6 +2616,15 @@ function renderResults() {
   $("s-results").innerHTML = h.join("");
   $("btn-again").onclick = () => { if (!S.running) startTest(); };
   $("btn-home").onclick = () => { tts.cancel(); show("setup"); updateStart(); };
+  const freeNext = $("btn-free-next");
+  if (freeNext) freeNext.onclick = () => {
+    if (S.running) return;
+    tts.cancel();
+    S.sel = new Set([FREE_SEC.id]);
+    $("free-topic").value = "random"; lsSet("svar-free-topic", "random"); topicHint();
+    renderSeclist();
+    startTest();
+  };
   // Chrome records WebM without a duration, so the player shows 0:00 until the end is found once.
   $("s-results").querySelectorAll("audio").forEach(a => {
     a.addEventListener("loadedmetadata", () => {
@@ -2420,6 +2648,7 @@ function renderResults() {
 
 /* ---------- init ---------- */
 renderSeclist();
+renderTopicPick();
 updateStart();
 tts.load();
 })();
