@@ -128,6 +128,9 @@ q{quotes:"“" "”" "‘" "’"}
 .topic-pick label{font-weight:600;font-size:.92rem}
 .topic-pick select{font:inherit;font-size:.95rem;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:9px 12px;max-width:100%;min-width:0}
 .topic-pick select:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.pick-row{display:flex;flex-wrap:wrap;gap:8px}
+.pick-row select{flex:1 1 220px}
+.pick-row select+select{flex:0 1 230px}
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px;display:flex;flex-direction:column;gap:12px}
 .panel-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
 .pill{font:500 .76rem var(--f-mono);padding:3px 10px;border-radius:999px;background:var(--sunk);color:var(--muted);border:1px solid var(--line);white-space:nowrap}
@@ -354,17 +357,17 @@ audio{width:100%;max-width:340px;height:38px}
       <p class="hint">Untuk latihan per bagian, hapus centang section yang tidak ingin dikerjakan. Untuk simulasi penuh, biarkan semua tercentang.</p>
       <div class="topic-pick">
         <label for="free-topic">Topik Free Speech (Section C)</label>
-        <select id="free-topic"></select>
+        <div class="pick-row"><select id="free-topic" aria-label="Topik Free Speech"></select><select id="count-C" aria-label="Jumlah topik Free Speech"></select></div>
         <span class="hint" id="free-topic-hint"></span>
       </div>
       <div class="topic-pick">
         <label for="bank-D">Soal Listening (Section D)</label>
-        <select id="bank-D"></select>
+        <div class="pick-row"><select id="bank-D" aria-label="Sumber soal Listening"></select><select id="count-D" aria-label="Jumlah soal Listening"></select></div>
       </div>
       <div class="topic-pick">
         <label for="bank-F">Soal Grammar (Section F)</label>
-        <select id="bank-F"></select>
-        <span class="hint">Mode acak mengambil soal dari bank secara bergiliran: semua soal keluar dulu sebelum ada yang terulang. Jumlah dan nomor soal tetap sama dengan tes asli.</span>
+        <div class="pick-row"><select id="bank-F" aria-label="Sumber soal Grammar"></select><select id="count-F" aria-label="Jumlah soal Grammar"></select></div>
+        <span class="hint">Mode acak mengambil soal dari bank secara bergiliran: semua soal keluar dulu sebelum ada yang terulang. Pilih jumlah soal lebih banyak untuk latihan beruntun dalam satu sesi; pilihan "tes asli" menjaga jumlah dan nomor soal sama dengan tes SVAR.</span>
       </div>
     </div>
 
@@ -1043,7 +1046,7 @@ const GRAMMAR_BANK = {
 };
 
 function secItems(sec) { return sec.kind === "listening" ? sec.conversations.reduce((a, c) => a.concat(c.items), []) : sec.items; }
-const TOTAL_ITEMS = SECTIONS.reduce((s, sec) => s + secItems(sec).length, 0);
+let TOTAL_ITEMS = SECTIONS.reduce((s, sec) => s + secItems(sec).length, 0);
 
 /* ---------- scoring helpers ---------- */
 function clamp(v, a, b) { return Math.min(b, Math.max(a, v)); }
@@ -1680,19 +1683,19 @@ function echoWords(t0, t1, targetTokens) {
 
 /* ---------- setup screen ---------- */
 function setPill(id, text, state) { const p = $(id); p.textContent = text; p.dataset.state = state || ""; }
-function selectedCount() { return SECTIONS.filter(s => S.sel.has(s.id)).reduce((n, s) => n + secItems(s).length, 0); }
+function selectedCount() { return SECTIONS.filter(s => S.sel.has(s.id)).reduce((n, s) => n + sectionCount(s), 0); }
 function needsMic() { return SPEAKING.some(id => S.sel.has(id)); }
 function needsAudio() { return AUDIO.some(id => S.sel.has(id)); }
 
 function renderSeclist() {
   $("seclist").innerHTML = SECTIONS.map(sec => {
-    const items = secItems(sec);
-    const range = items.length > 1 ? items[0].n + "–" + items[items.length - 1].n : String(items[0].n);
+    const lay = layout()[sec.id], count = lay.count;
+    const range = count > 1 ? lay.start + "–" + (lay.start + count - 1) : String(lay.start);
     return `<label class="secrow${S.sel.has(sec.id) ? "" : " off"}" for="sec-${sec.id}">
       <input type="checkbox" id="sec-${sec.id}" data-sec="${sec.id}"${S.sel.has(sec.id) ? " checked" : ""}>
       <span class="sec-letter">${sec.id}</span>
       <span class="secrow-main"><b>${esc(sec.name)}</b><span>${esc(sec.short)}</span></span>
-      <span class="secrow-meta"><span class="count">${items.length} soal · ${range}</span><span class="needs">${esc(sec.needs)}</span></span>
+      <span class="secrow-meta"><span class="count">${count} soal · ${range}</span><span class="needs">${esc(sec.needs)}</span></span>
     </label>`;
   }).join("");
 }
@@ -1748,53 +1751,101 @@ function restoreSelect(sel, key, valid) {
   sel.value = valid.indexOf(saved) >= 0 ? saved : "random";
   sel.addEventListener("change", () => lsSet(key, sel.value));
 }
+const GRAMMAR_INSTR = GRAMMAR_SEC.instr.slice();
+const POOL3 = LISTEN_BANK.filter(c => c.items.length === 3), POOL2 = LISTEN_BANK.filter(c => c.items.length === 2);
+const G_W = GRAMMAR_ORIG.filter(it => !it.audio).length, G_A = GRAMMAR_ORIG.filter(it => it.audio).length;
+/* "count" = topics for C, sets of (3+2)-question conversations for D, sets of (written+audio) questions for F. 1 = original test. */
+const COUNT_MAX = { C: FREE_TOPICS.length, D: Math.min(POOL3.length, POOL2.length), F: Math.min(Math.floor(GRAMMAR_BANK.written.length / G_W), Math.floor(GRAMMAR_BANK.audio.length / G_A)) };
+function countOptions(id) {
+  if (id === "C") return [1, 3, 5, 10, COUNT_MAX.C].filter((v, i, a) => v <= COUNT_MAX.C && a.indexOf(v) === i)
+    .map(v => [v, v === 1 ? "1 topik (tes asli)" : v + " topik" + (v === COUNT_MAX.C ? " (semua)" : "")]);
+  const per = id === "D" ? LISTEN_ORIG.reduce((s, c) => s + c.items.length, 0) : GRAMMAR_ORIG.length;
+  return Array.from({ length: COUNT_MAX[id] }, (_, i) => i + 1).map(v => [v, v * per + " soal" +
+    (id === "D" ? " · " + v * LISTEN_ORIG.length + " percakapan" : "") + (v === 1 ? " (tes asli)" : v === COUNT_MAX[id] ? " (semua)" : "")]);
+}
+const countOf = id => { const v = +($("count-" + id) || {}).value; return v >= 1 ? v : 1; };
+function sectionCount(sec) {
+  if (sec === FREE_SEC) return countOf("C");
+  if (sec === LISTEN_SEC) return countOf("D") * LISTEN_ORIG.reduce((s, c) => s + c.items.length, 0);
+  if (sec === GRAMMAR_SEC) return countOf("F") * GRAMMAR_ORIG.length;
+  return secItems(sec).length;
+}
+function layout() {
+  const out = {}; let n = 1;
+  SECTIONS.forEach(sec => { const c = sectionCount(sec); out[sec.id] = { start: n, count: c }; n += c; });
+  out.total = n - 1;
+  return out;
+}
 function renderBankPick() {
   const ft = $("free-topic");
   ft.innerHTML = `<option value="random">Acak dari ${FREE_TOPICS.length} topik (bergiliran, tidak mengulang)</option>` +
     FREE_TOPICS.map((t, i) => `<option value="${t.id}">${i === 0 ? "Topik asli: " : ""}${esc(t.topic)}</option>`).join("");
   restoreSelect(ft, "svar-free-topic", ["random"].concat(FREE_TOPICS.map(t => t.id)));
   ft.addEventListener("change", topicHint);
-  topicHint();
-  const range = items => items[0].n + "–" + items[items.length - 1].n;
   const nListen = LISTEN_BANK.reduce((s, c) => s + c.items.length, 0);
-  $("bank-D").innerHTML = `<option value="random">Acak dari bank: ${LISTEN_BANK.length} percakapan, ${nListen} soal</option><option value="orig">Soal asli (${range(secItems({ kind: "listening", conversations: LISTEN_ORIG }))})</option>`;
+  $("bank-D").innerHTML = `<option value="random">Acak dari bank: ${LISTEN_BANK.length} percakapan, ${nListen} soal</option><option value="orig">Soal asli dulu, lalu dari bank</option>`;
   restoreSelect($("bank-D"), "svar-bank-D", ["random", "orig"]);
-  $("bank-F").innerHTML = `<option value="random">Acak dari bank: ${GRAMMAR_BANK.written.length + GRAMMAR_BANK.audio.length} soal</option><option value="orig">Soal asli (${range(GRAMMAR_ORIG)})</option>`;
+  $("bank-F").innerHTML = `<option value="random">Acak dari bank: ${GRAMMAR_BANK.written.length + GRAMMAR_BANK.audio.length} soal</option><option value="orig">Soal asli dulu, lalu dari bank</option>`;
   restoreSelect($("bank-F"), "svar-bank-F", ["random", "orig"]);
+  ["C", "D", "F"].forEach(id => {
+    const sel = $("count-" + id), opts = countOptions(id), saved = +lsGet("svar-count-" + id);
+    sel.innerHTML = opts.map(o => `<option value="${o[0]}">${esc(o[1])}</option>`).join("");
+    sel.value = String(opts.some(o => o[0] === saved) ? saved : 1);
+    sel.addEventListener("change", () => { lsSet("svar-count-" + id, sel.value); topicHint(); renderSeclist(); updateStart(); });
+  });
+  topicHint();
 }
 function topicHint() {
-  $("free-topic-hint").textContent = $("free-topic").value === "random"
-    ? "Setiap tes memakai topik berikutnya dari urutan acak. Semua " + FREE_TOPICS.length + " topik keluar dulu sebelum ada yang terulang. Topiknya baru terlihat di soal 23, seperti tes asli."
-    : "Topik ini dipakai di setiap tes sampai kamu menggantinya.";
+  const many = countOf("C") > 1;
+  $("free-topic-hint").textContent = ($("free-topic").value === "random"
+    ? "Setiap tes memakai topik berikutnya dari urutan acak. Semua " + FREE_TOPICS.length + " topik keluar dulu sebelum ada yang terulang."
+    : "Topik ini dipakai di setiap tes sampai kamu menggantinya." + (many ? " Topik lainnya diambil acak dari bank." : "")) +
+    (many ? " Tiap topik: 30 detik berpikir + 45 detik bicara, jadi " + countOf("C") + " topik sekitar " + Math.ceil(countOf("C") * 80 / 60) + " menit." : "");
 }
+const pickFrom = (pool, ids) => ids.map(id => pool.find(x => (x.id || bankId(x)) === id));
 function pickFreeTopic() {
-  const v = $("free-topic").value;
-  const id = v === "random" ? bagDraw("svar-free-bag", FREE_TOPICS.map(t => t.id), 1)[0] : v;
-  const t = FREE_TOPICS.find(x => x.id === id) || FREE_TOPICS[0];
-  FREE_SEC.items[0] = Object.assign({}, t, { n: FREE_TOPICS[0].n });
+  const k = countOf("C"), v = $("free-topic").value, all = FREE_TOPICS.map(t => t.id);
+  const ids = v === "random" ? bagDraw("svar-free-bag", all, k) : [v].concat(bagDraw("svar-free-bag-x", all.filter(id => id !== v), k - 1));
+  FREE_SEC.items = pickFrom(FREE_TOPICS, ids).map(t => Object.assign({}, t || FREE_TOPICS[0]));
 }
 function pickListening() {
-  let convs = LISTEN_ORIG;
-  if ($("bank-D").value === "random") {
-    // One 3-question conversation, then one 2-question conversation, like the original (24–26, 27–28).
-    convs = [3, 2].map(len => {
-      const pool = LISTEN_BANK.filter(c => c.items.length === len);
-      const id = bagDraw("svar-bank-D" + len, pool.map(c => c.id), 1)[0];
-      return pool.find(c => c.id === id);
-    });
-  }
-  let n = LISTEN_ORIG[0].items[0].n;
-  LISTEN_SEC.conversations = convs.map((c, ci) => Object.assign({}, c, { title: "Conversation " + (ci + 1), items: c.items.map(it => Object.assign({}, it, { n: n++ })) }));
+  const k = countOf("D"), orig = $("bank-D").value === "orig";
+  // Each set = one 3-question conversation, then one 2-question conversation, like the original (24–26, 27–28).
+  const draw = (pool, len) => {
+    const o = orig ? LISTEN_ORIG.filter(c => c.items.length === len).map(c => c.id) : [];
+    const rest = pool.map(c => c.id).filter(id => o.indexOf(id) < 0);
+    return pickFrom(pool, o.slice(0, k).concat(bagDraw("svar-bank-D" + len + (orig ? "-x" : ""), rest, k - Math.min(k, o.length))));
+  };
+  const a = draw(POOL3, 3), b = draw(POOL2, 2), convs = [];
+  for (let i = 0; i < k; i++) convs.push(a[i], b[i]);
+  LISTEN_SEC.conversations = convs;
 }
 function pickGrammar() {
-  let items = GRAMMAR_ORIG;
-  if ($("bank-F").value === "random") {
-    const draw = (pool, key, k) => bagDraw(key, pool.map(bankId), k).map(id => pool.find(it => bankId(it) === id));
-    items = draw(GRAMMAR_BANK.written, "svar-bank-Fw", GRAMMAR_ORIG.filter(it => !it.audio).length)
-      .concat(draw(GRAMMAR_BANK.audio, "svar-bank-Fa", GRAMMAR_ORIG.filter(it => it.audio).length));
+  const k = countOf("F"), orig = $("bank-F").value === "orig";
+  const draw = (pool, key, n, origItems) => {
+    const o = orig ? origItems.map(bankId) : [];
+    const rest = pool.map(bankId).filter(id => o.indexOf(id) < 0);
+    return o.slice(0, n).concat(bagDraw(key + (orig ? "-x" : ""), rest, n - Math.min(n, o.length))).map(id => pool.find(it => bankId(it) === id));
+  };
+  GRAMMAR_SEC.items = draw(GRAMMAR_BANK.written, "svar-bank-Fw", G_W * k, GRAMMAR_ORIG.filter(it => !it.audio))
+    .concat(draw(GRAMMAR_BANK.audio, "svar-bank-Fa", G_A * k, GRAMMAR_ORIG.filter(it => it.audio)))
+    .map(it => Object.assign({}, it, { id: bankId(it) }));
+}
+/* Numbers run on across sections in test order, so a longer C, D or F shifts the later sections. With every count at 1 this
+   gives the original 1–38. */
+function renumber() {
+  const L = layout();
+  SECTIONS.forEach(sec => {
+    if (!S.sel.has(sec.id)) return;
+    let n = L[sec.id].start;
+    if (sec.kind === "listening") sec.conversations = sec.conversations.map((c, ci) => Object.assign({}, c, { title: "Conversation " + (ci + 1), items: c.items.map(it => Object.assign({}, it, { n: n++ })) }));
+    else sec.items = sec.items.map(it => Object.assign({}, it, { n: n++ }));
+  });
+  if (S.sel.has(GRAMMAR_SEC.id)) {
+    const parts = [GRAMMAR_SEC.items.filter(it => !it.audio), GRAMMAR_SEC.items.filter(it => it.audio)];
+    GRAMMAR_SEC.instr = GRAMMAR_INSTR.map((p, i) => Object.assign({}, p, { label: "Soal " + parts[i][0].n + (parts[i].length > 1 ? "–" + parts[i][parts[i].length - 1].n : "") }));
   }
-  let n = GRAMMAR_ORIG[0].n;
-  GRAMMAR_SEC.items = items.map(it => Object.assign({}, it, { id: bankId(it), n: n++ }));
+  TOTAL_ITEMS = L.total;
 }
 
 (function envCheck() {
@@ -2460,6 +2511,7 @@ async function runTest() {
   if (S.sel.has(FREE_SEC.id)) pickFreeTopic();
   if (S.sel.has(LISTEN_SEC.id)) pickListening();
   if (S.sel.has(GRAMMAR_SEC.id)) pickGrammar();
+  renumber();
   S.steps = buildSteps(); S.stepIdx = 0;
   $("notes").value = "";
   speech.reset(); speech.allowRetry(); sharedMisses = 0;
@@ -2543,8 +2595,10 @@ function computeResults() {
       out.sec[sec.id] = { items, score: mean(sc.map(s => s.overall)), acc: mean(sc.map(s => s.acc)), flu: mean(sc.map(s => s.flu)), wpm: mean(sc.map(s => s.wpm)),
         scored: sc.filter(s => s.overall != null).length, done: sc.length, total: sec.items.length };
     } else if (sec.kind === "free") {
-      const item = sec.items[0], r = S.res[item.n], s = r ? scoreFree(item, r, !!SR) : null;
-      out.sec[sec.id] = { item, r, s, score: s ? s.overall : null, flu: s ? s.cFlu : null };
+      const items = sec.items.map(item => { const r = S.res[item.n]; return { item, r, s: r ? scoreFree(item, r, !!SR) : null }; });
+      const sc = items.map(x => x.s).filter(Boolean);
+      out.sec[sec.id] = { items, score: mean(sc.map(s => s.overall)), flu: mean(sc.map(s => s.cFlu)),
+        spoke: sc.filter(s => s.spoke), words: sc.reduce((n, s) => n + (s.srOk ? s.words : 0), 0), srOk: sc.some(s => s.srOk), total: items.length };
     } else {
       const list = sec.kind === "listening"
         ? sec.conversations.reduce((a, c) => a.concat(c.items.map(item => ({ item, conv: c }))), [])
@@ -2674,7 +2728,7 @@ function speechItemHTML(sec, x) {
 
 function freeHTML(sec, x) {
   const { item, r, s } = x;
-  if (!r || !s) return `<article class="item"><p class="hint">Soal ini tidak dikerjakan.</p></article>`;
+  if (!r || !s) return `<article class="item"><div class="item-head"><span class="qn">Soal ${item.n} · ${esc(item.topic)}</span><span class="chip">Tidak dikerjakan</span></div></article>`;
   const notes = [];
   if (!SR) notes.push("Penilaian otomatis tidak tersedia di browser ini. Dengarkan rekamanmu dan nilai sendiri dengan daftar cek di bawah.");
   else if (r.srErr) notes.push(srFailMessage(r.srErr).replace(/,? lalu tekan Tes ulang\.?$/, "."));
@@ -2742,7 +2796,11 @@ function convReviewHTML(conv, x) {
 }
 function sectionSummary(sec, x) {
   if (sec.kind === "read" || sec.kind === "repeat") return x.scored + " dari " + x.total + " soal dinilai" + (x.acc != null ? " · akurasi kata " + Math.round(x.acc) + "%" : "");
-  if (sec.kind === "free") return x.s && x.s.spoke ? "bicara " + Math.round(x.s.dur) + " detik" + (x.s.srOk ? " · " + x.s.words + " kata" : "") : "tidak ada suara terekam";
+  if (sec.kind === "free") {
+    if (!x.spoke.length) return "tidak ada suara terekam";
+    if (x.total === 1) { const s = x.spoke[0]; return "bicara " + Math.round(s.dur) + " detik" + (s.srOk ? " · " + s.words + " kata" : ""); }
+    return x.spoke.length + " dari " + x.total + " topik dijawab · rata-rata " + Math.round(mean(x.spoke.map(s => s.dur))) + " detik" + (x.srOk ? " · " + x.words + " kata" : "");
+  }
   return x.correct + " dari " + x.total + " benar";
 }
 function reviewSection(sec, R, open) {
@@ -2751,7 +2809,7 @@ function reviewSection(sec, R, open) {
   if (sec.kind === "read" || sec.kind === "repeat") {
     body = `<div class="legend"><span><i class="sw ok"></i>Terbaca benar</span><span><i class="sw miss"></i>Tidak terdengar</span><span><i class="sw sub"></i>Terdengar sebagai kata lain</span><span><i>+kata</i>&nbsp;Kata tambahan</span></div>` +
       x.items.map(it => speechItemHTML(sec, it)).join("");
-  } else if (sec.kind === "free") body = freeHTML(sec, x);
+  } else if (sec.kind === "free") body = x.items.map(it => freeHTML(sec, it)).join("");
   else if (sec.kind === "listening") body = sec.conversations.map(conv => convReviewHTML(conv, x)).join("");
   else body = x.items.map(mcqItemHTML).join("");
   if (AGAIN_LABEL[sec.id]) body += `<div class="row"><button class="btn ghost small" type="button" data-again="${sec.id}">${AGAIN_LABEL[sec.id]}</button></div>`;
@@ -2826,8 +2884,8 @@ function renderResults() {
 }
 
 /* ---------- init ---------- */
-renderSeclist();
 renderBankPick();
+renderSeclist();
 updateStart();
 tts.load();
 })();
